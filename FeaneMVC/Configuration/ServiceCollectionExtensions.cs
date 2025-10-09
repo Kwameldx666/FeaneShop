@@ -3,11 +3,9 @@ using FeaneMVC.Application.Configuration;
 using FeaneMVC.Attributes;
 using FeaneMVC.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
 using System.Text;
 
 namespace FeaneMVC.Configuration

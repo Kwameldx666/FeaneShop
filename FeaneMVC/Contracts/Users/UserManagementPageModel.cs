@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace FeaneMVC.Contracts.Users;
 
 public class UserManagementPageModel

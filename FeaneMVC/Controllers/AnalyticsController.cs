@@ -1,8 +1,8 @@
-using FeaneMVC.Attributes;
 using FeaneMVC.Application.Queries.Analytics;
+using FeaneMVC.Attributes;
 using FeaneMVC.Contracts.Analytics;
-using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FeaneMVC.Controllers
 {

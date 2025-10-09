@@ -1,4 +1,3 @@
-using System;
 using FeaneMVC.Application.Commands.Carts;
 using FeaneMVC.Application.Queries.Carts;
 using FeaneMVC.Application.Queries.Sessions;
@@ -6,10 +5,10 @@ using FeaneMVC.Application.Queries.Users;
 using FeaneMVC.Domain.Entities;
 using FeaneMVC.Domain.Enums;
 using FeaneMVC.Domain.ValueObjects;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MediatR;
 
 namespace FeaneMVC.Controllers
 {

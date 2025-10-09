@@ -1,11 +1,10 @@
-using System;
 using FeaneMVC.Application.Commands.Payments;
 using FeaneMVC.Application.Queries.Sessions;
 using FeaneMVC.Domain.Entities;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MediatR;
 
 namespace FeaneMVC.Controllers;
 

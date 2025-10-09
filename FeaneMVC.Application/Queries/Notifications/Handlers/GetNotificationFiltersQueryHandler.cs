@@ -1,5 +1,5 @@
-using FeaneMVC.Domain.Interfaces;
 using FeaneMVC.Domain.Entities;
+using FeaneMVC.Domain.Interfaces;
 using MediatR;
 
 namespace FeaneMVC.Application.Queries.Notifications.Handlers;

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace FeaneMVC.Contracts.Notifications;
 
 public class NotificationsPageModel

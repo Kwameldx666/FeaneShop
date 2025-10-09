@@ -1,13 +1,10 @@
-using System;
-using System.Threading.Tasks;
-using FeaneMVC.Application.Commands.Reservations;
 using FeaneMVC.Application.Queries.Sessions;
 using FeaneMVC.Contracts.Reservations;
 using FeaneMVC.Extenstions;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MediatR;
 
 namespace FeaneMVC.Controllers
 {

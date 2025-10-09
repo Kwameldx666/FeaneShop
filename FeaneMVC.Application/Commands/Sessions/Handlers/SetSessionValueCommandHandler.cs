@@ -1,7 +1,5 @@
 using FeaneMVC.Application.Common.Interfaces.Services;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FeaneMVC.Application.Commands.Sessions.Handlers;
 

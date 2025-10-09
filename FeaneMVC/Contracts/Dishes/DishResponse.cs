@@ -1,5 +1,3 @@
-using System;
-
 namespace FeaneMVC.Contracts.Dishes;
 
 public class DishResponse

@@ -1,16 +1,13 @@
 using FeaneMVC.Application.Commands.Notifications;
 using FeaneMVC.Application.Queries.Notifications;
+using FeaneMVC.Application.Services;
 using FeaneMVC.Contracts.Notifications;
 using FeaneMVC.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using MediatR;
-using FeaneMVC.Application.Services;
 
 namespace FeaneMVC.Controllers
 {

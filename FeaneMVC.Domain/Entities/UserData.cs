@@ -1,5 +1,4 @@
 using FeaneMVC.Domain.Enums;
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace FeaneMVC.Domain.Entities

@@ -1,7 +1,5 @@
 using FeaneMVC.Domain.Interfaces;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace FeaneMVC.Application.Commands.Notifications.Handlers;
 

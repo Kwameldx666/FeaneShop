@@ -1,9 +1,7 @@
 using FeaneMVC.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using System;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace FeaneMVC.Infrastructure.Identity;
 

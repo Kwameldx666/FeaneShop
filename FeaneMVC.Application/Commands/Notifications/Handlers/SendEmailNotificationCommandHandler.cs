@@ -1,7 +1,4 @@
-using FeaneMVC.Application.Common.Interfaces.Services;
 using MediatR;
-using System.Threading;
-using System.Threading.Tasks;
 using INotification = FeaneMVC.Application.Common.Interfaces.Services.INotification;
 
 namespace FeaneMVC.Application.Commands.Notifications.Handlers;

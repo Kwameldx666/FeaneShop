@@ -1,26 +1,23 @@
-using FeaneMVC.Application.Configuration;
 using FeaneMVC.Application.Commands.Reservations;
 using FeaneMVC.Application.Commands.Sessions;
 using FeaneMVC.Application.Commands.Users;
+using FeaneMVC.Application.Configuration;
 using FeaneMVC.Application.Queries.Authentication;
 using FeaneMVC.Application.Queries.Reservations;
 using FeaneMVC.Application.Queries.Sessions;
 using FeaneMVC.Application.Queries.Users;
-using FeaneMVC.Domain.Entities;
-using FeaneMVC.Domain.Enums;
 using FeaneMVC.Contracts.Account;
 using FeaneMVC.Contracts.Reservations;
+using FeaneMVC.Domain.Entities;
+using FeaneMVC.Domain.Enums;
 using FeaneMVC.Extenstions;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MediatR;
-using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace FeaneMVC.Controllers
 {

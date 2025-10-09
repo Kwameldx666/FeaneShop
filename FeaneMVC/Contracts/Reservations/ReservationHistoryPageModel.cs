@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace FeaneMVC.Contracts.Reservations;
 
 public class ReservationHistoryPageModel

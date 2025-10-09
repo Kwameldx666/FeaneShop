@@ -1,10 +1,9 @@
 using FeaneMVC.Application.Commands.Users;
 using FeaneMVC.Application.Queries.Users;
 using FeaneMVC.Contracts.Users;
-using FeaneMVC.Domain.Entities;
 using FeaneMVC.Extenstions;
-using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FeaneMVC.Controllers
 {

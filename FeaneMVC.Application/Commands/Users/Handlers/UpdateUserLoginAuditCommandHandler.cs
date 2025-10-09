@@ -1,6 +1,5 @@
 using FeaneMVC.Domain.Interfaces;
 using MediatR;
-using System;
 
 namespace FeaneMVC.Application.Commands.Users.Handlers;
 

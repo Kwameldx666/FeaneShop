@@ -1,5 +1,4 @@
 using FeaneMVC.Application.Common.Interfaces.Services;
-using FeaneMVC.Domain.Entities;
 using MediatR;
 
 namespace FeaneMVC.Application.Queries.Authentication.Handlers;

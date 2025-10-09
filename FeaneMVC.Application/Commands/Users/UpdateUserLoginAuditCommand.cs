@@ -1,5 +1,4 @@
 using MediatR;
-using System;
 
 namespace FeaneMVC.Application.Commands.Users;
 

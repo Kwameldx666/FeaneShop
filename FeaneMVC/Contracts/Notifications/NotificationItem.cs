@@ -1,5 +1,3 @@
-using System;
-
 namespace FeaneMVC.Contracts.Notifications;
 
 public class NotificationItem
