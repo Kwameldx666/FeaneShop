@@ -1,0 +1,160 @@
+@model FeaneMVC.Contracts.Reservations.CreateReservationRequest
+
+@{
+    Layout = "_LayoutBook";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/reservation-book.css" />
+</head>
+
+<section class="book_section layout_padding">
+    <div class="container">
+        <div class="heading_container">
+            <h2>Забронировать столик</h2>
+            <p class="lead">Поделитесь деталями визита, и мы подготовим идеальное место для вашей встречи.</p>
+        </div>
+        <div class="row g-4 align-items-stretch">
+            <div class="col-lg-7">
+                <div class="form_container shadow-sm">
+                    @if (ViewData["SuccessMessage"] is string successMessage)
+                    {
+                        <div class="alert alert-success" role="alert">@successMessage</div>
+                    }
+                    <form asp-action="ReservationProcess" method="post" class="reservation-form">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label asp-for="CustomerName" class="form-label"></label>
+                                <input type="text" class="form-control" asp-for="CustomerName" placeholder="Например, Анна" />
+                                <span asp-validation-for="CustomerName" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="PhoneNumber" class="form-label"></label>
+                                <input type="tel" class="form-control" asp-for="PhoneNumber" placeholder="+375 (29) 000-00-00" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="UserEmail" class="form-label"></label>
+                                <input type="email" class="form-control" asp-for="UserEmail" placeholder="guest@example.com" />
+                                <span asp-validation-for="UserEmail" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="NumberOfPeople" class="form-label"></label>
+                                <select class="form-select" asp-for="NumberOfPeople">
+                                    <option value="">Сколько гостей?</option>
+                                    @for (var i = 1; i <= 12; i++)
+                                    {
+                                        <option value="@i">@i</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="NumberOfPeople" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="ReservationDateTime" class="form-label">Дата и время</label>
+                                <input type="datetime-local" class="form-control" asp-for="ReservationDateTime" />
+                                <span asp-validation-for="ReservationDateTime" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="BudgetPerGuest" class="form-label"></label>
+                                <div class="input-group">
+                                    <input type="number" step="0.5" min="0" class="form-control" asp-for="BudgetPerGuest" />
+                                    <span class="input-group-text">BYN</span>
+                                </div>
+                                <span asp-validation-for="BudgetPerGuest" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Occasion" class="form-label"></label>
+                                <select class="form-select" asp-for="Occasion">
+                                    <option value="">Выберите повод</option>
+                                    <option value="Романтический ужин">Романтический ужин</option>
+                                    <option value="Семейный праздник">Семейный праздник</option>
+                                    <option value="Деловая встреча">Деловая встреча</option>
+                                    <option value="День рождения">День рождения</option>
+                                    <option value="Другое">Другое</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="SeatingPreference" class="form-label"></label>
+                                <select class="form-select" asp-for="SeatingPreference">
+                                    <option value="">Предпочтения по рассадке</option>
+                                    <option value="У окна">У окна</option>
+                                    <option value="В центре зала">В центре зала</option>
+                                    <option value="Тихий угол">Тихий угол</option>
+                                    <option value="Терраса">Терраса</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label asp-for="SpecialRequests" class="form-label"></label>
+                                <textarea class="form-control" asp-for="SpecialRequests" rows="3" placeholder="Например, детский стул или безглютеновое меню"></textarea>
+                                <span asp-validation-for="SpecialRequests" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="btn_box">
+                            <button type="submit" class="btn btn-primary btn-lg w-100 mt-4">Забронировать</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="booking-summary shadow-sm">
+                    <h4 class="summary-title">Сводка визита</h4>
+                    <ul class="summary-list">
+                        <li><span>Гостей:</span> <strong id="summary-guests">@Model.NumberOfPeople</strong></li>
+                        <li><span>Дата:</span> <strong id="summary-date">@Model.ReservationDateTime.ToLocalTime().ToString("dd MMMM HH:mm")</strong></li>
+                        <li><span>Бюджет:</span> <strong id="summary-budget">@Model.BudgetPerGuest.ToString("F2") BYN / гость</strong></li>
+                        <li><span>Примерный чек:</span> <strong id="summary-total">@(Model.NumberOfPeople * Model.BudgetPerGuest).ToString("F2") BYN</strong></li>
+                    </ul>
+                    <p class="summary-note">После подтверждения вы получите письмо с деталями резервации и сможете отслеживать статус в профиле.</p>
+                    <div class="map_container">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="~/js/reservation-book.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v6.7/mapsJavaScriptAPI.js" async defer></script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            const guestsInput = document.getElementById('@Html.IdFor(m => m.NumberOfPeople)');
+            const budgetInput = document.getElementById('@Html.IdFor(m => m.BudgetPerGuest)');
+            const dateInput = document.getElementById('@Html.IdFor(m => m.ReservationDateTime)');
+
+            const guestsOutput = document.getElementById('summary-guests');
+            const budgetOutput = document.getElementById('summary-budget');
+            const totalOutput = document.getElementById('summary-total');
+            const dateOutput = document.getElementById('summary-date');
+
+            function updateSummary() {
+                const guests = Number(guestsInput?.value || 0);
+                const budget = Number(budgetInput?.value || 0);
+                const total = guests * budget;
+                guestsOutput.textContent = guests > 0 ? guests : '—';
+                budgetOutput.textContent = budget > 0 ? `${budget.toFixed(2)} BYN / гость` : '—';
+                totalOutput.textContent = total > 0 ? `${total.toFixed(2)} BYN` : '—';
+
+                if (dateInput?.value) {
+                    const date = new Date(dateInput.value);
+                    dateOutput.textContent = date.toLocaleString('ru-RU', { day: '2-digit', month: 'long', hour: '2-digit', minute: '2-digit' });
+                } else {
+                    dateOutput.textContent = '—';
+                }
+            }
+
+            guestsInput?.addEventListener('input', updateSummary);
+            budgetInput?.addEventListener('input', updateSummary);
+            dateInput?.addEventListener('change', updateSummary);
+
+            updateSummary();
+        })();
+    </script>
+}

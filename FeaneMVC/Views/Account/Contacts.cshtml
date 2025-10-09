@@ -1,0 +1,85 @@
+@model FeaneMVC.Domain.Entities.UserData
+
+@{
+    Layout = "_LayoutProfile";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/account-contacts.css" />
+}
+
+
+<body class="adaptive" data-multi-lang="false">
+    <div class="page_layout page_layout-clear">
+        <main>
+            <div class="layout">
+                <div class="layout__content">
+                    <div class="content-wrapper section--content_wrapper">
+                        <div class="sidebar--menu">
+                            <input class="menu-switcher" id="menu-toggle" type="checkbox" />
+                            <label class="menu-toggle" data-title="Личный кабинет" for="menu-toggle"></label>
+                            <div class="menu menu--personal content-block--padded">
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/profile">
+                                        История резерваций
+                                    </a>
+                                </div>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/addresses">
+                                        Адрес доставки
+                                    </a>
+                                </div>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link menu-link--active" href="/account/contacts">
+                                        Контактные данные
+                                    </a>
+                                </div>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/logout">
+                                        Выход
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section--content">
+                            <div class="section--checkout_header content-block--padded">
+                                <h1 class="section-title title title--h1">
+                                    Контактные данные
+                                </h1>
+                            </div>
+
+                            <div class="content-block--padded">
+                                <div id="contacts-feedback" class="alert d-none" role="alert"></div>
+                                <form class="contact-form" method="post" action="@Url.Action("UpdateContacts", "Account")">
+                                    <label for="contact-name">Имя:</label>
+                                    <input type="text" id="contact-name" name="Username" value="@Model.Username" required />
+
+                                    <label for="contact-email">Электронная почта:</label>
+                                    <input type="email" id="contact-email" name="Email" value="@Model.Email" required />
+
+                                    <label for="contact-phone">Телефон:</label>
+                                    <input type="tel" id="contact-phone" name="PhoneNumber" value="@Model.PhoneNumber" required />
+
+                                    <label for="contact-address">Адрес:</label>
+                                    <input type="text" id="contact-address" name="Address" value="@Model.Address" required />
+
+                                    <button type="submit">Сохранить изменения</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <link href="https://static.insales-cdn.com/assets/1/2900/1583956/1719923585/theme.css" rel="stylesheet" type="text/css" onload="document.body.classList.add('settings_loaded');" />
+    <script src="https://static.insales-cdn.com/assets/1/2900/1583956/1719923585/theme.js" charset="utf-8"></script>
+
+    @section Scripts {
+        <script src="~/js/account-contacts.js"></script>
+    }
+
+</body>
+

@@ -1,0 +1,20 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    @RenderSection("Styles", required: false) <!-- Рендеринг стилей, если они есть -->
+</head>
+<body>
+    @Html.Partial("_Header") <!-- Заголовок -->
+    @Html.Partial("_Navbar") <!-- Навигационная панель -->
+
+    <main>
+        @RenderBody() <!-- Основное содержимое представления -->
+    </main>
+
+    @Html.Partial("_Footer") <!-- Подвал -->
+    @RenderSection("Scripts", required: false) <!-- Рендеринг скриптов, если они есть -->
+</body>
+</html>

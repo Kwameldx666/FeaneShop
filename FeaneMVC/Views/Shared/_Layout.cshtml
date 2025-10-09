@@ -1,0 +1,14 @@
+@using System.Linq
+@using FeaneMVC.Contracts.Dishes
+@{
+    var dishMenu = ViewBag.DishMenu as IEnumerable<DishResponse> ?? Enumerable.Empty<DishResponse>();
+}
+
+@Html.Partial("_Header")
+
+@Html.Partial("_Navbar")
+@Html.Partial("_Food", dishMenu)
+@RenderBody()
+@Html.Partial("_Footer")
+
+@RenderSection("Scripts", required: false)

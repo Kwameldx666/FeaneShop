@@ -1,0 +1,93 @@
+.payment-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.payment-card {
+    width: 100%;
+    max-width: 520px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 20px 45px -20px rgba(0, 0, 0, 0.45);
+    padding: 2.5rem 2rem;
+}
+
+.payment-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+.payment-amount {
+    text-align: center;
+    color: #6c757d;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.payment-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.payment-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.payment-form .form-control {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid #ced4da;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.payment-form .form-control:focus {
+    outline: none;
+    border-color: #ffbe33;
+    box-shadow: 0 0 0 0.25rem rgba(255, 190, 51, 0.25);
+}
+
+.form-group-inline {
+    display: flex;
+    gap: 1rem;
+}
+
+.form-group-inline .form-field {
+    flex: 1 1 0;
+}
+
+.pay-button {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ffbe33, #ff6f61);
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    box-shadow: 0 12px 30px -12px rgba(255, 111, 97, 0.7);
+}
+
+.pay-button:hover {
+    background: linear-gradient(135deg, #ffa200, #ff4b3a);
+}
+
+.text-danger {
+    font-size: 0.85rem;
+}
+
+@media (max-width: 600px) {
+    .payment-card {
+        padding: 2rem 1.5rem;
+    }
+
+    .form-group-inline {
+        flex-direction: column;
+    }
+}

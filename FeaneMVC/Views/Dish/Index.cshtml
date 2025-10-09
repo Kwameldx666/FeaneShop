@@ -1,0 +1,87 @@
+﻿@model IEnumerable<FeaneMVC.Contracts.Dishes.DishResponse>
+
+@{
+    Layout = "_LayoutProfile";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dish-index.css" />
+}
+
+<div class="admin-container" data-delete-url="@Url.Action("DeleteDish")">
+    <div class="admin-header">
+        <h2>Dishes List</h2>
+        <a href="@Url.Action("AddDish", "Dish")" class="add-dish-btn">Add New Dish</a>
+    </div>
+
+    <div id="dish-feedback" class="alert d-none" role="alert"></div>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert success-alert">@TempData["Message"]</div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert error-alert">@TempData["Error"]</div>
+    }
+
+    <div class="seed-section">
+        <form asp-action="SeedSampleData" method="post" class="seed-form">
+            @Html.AntiForgeryToken()
+            <label for="seed-count">Seed sample dishes</label>
+            <div class="seed-input-group">
+                <input id="seed-count" name="count" type="number" min="1" max="50" value="12" />
+                <button type="submit" class="seed-btn">Fill with sample data</button>
+            </div>
+            <p class="seed-hint">Quickly generate placeholder dishes for testing. Existing dishes with the same name are skipped.</p>
+        </form>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="empty-message">
+            <p>No dishes available. Please add some dishes.</p>
+        </div>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Image</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var dish in Model)
+                {
+                    <tr id="dish-row-@dish.Id">
+                        <td>@dish.Name</td>
+                        <td>@dish.Description</td>
+                        <td>@dish.Price.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
+
+                        <td>@dish.Category</td>
+                        <td>
+                            <img src="@dish.ImageUrl" alt="@dish.Name" style="width: 60px; height: 60px; border-radius: 8px;" />
+                        </td>
+                        <td>
+                            <div class="table-actions">
+                                <a href="@Url.Action("EditDish", new { id = dish.Id })" class="edit-btn">Edit</a>
+                                <button class="delete-btn" onclick="deleteDish('@dish.Id')">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
+
+@section Scripts {
+    <script src="~/js/dish-index.js"></script>
+}

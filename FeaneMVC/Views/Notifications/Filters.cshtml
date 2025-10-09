@@ -1,0 +1,29 @@
+﻿@model List<FeaneMVC.Domain.Entities.Filter>
+@{
+    Layout = null;
+}
+<h1>Manage Filters</h1>
+
+<form asp-action="GenerateFilters" method="post">
+    <textarea name="userInput" placeholder="Enter what you like (e.g., 'I enjoy hobbies, work, and news')"></textarea>
+    <button type="submit">Generate Filters with AI</button>
+</form>
+
+<form asp-action="AddFilter" method="post">
+    <input type="text" name="filterName" placeholder="Enter a single filter (e.g., 'I like sports')" />
+    <button type="submit">Add Filter</button>
+</form>
+
+@if (TempData["Error"] != null)
+{
+    <p style="color: red;">@TempData["Error"]</p>
+}
+
+<h2>Current Filters</h2>
+<ul>
+    @foreach (var filter in Model)
+    {
+        <li>@filter.Name (ID: @filter.Name)</li> <!-- Явно указываем свойство Name -->
+    }
+</ul>
+<a asp-action="Index">Back to Notifications</a>

@@ -1,0 +1,13 @@
+using System;
+using System.Collections.Generic;
+
+namespace FeaneMVC.Contracts.Reservations;
+
+public class ReservationHistoryPageModel
+{
+    public IReadOnlyList<ReservationHistoryItem> Reservations { get; init; } = Array.Empty<ReservationHistoryItem>();
+
+    public string? StatusMessage { get; init; }
+
+    public string? ErrorMessage { get; init; }
+}
