@@ -1,13 +1,13 @@
-# 🍽️ FeaneMVC
+# 🍽️ Feane Shop (микросервисная версия)
 
-Современное веб-приложение для онлайн-магазина еды с доставкой и бронированием столиков, построенное на ASP.NET Core с разделением на слои **Domain → Application → Infrastructure → Web**. Проект демонстрирует полноценный пользовательский и административный сценарии, интеграцию с платежами, уведомлениями и внешними сервисами.
+Современное приложение для онлайн-магазина еды с доставкой и бронированием столиков, преобразованное в микросервисную архитектуру. Каждый доменный модуль развёрнут как независимый сервис, а единая точка входа реализована через API Gateway.
 
 <div align="center">
 
-![.NET](https://img.shields.io/badge/.NET-10.0_%28preview%29-512BD4?style=for-the-badge&logo=dotnet)
-![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-MVC-512BD4?style=for-the-badge&logo=dotnet)
-![Entity Framework Core](https://img.shields.io/badge/EF_Core-9.0-512BD4?style=for-the-badge&logo=nuget)
-![SQL Server](https://img.shields.io/badge/SQL_Server-2019+-CC2927?style=for-the-badge&logo=microsoft-sql-server)
+![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=for-the-badge&logo=dotnet)
+![ASP.NET Core](https://img.shields.io/badge/ASP.NET_Core-Minimal_API-512BD4?style=for-the-badge&logo=dotnet)
+![Microservices](https://img.shields.io/badge/Architecture-Microservices-orange?style=for-the-badge)
+![HTTP](https://img.shields.io/badge/Protocol-REST-0d8abc?style=for-the-badge)
 ![Docker](https://img.shields.io/badge/Docker-ready-2496ED?style=for-the-badge&logo=docker)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
@@ -19,28 +19,29 @@
 
 ## 📋 Описание
 
-**FeaneMVC** реализует типичные сценарии e-commerce ресторана:
+Микросервисы покрывают основные сценарии e-commerce ресторана:
 
 - показ меню, фильтрация и подбор блюд;
 - управление корзиной, оформление и отслеживание заказов;
 - бронирование столиков с историей и отменой;
 - личный кабинет с управлением контактами и адресами доставки;
 - прием и обработка платежей, фиксация транзакций;
-- панель администратора с аналитикой, управлением меню и пользователями;
-- уведомления клиентов, интеграция с OpenWeatherMap для отображения погоды.
+- панель администратора и расширенные интеграции планируются как отдельные сервисы (вне текущего объёма).
 
-Проект построен с использованием CQRS через MediatR, FluentValidation и Identity с поддержкой JWT-аутентификации и пользовательских сессий.
+Сервисы реализованы на ASP.NET Core Minimal API, снабжены Swagger для документации и запускаются независимо друг от друга (через `docker compose` или `dotnet run`).
 
 ---
 
 ## 🧱 Архитектура
 
-- **FeaneMVC.Domain** — сущности, value-object'ы, доменные сервисы и перечисления.
-- **FeaneMVC.Application** — обработчики команд и запросов (MediatR), DTO, валидаторы и бизнес-правила.
-- **FeaneMVC.Infrastructure** — EF Core контекст, миграции, репозитории, реализация Identity и внешние сервисы.
-- **FeaneMVC (Web)** — MVC-контроллеры, Razor-представления, middleware и конфигурация веб-приложения.
+Проект разделён на независимые микросервисы, каждый со своим REST API и жизненным циклом:
 
-Подход обеспечивает слабую связанность, модульность и удобство для unit/integration тестирования.
+- **CatalogService** — отвечает за меню и категории блюд.
+- **OrderingService** — принимает заказы и управляет статусами.
+- **ReservationService** — ведёт учёт бронирований столиков.
+- **Feane.Gateway.Api** — API Gateway/BFF, предоставляющий фронтенду единый контракт.
+
+У каждого сервиса собственная кодовая база, Dockerfile и параметры запуска. Совместное использование кода исключено — вместо этого обмен идёт по HTTP, что предотвращает появление "распределённого монолита".
 
 ---
 
@@ -48,15 +49,13 @@
 
 | Категория | Стек |
 |-----------|------|
-| Язык / Runtime | C# 13, .NET 10 (preview) |
-| Веб | ASP.NET Core MVC, Razor Views |
-| Доступ к данным | Entity Framework Core 9, Dapper |
-| Аутентификация | ASP.NET Core Identity, JWT Bearer, Cookie auth |
-| Валидация | FluentValidation |
-| Паттерны | CQRS, Mediator, Repository, Unit of Work |
-| Инфраструктура | SQL Server, Docker |
-| UI | Bootstrap 5, jQuery |
-| Интеграции | OpenWeatherMap API, email/notifications |
+| Язык / Runtime | C# 12, .NET 8 |
+| Веб | ASP.NET Core Minimal APIs |
+| Доступ к данным | In-memory (для демо), планируется отдельная БД на сервис |
+| Аутентификация | Подключается через Gateway (будущая интеграция) |
+| Паттерны | BFF/API Gateway, Service per Bounded Context |
+| Инфраструктура | Docker, docker-compose |
+| Мониторинг | Swagger/OpenAPI для каждого сервиса |
 
 ---
 
@@ -64,43 +63,13 @@
 
 ### 📦 Предварительные требования
 
-- [.NET SDK 10.0 preview](https://dotnet.microsoft.com/) (проект таргетирует `net10.0`)
-- SQL Server 2019+ (Express, LocalDB или полноценный сервер)
-- Docker (опционально, для контейнеризации)
+- [.NET SDK 8.0](https://dotnet.microsoft.com/)
+- Docker / Docker Compose (для локального оркестрирования)
 - Git
-
-> 💡 Если вы используете стабильный .NET 8/9, переключите `TargetFramework` в `FeaneMVC.csproj` на соответствующую версию.
 
 ### 🔐 Настройка конфигурации
 
-Скопируйте `FeaneMVC/appsettings.json` или `appsettings.Development.json` и задайте значения:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=FeabeDb;Trusted_Connection=True;TrustServerCertificate=True;"
-  },
-  "OpenWeatherMap": {
-    "ApiKey": "ВАШ_API_КЛЮЧ"
-  },
-  "JwtSettings": {
-    "Issuer": "FeaneMVC",
-    "Audience": "FeaneMVCUsers",
-    "SecretKey": "ПРОИЗВОЛЬНАЯ_СТРОКА_32+_СИМВОЛА",
-    "AccessTokenExpirationMinutes": 60,
-    "CookieName": "AuthToken"
-  }
-}
-```
-
-Для безопасного хранения секретов используйте [User Secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets):
-
-```bash
-cd FeaneMVC
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=.;Database=FeabeDb;Trusted_Connection=True;TrustServerCertificate=True;"
-dotnet user-secrets set "OpenWeatherMap:ApiKey" "<ваш ключ>"
-dotnet user-secrets set "JwtSettings:SecretKey" "<секрет>"
-```
+Текущая демо-реализация использует in-memory хранилища и не требует внешних зависимостей. Адреса downstream-сервисов для шлюза задаются переменными окружения `Downstream__Catalog`, `Downstream__Ordering`, `Downstream__Reservation` (см. `docker-compose.yml`).
 
 ### 🛠️ Локальный запуск
 
@@ -108,48 +77,55 @@ dotnet user-secrets set "JwtSettings:SecretKey" "<секрет>"
 git clone https://github.com/Kwameldx666/FeaneMVC.git
 cd FeaneMVC
 
-dotnet restore
-# Применяем миграции из проекта инфраструктуры
-dotnet ef database update \
-  --project FeaneMVC.Infrastructure \
-  --startup-project FeaneMVC
+# Запуск всех сервисов
+docker compose up --build
 
-dotnet run --project FeaneMVC
+# Локальный запуск одного сервиса (пример)
+dotnet run --project services/CatalogService/CatalogService.Api
 ```
 
-По умолчанию приложение доступно по адресам `https://localhost:5001` и `http://localhost:5000`.
+После запуска docker-compose сервисы доступны по адресам:
+
+- Gateway: http://localhost:8080
+- CatalogService: http://localhost:5001
+- OrderingService: http://localhost:5002
+- ReservationService: http://localhost:5003
 
 ### 🐳 Запуск в Docker
 
 ```bash
-# Сборка образа
-docker build -t feane-mvc .
+# Сборка и запуск всех сервисов
+docker compose up --build
 
-# Запуск контейнера
-docker run -it --rm -p 8080:80 \
-  -e ConnectionStrings__DefaultConnection="Server=host.docker.internal;Database=FeabeDb;User Id=sa;Password=<пароль>;TrustServerCertificate=True" \
-  -e JwtSettings__SecretKey="<секрет>" \
-  feane-mvc
+# Перезапуск одного сервиса после изменений
+docker compose up --build catalog-api
 ```
 
-Приложение будет доступно по адресу `http://localhost:8080`.
+Gateway доступен по адресу `http://localhost:8080`, остальные сервисы — на портах `5001-5003`.
 
 ---
 
-## 📂 Структура решения
+## 📂 Структура репозитория
 
 ```
-FeaneMVC.sln
-├── FeaneMVC/                  # Веб-слой (Controllers, Views, Middleware, wwwroot)
-│   ├── Configuration/         # Расширения для ServiceCollection и Middleware
-│   ├── Controllers/           # MVC-контроллеры (меню, корзина, аккаунты, платежи, бронирования и др.)
-│   ├── Middleware/            # Конвейер обработки запросов, обработка ошибок
-│   ├── Views/                 # Razor-представления пользовательской части
-│   └── wwwroot/               # Статические ресурсы (CSS, JS, изображения)
-├── FeaneMVC.Application/      # CQRS-слой: команды, запросы, обработчики, валидация
-├── FeaneMVC.Domain/           # Доменные сущности, enum'ы, value object'ы, сервисы
-├── FeaneMVC.Infrastructure/   # EF Core контекст, миграции, репозитории, интеграции, Identity
-└── Dockerfile                 # Описание контейнера для деплоя
+FeaneMicroservices.sln         # решение с микросервисами
+docker-compose.yml             # оркестрация сервисов
+gateway/
+  ├── Dockerfile
+  └── Feane.Gateway.Api/       # BFF/API Gateway
+services/
+  ├── CatalogService/
+  │   ├── Dockerfile
+  │   └── CatalogService.Api/  # сервис каталога меню
+  ├── OrderingService/
+  │   ├── Dockerfile
+  │   └── OrderingService.Api/ # сервис заказов
+  └── ReservationService/
+      ├── Dockerfile
+      └── ReservationService.Api/ # сервис резерваций
+docs/
+  └── microservices-architecture.md # подробности декомпозиции
+FeaneMVC*/                     # исходный монолит (для справки, постепенно выносится)
 ```
 
 ---
@@ -172,10 +148,10 @@ dotnet format --verify-no-changes
 
 ## 🚀 Дальнейшее развитие
 
-- Покрытие бизнес-логики тестами.
-- Настройка CI/CD (GitHub Actions) с прогоном `build`, `test`, `format`.
-- Реализация реальных платёжных шлюзов и уведомлений.
-- Локализация интерфейса и контента.
+- Покрытие каждого сервиса модульными и контрактными тестами.
+- Настройка CI/CD (GitHub Actions) с прогоном `dotnet build`, `dotnet test`, `docker build` для всех сервисов.
+- Добавление брокера сообщений и интеграция реальных платёжных шлюзов/уведомлений.
+- Локализация интерфейса и контента поверх Gateway.
 
 ---
 
