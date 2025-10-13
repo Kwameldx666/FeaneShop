@@ -1,9 +1,7 @@
-using FeaneMVC.Application.Commands.Sessions;
-using FeaneMVC.Application.Queries.Dishes;
-using FeaneMVC.Application.Queries.Sessions;
-using FeaneMVC.Application.Queries.Users;
-using FeaneMVC.Contracts.Dishes;
-using FeaneMVC.Extenstions;
+using System.Linq;
+using Feane.Contracts.Dishes;
+using FeaneMVC.Clients.Menu;
+using FeaneMVC.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeaneMVC.Controllers;
@@ -11,12 +9,17 @@ namespace FeaneMVC.Controllers;
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
-    private readonly MediatR.IMediator _mediator;
+    private readonly IMenuApiClient _menuApiClient;
+    private readonly IUserSessionAccessor _userSessionAccessor;
 
-    public HomeController(ILogger<HomeController> logger, MediatR.IMediator mediator)
+    public HomeController(
+        ILogger<HomeController> logger,
+        IMenuApiClient menuApiClient,
+        IUserSessionAccessor userSessionAccessor)
     {
         _logger = logger;
-        _mediator = mediator;
+        _menuApiClient = menuApiClient;
+        _userSessionAccessor = userSessionAccessor;
     }
 
     public async Task<IActionResult> Index()
@@ -30,8 +33,7 @@ public class HomeController : Controller
             _logger.LogWarning(exception, "Failed to hydrate user session");
         }
 
-        var dishDtos = await _mediator.Send(new GetAllDishesQuery());
-        var dishes = dishDtos?.ToResponseCollection() ?? Enumerable.Empty<DishResponse>();
+        var dishes = await _menuApiClient.GetAllAsync();
 
         ViewBag.DishMenu = dishes;
 
@@ -51,19 +53,6 @@ public class HomeController : Controller
 
     private async Task EnsureUserSessionAsync()
     {
-        var userId = await _mediator.Send(new GetCurrentUserIdQuery());
-        if (userId == Guid.Empty)
-        {
-            return;
-        }
-
-        var user = await _mediator.Send(new GetUserProfileByIdQuery(userId));
-        if (user?.Data?.User == null)
-        {
-            return;
-        }
-
-        await _mediator.Send(new SetSessionValueCommand("UserId", user.Data.User.Id.ToString()));
-        await _mediator.Send(new SetSessionValueCommand("UserRole", user.Data.User.Roles.ToString()));
+        await _userSessionAccessor.GetOrCreateUserIdAsync(HttpContext);
     }
 }

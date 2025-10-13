@@ -1,5 +1,3 @@
-using FeaneMVC.Middleware;
-
 namespace FeaneMVC.Configuration
 {
     public static class ApplicationBuilderExtensions
@@ -15,9 +13,6 @@ namespace FeaneMVC.Configuration
             app.UseStaticFiles();
             app.UseRouting();
             app.UseSession();
-            app.UseJwtCookieAuthentication();
-            app.UseAuthentication();
-            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",

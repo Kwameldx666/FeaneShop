@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../FeaneMVC.Application/FeaneMVC.Application.csproj" />
+    <ProjectReference Include="../../FeaneMVC.Infrastructure/FeaneMVC.Infrastructure.csproj" />
+    <ProjectReference Include="../../Feane.Contracts/Feane.Contracts.csproj" />
+  </ItemGroup>
+</Project>

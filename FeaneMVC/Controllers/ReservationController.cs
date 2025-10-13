@@ -1,30 +1,27 @@
-using FeaneMVC.Application.Queries.Sessions;
-using FeaneMVC.Contracts.Reservations;
-using FeaneMVC.Extenstions;
-using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+using Feane.Contracts.Reservations;
+using FeaneMVC.Clients.Reservations;
+using FeaneMVC.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeaneMVC.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ReservationController : Controller
     {
-        private readonly IMediator _mediator;
+        private readonly IReservationApiClient _reservationApiClient;
+        private readonly IUserSessionAccessor _userSessionAccessor;
 
-        public ReservationController(IMediator mediator)
+        public ReservationController(
+            IReservationApiClient reservationApiClient,
+            IUserSessionAccessor userSessionAccessor)
         {
-            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _reservationApiClient = reservationApiClient;
+            _userSessionAccessor = userSessionAccessor;
         }
 
         public async Task<IActionResult> Book()
         {
-            var userId = await _mediator.Send(new GetCurrentUserIdQuery());
-            if (userId == Guid.Empty)
-            {
-                return RedirectToAction("Authentication", "Account", new { returnUrl = Url.Action(nameof(Book)) });
-            }
+            await _userSessionAccessor.GetOrCreateUserIdAsync(HttpContext);
 
             var defaultRequest = new CreateReservationRequest
             {
@@ -44,20 +41,15 @@ namespace FeaneMVC.Controllers
                 return View("Book", request);
             }
 
-            var userId = await _mediator.Send(new GetCurrentUserIdQuery());
-            if (userId == Guid.Empty)
+            var userId = await _userSessionAccessor.GetOrCreateUserIdAsync(HttpContext);
+            request.UserId = userId;
+
+            try
             {
-                return RedirectToAction("Authentication", "Account", new { returnUrl = Url.Action(nameof(Book)) });
-            }
-
-            var reservationResponse = await _mediator.Send(request.ToCommand(userId));
-
-            if (reservationResponse.Status)
-            {
-                ViewData["SuccessMessage"] = string.IsNullOrWhiteSpace(reservationResponse.Message)
-                    ? "Столик успешно забронирован."
-                    : reservationResponse.Message;
-
+                var history = await _reservationApiClient.CreateAsync(request);
+                ViewData["SuccessMessage"] = history.StatusMessage ?? "Столик успешно забронирован.";
+                history.Items = history.Items.Take(5).ToList();
+                ViewData["ReservationHistory"] = history;
                 ModelState.Clear();
                 return View("Book", new CreateReservationRequest
                 {
@@ -66,9 +58,11 @@ namespace FeaneMVC.Controllers
                     BudgetPerGuest = request.BudgetPerGuest
                 });
             }
-
-            ModelState.AddModelError(string.Empty, reservationResponse.Message ?? "Не удалось создать резервацию.");
-            return View("Book", request);
+            catch (Exception exception)
+            {
+                ModelState.AddModelError(string.Empty, exception.Message);
+                return View("Book", request);
+            }
         }
     }
 }

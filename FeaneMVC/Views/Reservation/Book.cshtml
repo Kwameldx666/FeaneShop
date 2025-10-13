@@ -1,4 +1,5 @@
-@model FeaneMVC.Contracts.Reservations.CreateReservationRequest
+@using System.Linq
+@model Feane.Contracts.Reservations.CreateReservationRequest
 
 @{
     Layout = "_LayoutBook";
@@ -113,6 +114,22 @@
                         <div id="map"></div>
                     </div>
                 </div>
+                @if (ViewData["ReservationHistory"] is Feane.Contracts.Reservations.ReservationHistoryPageModel history && history.Items.Any())
+                {
+                    <div class="reservation-history shadow-sm mt-4">
+                        <h4 class="summary-title">Последние бронирования</h4>
+                        <ul class="history-list">
+                            @foreach (var item in history.Items)
+                            {
+                                <li>
+                                    <span class="history-date">@item.ReservationDate.ToLocalTime().ToString("dd MMM HH:mm")</span>
+                                    <span class="history-status badge bg-primary">@item.Status</span>
+                                    <span class="history-people">Гостей: @item.NumberOfPeople</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
             </div>
         </div>
     </div>

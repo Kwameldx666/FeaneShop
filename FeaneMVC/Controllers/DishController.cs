@@ -1,26 +1,22 @@
-using FeaneMVC.Application.Commands.Dishes;
-using FeaneMVC.Application.Queries.Dishes;
-using FeaneMVC.Attributes;
-using FeaneMVC.Contracts.Dishes;
-using FeaneMVC.Extenstions;
+using System.Linq;
+using Feane.Contracts.Dishes;
+using FeaneMVC.Clients.Menu;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeaneMVC.Controllers
 {
-    [ServiceFilter(typeof(AdminOrModeratorModeAttribute))]
     public class DishController : Controller
     {
-        private readonly MediatR.IMediator _mediator;
+        private readonly IMenuApiClient _menuApiClient;
 
-        public DishController(MediatR.IMediator mediator)
+        public DishController(IMenuApiClient menuApiClient)
         {
-            _mediator = mediator;
+            _menuApiClient = menuApiClient;
         }
 
         public async Task<ActionResult> Index()
         {
-            var dishDtos = await _mediator.Send(new GetAllDishesQuery());
-            var dishes = dishDtos?.ToResponseCollection().ToList() ?? new List<DishResponse>();
+            var dishes = (await _menuApiClient.GetAllAsync()).ToList();
 
             if (!dishes.Any())
             {
@@ -33,14 +29,14 @@ namespace FeaneMVC.Controllers
 
         public async Task<ActionResult> Details(Guid id)
         {
-            var dishResult = await _mediator.Send(new GetDishByIdQuery(id));
-            if (dishResult == null || !dishResult.Status || dishResult.Data == null)
+            var dish = await _menuApiClient.GetByIdAsync(id);
+            if (dish == null)
             {
                 TempData["Error"] = "Dish not found.";
                 return RedirectToAction("Index");
             }
 
-            return View(dishResult.Data.ToResponse());
+            return View(dish);
         }
 
         public ActionResult AddDish()
@@ -68,28 +64,35 @@ namespace FeaneMVC.Controllers
                 request.ImageUrl = $"/Images/{fileName}";
             }
 
-            var dishResponse = await _mediator.Send(request.ToCommand());
-            if (dishResponse.Status && dishResponse.Data != null)
+            var dishResponse = await _menuApiClient.CreateAsync(request);
+            if (dishResponse != null)
             {
                 TempData["Message"] = "Dish added successfully!";
                 return RedirectToAction("Index");
             }
 
-            ModelState.AddModelError(string.Empty, dishResponse.Message ?? "Failed to add the dish. Please try again.");
+            ModelState.AddModelError(string.Empty, "Failed to add the dish. Please try again.");
             return View(request);
         }
 
         public async Task<ActionResult> EditDish(Guid id)
         {
-            var dishResult = await _mediator.Send(new GetDishByIdQuery(id));
-            if (dishResult == null || !dishResult.Status || dishResult.Data == null)
+            var dish = await _menuApiClient.GetByIdAsync(id);
+            if (dish == null)
             {
                 TempData["Error"] = "Dish not found.";
                 return RedirectToAction("Index");
             }
 
-            var dish = dishResult.Data.ToResponse();
-            return View(dish.ToUpdateRequest());
+            return View(new UpdateDishRequest
+            {
+                Id = dish.Id,
+                Name = dish.Name,
+                Description = dish.Description,
+                Price = dish.Price,
+                Category = dish.Category,
+                ImageUrl = dish.ImageUrl
+            });
         }
 
         [HttpPost]
@@ -114,14 +117,14 @@ namespace FeaneMVC.Controllers
                     request.ImageUrl = $"/Images/{fileName}";
                 }
 
-                var dishResponse = await _mediator.Send(request.ToCommand());
-                if (dishResponse.Status)
+                var updateSucceeded = await _menuApiClient.UpdateAsync(request);
+                if (updateSucceeded)
                 {
                     TempData["Message"] = "Dish updated successfully!";
                     return RedirectToAction("Index");
                 }
 
-                ModelState.AddModelError(string.Empty, dishResponse.Message ?? "Failed to update the dish. Please try again.");
+                ModelState.AddModelError(string.Empty, "Failed to update the dish. Please try again.");
             }
             catch (Exception ex)
             {
@@ -135,11 +138,11 @@ namespace FeaneMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteDish(Guid id)
         {
-            var dishResponse = await _mediator.Send(new DeleteDishCommand(id));
+            await _menuApiClient.DeleteAsync(id);
             return Json(new
             {
-                status = dishResponse.Status,
-                message = dishResponse.Message ?? (dishResponse.Status ? "Dish deleted successfully." : "Failed to delete the dish.")
+                status = true,
+                message = "Dish deleted successfully."
             });
         }
 
@@ -147,23 +150,7 @@ namespace FeaneMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SeedSampleData(int count)
         {
-            if (count <= 0 || count > 100)
-            {
-                TempData["Error"] = "Count must be between 1 and 100.";
-                return RedirectToAction("Index");
-            }
-
-            var seedResponse = await _mediator.Send(new SeedSampleDishesCommand(count));
-
-            if (seedResponse.Status && seedResponse.Data != null)
-            {
-                TempData["Message"] = $"Generated {seedResponse.Data.CreatedCount} dishes. Skipped {seedResponse.Data.SkippedCount} duplicates.";
-            }
-            else
-            {
-                TempData["Error"] = seedResponse.Message ?? "Failed to generate sample dishes.";
-            }
-
+            TempData["Error"] = "Automatic seeding is not supported in the gateway. Use the menu microservice directly.";
             return RedirectToAction("Index");
         }
     }

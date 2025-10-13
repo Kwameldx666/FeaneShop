@@ -1,4 +1,4 @@
-﻿@model IEnumerable<FeaneMVC.Contracts.Dishes.DishResponse>
+﻿@model IEnumerable<Feane.Contracts.Dishes.DishResponse>
 
 @{
     Layout = "_LayoutProfile";
@@ -27,15 +27,9 @@
     }
 
     <div class="seed-section">
-        <form asp-action="SeedSampleData" method="post" class="seed-form">
-            @Html.AntiForgeryToken()
-            <label for="seed-count">Seed sample dishes</label>
-            <div class="seed-input-group">
-                <input id="seed-count" name="count" type="number" min="1" max="50" value="12" />
-                <button type="submit" class="seed-btn">Fill with sample data</button>
-            </div>
-            <p class="seed-hint">Quickly generate placeholder dishes for testing. Existing dishes with the same name are skipped.</p>
-        </form>
+        <div class="alert info-alert">
+            Sample data seeding is now managed by the Menu microservice. Use the API directly if you need bulk test data.
+        </div>
     </div>
 
     @if (!Model.Any())

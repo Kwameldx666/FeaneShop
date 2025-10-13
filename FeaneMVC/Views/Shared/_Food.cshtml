@@ -1,13 +1,13 @@
 @using System.Linq
-@model IEnumerable<FeaneMVC.Contracts.Dishes.DishResponse>
+@model IEnumerable<Feane.Contracts.Dishes.DishResponse>
 
 @{ 
-    var dishes = Model ?? Enumerable.Empty<FeaneMVC.Contracts.Dishes.DishResponse>();
+    var dishes = Model ?? Enumerable.Empty<Feane.Contracts.Dishes.DishResponse>();
 }
 
 <link rel="stylesheet" href="~/css/food-section.css" />
 
-<section class="food_section layout_padding-bottom" data-add-to-cart-url="@Url.Action("Add", "Cart")">
+<section class="food_section layout_padding-bottom">
     <div class="container">
         <div class="heading_container heading_center">
             <h2>Our Menu</h2>
@@ -47,13 +47,13 @@
                                         <p>@dish.Description</p>
                                         <div class="options">
                                             <h6 class="price">$@(dish.Price > 0 ? dish.Price.ToString("0.00") : "N/A")</h6>
-                                            <a href="#" class="cart-icon add-to-cart" data-id="@dish.Id" data-name="@dish.Name" data-price="@dish.Price" data-quantity="1">
+                                            <span class="cart-icon disabled" title="Ordering via gateway будет добавлено позже">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
                                                     <circle cx="9" cy="21" r="1"></circle>
                                                     <circle cx="20" cy="21" r="1"></circle>
                                                     <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
                                                 </svg>
-                                            </a>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
