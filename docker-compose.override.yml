@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  user-service:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    volumes:
+      - ./services/user-service/src:/src
+  product-service:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    volumes:
+      - ./services/product-service/src:/src
+  gateway:
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
