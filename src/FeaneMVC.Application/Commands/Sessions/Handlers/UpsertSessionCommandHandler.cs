@@ -39,8 +39,8 @@ public class UpsertSessionCommandHandler : IRequestHandler<UpsertSessionCommand>
             {
                 CookieString = request.CookieValue,
                 ExpireTime = request.ExpireTime,
-                Username = request.IsEmail ? null : request.Credential,
-                Email = request.IsEmail ? request.Credential : null
+                Username = request.IsEmail ? string.Empty : request.Credential,
+                Email = request.IsEmail ? request.Credential : string.Empty
             };
 
             await sessionRepository.AddSessionAsync(session, cancellationToken);

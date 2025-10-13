@@ -3,15 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.0.11104.47
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeaneMVC", "FeaneMVC\FeaneMVC.csproj", "{EEE8CB13-16A2-4903-BB19-EFF20ADB1307}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FeaneMVC", "src\FeaneMVC\FeaneMVC.csproj", "{EEE8CB13-16A2-4903-BB19-EFF20ADB1307}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{577848F7-8447-452F-AF09-F00C6F3879A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeaneMVC.Application", "FeaneMVC.Application\FeaneMVC.Application.csproj", "{A91DD1DF-570E-4B3E-BB14-38562944640C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeaneMVC.Application", "src\FeaneMVC.Application\FeaneMVC.Application.csproj", "{A91DD1DF-570E-4B3E-BB14-38562944640C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeaneMVC.Domain", "FeaneMVC.Domain\FeaneMVC.Domain.csproj", "{56885E4E-95ED-4DCE-93C3-9CA943FB4396}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeaneMVC.Domain", "src\FeaneMVC.Domain\FeaneMVC.Domain.csproj", "{56885E4E-95ED-4DCE-93C3-9CA943FB4396}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeaneMVC.Infrastructure", "FeaneMVC.Infrastructure\FeaneMVC.Infrastructure.csproj", "{12FEF404-E18C-4D36-2BF5-5E82A2894380}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FeaneMVC.Infrastructure", "src\FeaneMVC.Infrastructure\FeaneMVC.Infrastructure.csproj", "{12FEF404-E18C-4D36-2BF5-5E82A2894380}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{85FF7E41-8172-4321-9592-E8559B994AD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +40,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{EEE8CB13-16A2-4903-BB19-EFF20ADB1307} = {85FF7E41-8172-4321-9592-E8559B994AD8}
+		{A91DD1DF-570E-4B3E-BB14-38562944640C} = {85FF7E41-8172-4321-9592-E8559B994AD8}
+		{56885E4E-95ED-4DCE-93C3-9CA943FB4396} = {85FF7E41-8172-4321-9592-E8559B994AD8}
+		{12FEF404-E18C-4D36-2BF5-5E82A2894380} = {85FF7E41-8172-4321-9592-E8559B994AD8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CFAA9B3-8E36-4B46-AB78-A9C4BE614817}
