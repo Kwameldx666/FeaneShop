@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FeaneMVC.Contracts.Reservations;
+namespace Feane.Contracts.Reservations;
 
 public class CreateReservationRequest
 {

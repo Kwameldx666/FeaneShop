@@ -1,4 +1,4 @@
-@model FeaneMVC.Contracts.Reservations.ReservationHistoryPageModel
+@model Feane.Contracts.Reservations.ReservationHistoryPageModel
 @using System
 @using System.Linq
 
@@ -53,7 +53,7 @@
 
                         @if (!string.IsNullOrWhiteSpace(Model?.StatusMessage))
                         {
-                            <div class="alert alert-success" role="alert">@Model.StatusMessage</div>
+                            <div class="alert alert-info" role="alert">@Model.StatusMessage</div>
                         }
                         @if (!string.IsNullOrWhiteSpace(Model?.ErrorMessage))
                         {
@@ -106,7 +106,7 @@
                                 </table>
                             </div>
                         }
-                        else
+                        else if (string.IsNullOrWhiteSpace(Model?.StatusMessage))
                         {
                             <div class="alert alert-info" role="alert">
                                 Вы не сделали ещё ни одной резервации.

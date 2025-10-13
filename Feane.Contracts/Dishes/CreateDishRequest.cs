@@ -1,12 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace FeaneMVC.Contracts.Dishes;
+namespace Feane.Contracts.Dishes;
 
-public class UpdateDishRequest
+public class CreateDishRequest
 {
-    [Required]
-    public Guid Id { get; set; }
-
     [Required]
     [StringLength(100)]
     public string Name { get; set; } = string.Empty;

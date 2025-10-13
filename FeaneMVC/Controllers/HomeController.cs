@@ -1,9 +1,10 @@
 using FeaneMVC.Application.Commands.Sessions;
-using FeaneMVC.Application.Queries.Dishes;
 using FeaneMVC.Application.Queries.Sessions;
 using FeaneMVC.Application.Queries.Users;
-using FeaneMVC.Contracts.Dishes;
-using FeaneMVC.Extenstions;
+using FeaneMVC.Clients;
+using Feane.Contracts.Dishes;
+using System.Linq;
+using System;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FeaneMVC.Controllers;
@@ -12,11 +13,13 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly MediatR.IMediator _mediator;
+    private readonly IMenuServiceClient _menuServiceClient;
 
-    public HomeController(ILogger<HomeController> logger, MediatR.IMediator mediator)
+    public HomeController(ILogger<HomeController> logger, MediatR.IMediator mediator, IMenuServiceClient menuServiceClient)
     {
         _logger = logger;
         _mediator = mediator;
+        _menuServiceClient = menuServiceClient;
     }
 
     public async Task<IActionResult> Index()
@@ -30,14 +33,27 @@ public class HomeController : Controller
             _logger.LogWarning(exception, "Failed to hydrate user session");
         }
 
-        var dishDtos = await _mediator.Send(new GetAllDishesQuery());
-        var dishes = dishDtos?.ToResponseCollection() ?? Enumerable.Empty<DishResponse>();
+        IReadOnlyCollection<DishResponse> dishes;
+
+        try
+        {
+            dishes = await _menuServiceClient.GetDishesAsync();
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(exception, "Failed to retrieve dishes from the menu service.");
+            dishes = Array.Empty<DishResponse>();
+            ViewBag.Message = "Сервис меню временно недоступен.";
+        }
 
         ViewBag.DishMenu = dishes;
 
         if (!dishes.Any())
         {
-            ViewBag.Message = "No dishes available.";
+            if (ViewBag.Message == null)
+            {
+                ViewBag.Message = "No dishes available.";
+            }
         }
 
         return View();

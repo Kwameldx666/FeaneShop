@@ -1,3 +1,4 @@
+using FeaneMVC.Clients;
 using FeaneMVC.Configuration;
 using FluentValidation.AspNetCore;
 
@@ -7,6 +8,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddFluentValidationClientsideAdapters();
 builder.Services.AddApplicationDependencies(builder.Configuration);
+builder.Services.AddMenuAndReservationClients(builder.Configuration);
 
 var app = builder.Build();
 

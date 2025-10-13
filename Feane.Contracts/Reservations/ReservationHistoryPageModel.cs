@@ -1,4 +1,4 @@
-namespace FeaneMVC.Contracts.Reservations;
+namespace Feane.Contracts.Reservations;
 
 public class ReservationHistoryPageModel
 {

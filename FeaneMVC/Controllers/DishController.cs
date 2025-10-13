@@ -1,31 +1,46 @@
-using FeaneMVC.Application.Commands.Dishes;
-using FeaneMVC.Application.Queries.Dishes;
+using Feane.Contracts.Dishes;
 using FeaneMVC.Attributes;
-using FeaneMVC.Contracts.Dishes;
-using FeaneMVC.Extenstions;
+using FeaneMVC.Clients;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Linq;
 
 namespace FeaneMVC.Controllers
 {
     [ServiceFilter(typeof(AdminOrModeratorModeAttribute))]
     public class DishController : Controller
     {
-        private readonly MediatR.IMediator _mediator;
+        private readonly IMenuServiceClient _menuServiceClient;
+        private readonly ILogger<DishController> _logger;
 
-        public DishController(MediatR.IMediator mediator)
+        public DishController(IMenuServiceClient menuServiceClient, ILogger<DishController> logger)
         {
-            _mediator = mediator;
+            _menuServiceClient = menuServiceClient;
+            _logger = logger;
         }
 
         public async Task<ActionResult> Index()
         {
-            var dishDtos = await _mediator.Send(new GetAllDishesQuery());
-            var dishes = dishDtos?.ToResponseCollection().ToList() ?? new List<DishResponse>();
+            List<DishResponse> dishes;
+
+            try
+            {
+                dishes = (await _menuServiceClient.GetDishesAsync()).ToList();
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to load dishes from the menu service.");
+                TempData["Error"] = "Menu service is unavailable. Please try again later.";
+                dishes = new List<DishResponse>();
+            }
 
             if (!dishes.Any())
             {
-                ViewBag.Message = "No dishes available. Please add some dishes.";
-                return View(dishes);
+                if (ViewBag.Message == null)
+                {
+                    ViewBag.Message = "No dishes available. Please add some dishes.";
+                }
             }
 
             return View(dishes);
@@ -33,14 +48,23 @@ namespace FeaneMVC.Controllers
 
         public async Task<ActionResult> Details(Guid id)
         {
-            var dishResult = await _mediator.Send(new GetDishByIdQuery(id));
-            if (dishResult == null || !dishResult.Status || dishResult.Data == null)
+            try
             {
-                TempData["Error"] = "Dish not found.";
+                var dish = await _menuServiceClient.GetDishAsync(id);
+                if (dish is null)
+                {
+                    TempData["Error"] = "Dish not found.";
+                    return RedirectToAction("Index");
+                }
+
+                return View(dish);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to load dish {DishId}", id);
+                TempData["Error"] = "Failed to load dish details.";
                 return RedirectToAction("Index");
             }
-
-            return View(dishResult.Data.ToResponse());
         }
 
         public ActionResult AddDish()
@@ -50,97 +74,118 @@ namespace FeaneMVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddDish(CreateDishRequest request, IFormFile imageFile)
+        public async Task<IActionResult> AddDish(CreateDishRequest request, IFormFile? imageFile)
         {
             if (!ModelState.IsValid)
             {
                 return View(request);
             }
 
-            if (imageFile != null && imageFile.Length > 0)
+            await UploadImageAsync(request, imageFile);
+
+            try
             {
-                var fileName = Path.GetFileName(imageFile.FileName);
-                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images", fileName);
+                var dish = await _menuServiceClient.CreateDishAsync(request);
+                if (dish is null)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to add the dish. Please try again.");
+                    return View(request);
+                }
 
-                using var stream = new FileStream(filePath, FileMode.Create);
-                await imageFile.CopyToAsync(stream);
-
-                request.ImageUrl = $"/Images/{fileName}";
-            }
-
-            var dishResponse = await _mediator.Send(request.ToCommand());
-            if (dishResponse.Status && dishResponse.Data != null)
-            {
                 TempData["Message"] = "Dish added successfully!";
                 return RedirectToAction("Index");
             }
-
-            ModelState.AddModelError(string.Empty, dishResponse.Message ?? "Failed to add the dish. Please try again.");
-            return View(request);
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to create dish {DishName}", request.Name);
+                ModelState.AddModelError(string.Empty, "Menu service is unavailable. Please try again later.");
+                return View(request);
+            }
         }
 
         public async Task<ActionResult> EditDish(Guid id)
         {
-            var dishResult = await _mediator.Send(new GetDishByIdQuery(id));
-            if (dishResult == null || !dishResult.Status || dishResult.Data == null)
+            try
             {
-                TempData["Error"] = "Dish not found.";
+                var dish = await _menuServiceClient.GetDishAsync(id);
+                if (dish is null)
+                {
+                    TempData["Error"] = "Dish not found.";
+                    return RedirectToAction("Index");
+                }
+
+                var updateRequest = new UpdateDishRequest
+                {
+                    Id = dish.Id,
+                    Name = dish.Name,
+                    Description = dish.Description,
+                    Price = dish.Price,
+                    Category = dish.Category,
+                    ImageUrl = dish.ImageUrl
+                };
+
+                return View(updateRequest);
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to load dish {DishId} for edit", id);
+                TempData["Error"] = "Failed to load dish details.";
                 return RedirectToAction("Index");
             }
-
-            var dish = dishResult.Data.ToResponse();
-            return View(dish.ToUpdateRequest());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditDish(UpdateDishRequest request, IFormFile imageFile)
+        public async Task<IActionResult> EditDish(UpdateDishRequest request, IFormFile? imageFile)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(request);
+            }
+
+            await UploadImageAsync(request, imageFile);
+
             try
             {
-                if (!ModelState.IsValid)
+                var dish = await _menuServiceClient.UpdateDishAsync(request.Id, request);
+                if (dish is null)
                 {
+                    ModelState.AddModelError(string.Empty, "Failed to update the dish. Please try again.");
                     return View(request);
                 }
 
-                if (imageFile != null && imageFile.Length > 0)
-                {
-                    var fileName = Path.GetFileName(imageFile.FileName);
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images", fileName);
-
-                    using var stream = new FileStream(filePath, FileMode.Create);
-                    await imageFile.CopyToAsync(stream);
-
-                    request.ImageUrl = $"/Images/{fileName}";
-                }
-
-                var dishResponse = await _mediator.Send(request.ToCommand());
-                if (dishResponse.Status)
-                {
-                    TempData["Message"] = "Dish updated successfully!";
-                    return RedirectToAction("Index");
-                }
-
-                ModelState.AddModelError(string.Empty, dishResponse.Message ?? "Failed to update the dish. Please try again.");
+                TempData["Message"] = "Dish updated successfully!";
+                return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
-                Console.WriteLine($"Error updating dish: {ex.Message}");
-                ModelState.AddModelError(string.Empty, "An error occurred while updating the dish.");
+                _logger.LogError(exception, "Failed to update dish {DishId}", request.Id);
+                ModelState.AddModelError(string.Empty, "Menu service is unavailable. Please try again later.");
+                return View(request);
             }
-
-            return View(request);
         }
 
         [HttpPost]
         public async Task<IActionResult> DeleteDish(Guid id)
         {
-            var dishResponse = await _mediator.Send(new DeleteDishCommand(id));
-            return Json(new
+            try
             {
-                status = dishResponse.Status,
-                message = dishResponse.Message ?? (dishResponse.Status ? "Dish deleted successfully." : "Failed to delete the dish.")
-            });
+                var removed = await _menuServiceClient.DeleteDishAsync(id);
+                return Json(new
+                {
+                    status = removed,
+                    message = removed ? "Dish deleted successfully." : "Failed to delete the dish."
+                });
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to delete dish {DishId}", id);
+                return Json(new
+                {
+                    status = false,
+                    message = "Menu service is unavailable. Please try again later."
+                });
+            }
         }
 
         [HttpPost]
@@ -153,18 +198,60 @@ namespace FeaneMVC.Controllers
                 return RedirectToAction("Index");
             }
 
-            var seedResponse = await _mediator.Send(new SeedSampleDishesCommand(count));
+            try
+            {
+                var (created, skipped) = await _menuServiceClient.SeedAsync(count);
 
-            if (seedResponse.Status && seedResponse.Data != null)
-            {
-                TempData["Message"] = $"Generated {seedResponse.Data.CreatedCount} dishes. Skipped {seedResponse.Data.SkippedCount} duplicates.";
+                if (created > 0 || skipped > 0)
+                {
+                    TempData["Message"] = $"Generated {created} dishes. Skipped {skipped} duplicates.";
+                }
+                else
+                {
+                    TempData["Error"] = "Failed to generate sample dishes.";
+                }
             }
-            else
+            catch (Exception exception)
             {
-                TempData["Error"] = seedResponse.Message ?? "Failed to generate sample dishes.";
+                _logger.LogError(exception, "Failed to seed sample dishes");
+                TempData["Error"] = "Menu service is unavailable. Please try again later.";
             }
 
             return RedirectToAction("Index");
+        }
+
+        private static async Task UploadImageAsync(CreateDishRequest request, IFormFile? imageFile)
+        {
+            if (imageFile is null || imageFile.Length == 0)
+            {
+                return;
+            }
+
+            var fileName = Path.GetFileName(imageFile.FileName);
+            var imagesFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Images");
+            Directory.CreateDirectory(imagesFolder);
+
+            var filePath = Path.Combine(imagesFolder, fileName);
+
+            await using var stream = new FileStream(filePath, FileMode.Create);
+            await imageFile.CopyToAsync(stream);
+
+            request.ImageUrl = $"/Images/{fileName}";
+        }
+
+        private static async Task UploadImageAsync(UpdateDishRequest request, IFormFile? imageFile)
+        {
+            var createRequest = new CreateDishRequest
+            {
+                Name = request.Name,
+                Description = request.Description,
+                Price = request.Price,
+                Category = request.Category,
+                ImageUrl = request.ImageUrl
+            };
+
+            await UploadImageAsync(createRequest, imageFile);
+            request.ImageUrl = createRequest.ImageUrl;
         }
     }
 }

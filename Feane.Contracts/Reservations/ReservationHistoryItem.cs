@@ -1,6 +1,4 @@
-using FeaneMVC.Domain.Enums;
-
-namespace FeaneMVC.Contracts.Reservations;
+namespace Feane.Contracts.Reservations;
 
 public class ReservationHistoryItem
 {

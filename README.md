@@ -38,9 +38,12 @@
 - **FeaneMVC.Domain** — сущности, value-object'ы, доменные сервисы и перечисления.
 - **FeaneMVC.Application** — обработчики команд и запросов (MediatR), DTO, валидаторы и бизнес-правила.
 - **FeaneMVC.Infrastructure** — EF Core контекст, миграции, репозитории, реализация Identity и внешние сервисы.
-- **FeaneMVC (Web)** — MVC-контроллеры, Razor-представления, middleware и конфигурация веб-приложения.
+- **Feane.Contracts** — общие контракты (DTO) для взаимодействия между сервисами.
+- **MenuService** — микросервис каталога блюд (REST API на минимальных эндпоинтах).
+- **ReservationService** — микросервис управления резервациями.
+- **FeaneMVC (Web)** — фронт/шлюз, который обращается к микросервисам через `HttpClient` + обеспечивает UI.
 
-Подход обеспечивает слабую связанность, модульность и удобство для unit/integration тестирования.
+Такое разделение превращает исходный монолит в набор автономных сервисов с чёткими границами. Общение идёт по HTTP поверх типизированных контрактов, что позволяет независимо разворачивать/масштабировать сервисы и упрощает замену реализации.
 
 ---
 
@@ -119,6 +122,25 @@ dotnet run --project FeaneMVC
 
 По умолчанию приложение доступно по адресам `https://localhost:5001` и `http://localhost:5000`.
 
+### 🔁 Запуск микросервисов
+
+UI выступает в роли шлюза и ожидает, что вспомогательные сервисы доступны по базовым адресам, заданным в `FeaneMVC/appsettings*.json` (по умолчанию `http://localhost:5201` и `http://localhost:5202`).
+
+В отдельных терминалах запустите службы:
+
+```bash
+# Каталог блюд
+dotnet run --project Services/MenuService/MenuService.csproj --urls "http://localhost:5201"
+
+# Управление резервациями
+dotnet run --project Services/ReservationService/ReservationService.csproj --urls "http://localhost:5202"
+
+# Затем фронт-шлюз
+dotnet run --project FeaneMVC/FeaneMVC.csproj
+```
+
+При необходимости можно переопределить адреса через переменные среды `Services__Menu` и `Services__Reservation`.
+
 ### 🐳 Запуск в Docker
 
 ```bash
@@ -146,9 +168,13 @@ FeaneMVC.sln
 │   ├── Middleware/            # Конвейер обработки запросов, обработка ошибок
 │   ├── Views/                 # Razor-представления пользовательской части
 │   └── wwwroot/               # Статические ресурсы (CSS, JS, изображения)
+├── Feane.Contracts/           # Общие DTO/контракты между сервисами
 ├── FeaneMVC.Application/      # CQRS-слой: команды, запросы, обработчики, валидация
 ├── FeaneMVC.Domain/           # Доменные сущности, enum'ы, value object'ы, сервисы
 ├── FeaneMVC.Infrastructure/   # EF Core контекст, миграции, репозитории, интеграции, Identity
+├── Services/
+│   ├── MenuService/           # Микросервис управления меню
+│   └── ReservationService/    # Микросервис резерваций
 └── Dockerfile                 # Описание контейнера для деплоя
 ```
 

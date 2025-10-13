@@ -3,11 +3,11 @@ using FeaneMVC.Application.Commands.Sessions;
 using FeaneMVC.Application.Commands.Users;
 using FeaneMVC.Application.Configuration;
 using FeaneMVC.Application.Queries.Authentication;
-using FeaneMVC.Application.Queries.Reservations;
 using FeaneMVC.Application.Queries.Sessions;
 using FeaneMVC.Application.Queries.Users;
+using FeaneMVC.Clients;
 using FeaneMVC.Contracts.Account;
-using FeaneMVC.Contracts.Reservations;
+using Feane.Contracts.Reservations;
 using FeaneMVC.Domain.Entities;
 using FeaneMVC.Domain.Enums;
 using FeaneMVC.Extenstions;
@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace FeaneMVC.Controllers
@@ -28,6 +29,7 @@ namespace FeaneMVC.Controllers
         private readonly ILogger<AccountController> _logger;
         private readonly SignInManager<UserData> _signInManager;
         private readonly UserManager<UserData> _userManager;
+        private readonly IReservationServiceClient _reservationServiceClient;
         private readonly EmailAddressAttribute _emailValidator = new();
 
         // Constructor to initialize dependencies
@@ -36,13 +38,15 @@ namespace FeaneMVC.Controllers
             IOptions<JwtOptions> jwtOptions,
             ILogger<AccountController> logger,
             SignInManager<UserData> signInManager,
-            UserManager<UserData> userManager)
+            UserManager<UserData> userManager,
+            IReservationServiceClient reservationServiceClient)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
             _jwtOptions = jwtOptions.Value;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _reservationServiceClient = reservationServiceClient ?? throw new ArgumentNullException(nameof(reservationServiceClient));
 
             if (!_jwtOptions.IsValid())
             {
@@ -92,12 +96,26 @@ namespace FeaneMVC.Controllers
 
             if (user?.Status == true && user.Data?.User != null)
             {
-                var reservations = await _mediator.Send(new GetReservationsByUserIdQuery(userId));
+                ReservationHistoryPageModel reservations;
+
+                try
+                {
+                    reservations = await _reservationServiceClient.GetHistoryAsync(userId);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception, "Failed to load reservation history for user {UserId}", userId);
+                    reservations = new ReservationHistoryPageModel
+                    {
+                        ErrorMessage = "Сервис резерваций временно недоступен."
+                    };
+                }
+
                 var pageModel = new ReservationHistoryPageModel
                 {
-                    Reservations = reservations.ToHistoryItems(),
-                    StatusMessage = TempData.TryGetValue("ReservationStatusMessage", out var status) ? status as string : null,
-                    ErrorMessage = TempData.TryGetValue("ReservationErrorMessage", out var error) ? error as string : null
+                    Reservations = reservations.Reservations,
+                    StatusMessage = TempData.TryGetValue("ReservationStatusMessage", out var status) ? status as string : reservations.StatusMessage,
+                    ErrorMessage = TempData.TryGetValue("ReservationErrorMessage", out var error) ? error as string : reservations.ErrorMessage
                 };
 
                 TempData.Remove("ReservationStatusMessage");

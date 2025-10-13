@@ -1,11 +1,13 @@
 using FeaneMVC.Application;
 using FeaneMVC.Application.Configuration;
 using FeaneMVC.Attributes;
+using FeaneMVC.Clients;
 using FeaneMVC.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Text;
 
 namespace FeaneMVC.Configuration
@@ -149,6 +151,35 @@ namespace FeaneMVC.Configuration
             services.AddScoped<AdminOrVipModeAttribute>();
             services.AddScoped<VipModeAttribute>();
             services.AddScoped<ModeratorModeAttribute>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddMenuAndReservationClients(this IServiceCollection services, IConfiguration configuration)
+        {
+            var servicesSection = configuration.GetSection("Services");
+
+            var menuServiceUrl = servicesSection.GetValue<string>("Menu");
+            if (string.IsNullOrWhiteSpace(menuServiceUrl))
+            {
+                throw new InvalidOperationException("Configuration value 'Services:Menu' is missing. Configure the menu microservice base address in appsettings.json.");
+            }
+
+            var reservationServiceUrl = servicesSection.GetValue<string>("Reservation");
+            if (string.IsNullOrWhiteSpace(reservationServiceUrl))
+            {
+                throw new InvalidOperationException("Configuration value 'Services:Reservation' is missing. Configure the reservation microservice base address in appsettings.json.");
+            }
+
+            services.AddHttpClient<IMenuServiceClient, MenuServiceClient>(client =>
+            {
+                client.BaseAddress = new Uri(menuServiceUrl);
+            });
+
+            services.AddHttpClient<IReservationServiceClient, ReservationServiceClient>(client =>
+            {
+                client.BaseAddress = new Uri(reservationServiceUrl);
+            });
 
             return services;
         }

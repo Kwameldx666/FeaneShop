@@ -28,6 +28,7 @@
     <ProjectReference Include="../FeaneMVC.Application/FeaneMVC.Application.csproj" />
     <ProjectReference Include="../FeaneMVC.Domain/FeaneMVC.Domain.csproj" />
     <ProjectReference Include="../FeaneMVC.Infrastructure/FeaneMVC.Infrastructure.csproj" />
+    <ProjectReference Include="../Feane.Contracts/Feane.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

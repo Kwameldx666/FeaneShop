@@ -1,10 +1,11 @@
+using Feane.Contracts.Reservations;
 using FeaneMVC.Application.Queries.Sessions;
-using FeaneMVC.Contracts.Reservations;
-using FeaneMVC.Extenstions;
+using FeaneMVC.Clients;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace FeaneMVC.Controllers
 {
@@ -12,10 +13,12 @@ namespace FeaneMVC.Controllers
     public class ReservationController : Controller
     {
         private readonly IMediator _mediator;
+        private readonly IReservationServiceClient _reservationServiceClient;
 
-        public ReservationController(IMediator mediator)
+        public ReservationController(IMediator mediator, IReservationServiceClient reservationServiceClient)
         {
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            _reservationServiceClient = reservationServiceClient ?? throw new ArgumentNullException(nameof(reservationServiceClient));
         }
 
         public async Task<IActionResult> Book()
@@ -50,25 +53,29 @@ namespace FeaneMVC.Controllers
                 return RedirectToAction("Authentication", "Account", new { returnUrl = Url.Action(nameof(Book)) });
             }
 
-            var reservationResponse = await _mediator.Send(request.ToCommand(userId));
-
-            if (reservationResponse.Status)
+            try
             {
-                ViewData["SuccessMessage"] = string.IsNullOrWhiteSpace(reservationResponse.Message)
-                    ? "Столик успешно забронирован."
-                    : reservationResponse.Message;
-
-                ModelState.Clear();
-                return View("Book", new CreateReservationRequest
+                var reservation = await _reservationServiceClient.CreateAsync(userId, request);
+                if (reservation is not null)
                 {
-                    ReservationDateTime = request.ReservationDateTime,
-                    NumberOfPeople = request.NumberOfPeople,
-                    BudgetPerGuest = request.BudgetPerGuest
-                });
-            }
+                    ViewData["SuccessMessage"] = "Столик успешно забронирован.";
+                    ModelState.Clear();
+                    return View("Book", new CreateReservationRequest
+                    {
+                        ReservationDateTime = request.ReservationDateTime,
+                        NumberOfPeople = request.NumberOfPeople,
+                        BudgetPerGuest = request.BudgetPerGuest
+                    });
+                }
 
-            ModelState.AddModelError(string.Empty, reservationResponse.Message ?? "Не удалось создать резервацию.");
-            return View("Book", request);
+                ModelState.AddModelError(string.Empty, "Не удалось создать резервацию.");
+                return View("Book", request);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Сервис резерваций недоступен. Попробуйте позже.");
+                return View("Book", request);
+            }
         }
     }
 }

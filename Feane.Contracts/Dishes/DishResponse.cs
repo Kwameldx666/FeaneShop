@@ -1,4 +1,4 @@
-namespace FeaneMVC.Contracts.Dishes;
+namespace Feane.Contracts.Dishes;
 
 public class DishResponse
 {
