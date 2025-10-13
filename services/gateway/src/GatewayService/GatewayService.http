@@ -1,0 +1,13 @@
+@baseAddress = http://localhost:8080
+
+### Health check
+GET {{baseAddress}}/health
+
+### Proxy login request
+POST {{baseAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "credential": "user@example.com",
+  "password": "P@ssword1"
+}

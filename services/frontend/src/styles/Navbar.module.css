@@ -1,0 +1,53 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.3);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.25rem;
+  letter-spacing: 0.05em;
+}
+
+.links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.links a,
+.links button {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: rgba(226, 232, 240, 0.85);
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  transition: all 0.2s ease;
+  background: transparent;
+  border: none;
+}
+
+.links a:hover,
+.links button:hover,
+.links a:focus-visible,
+.links button:focus-visible {
+  color: #f8fafc;
+  background: rgba(59, 130, 246, 0.35);
+}
+
+.logout {
+  border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+.active {
+  color: #f8fafc;
+  background: rgba(59, 130, 246, 0.6);
+  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.35);
+}

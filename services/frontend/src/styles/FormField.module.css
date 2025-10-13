@@ -1,0 +1,37 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.input {
+  border-radius: 0.85rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.35);
+  color: #f8fafc;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input:focus {
+  border-color: rgba(59, 130, 246, 0.8);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: rgba(148, 163, 184, 0.8);
+}
+
+.error {
+  font-size: 0.8rem;
+  color: rgb(248, 113, 113);
+}

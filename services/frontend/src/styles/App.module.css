@@ -1,0 +1,26 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 1.5rem;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.footer p {
+  margin: 0;
+}

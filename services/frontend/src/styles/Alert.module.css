@@ -1,0 +1,25 @@
+.alert {
+  border-radius: 0.85rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.info {
+  background: rgba(59, 130, 246, 0.15);
+  color: rgba(191, 219, 254, 0.95);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+.success {
+  background: rgba(34, 197, 94, 0.15);
+  color: rgba(187, 247, 208, 0.95);
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.error {
+  background: rgba(248, 113, 113, 0.15);
+  color: rgba(254, 202, 202, 0.95);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+}
