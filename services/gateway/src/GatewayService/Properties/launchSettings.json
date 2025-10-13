@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "GatewayService": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7200;http://localhost:5200",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ReverseProxy__Clusters__auth-cluster__Destinations__auth-service__Address": "http://localhost:5201/"
+      }
+    }
+  }
+}

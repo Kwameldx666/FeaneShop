@@ -12,10 +12,10 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["FeaneMVC/FeaneMVC.csproj", "FeaneMVC/"]
-RUN dotnet restore "./FeaneMVC/FeaneMVC.csproj"
+COPY ["FeaneMVC.csproj", "."]
+RUN dotnet restore "./FeaneMVC.csproj"
 COPY . .
-WORKDIR "/src/FeaneMVC"
+WORKDIR "/src"
 RUN dotnet build "./FeaneMVC.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # Этот этап используется для публикации проекта службы, который будет скопирован на последний этап

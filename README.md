@@ -73,7 +73,7 @@
 
 ### 🔐 Настройка конфигурации
 
-Скопируйте `FeaneMVC/appsettings.json` или `appsettings.Development.json` и задайте значения:
+Скопируйте `services/frontend/FeaneMVC/appsettings.json` или `appsettings.Development.json` и задайте значения:
 
 ```json
 {
@@ -96,7 +96,7 @@
 Для безопасного хранения секретов используйте [User Secrets](https://learn.microsoft.com/aspnet/core/security/app-secrets):
 
 ```bash
-cd FeaneMVC
+cd services/frontend/FeaneMVC
 dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Server=.;Database=FeabeDb;Trusted_Connection=True;TrustServerCertificate=True;"
 dotnet user-secrets set "OpenWeatherMap:ApiKey" "<ваш ключ>"
 dotnet user-secrets set "JwtSettings:SecretKey" "<секрет>"
@@ -106,15 +106,15 @@ dotnet user-secrets set "JwtSettings:SecretKey" "<секрет>"
 
 ```bash
 git clone https://github.com/Kwameldx666/FeaneMVC.git
-cd FeaneMVC
+cd FeaneMVC/services/frontend/FeaneMVC
 
 dotnet restore
 # Применяем миграции из проекта инфраструктуры
 dotnet ef database update \
-  --project FeaneMVC.Infrastructure \
-  --startup-project FeaneMVC
+  --project ../../src/FeaneMVC.Infrastructure/FeaneMVC.Infrastructure.csproj \
+  --startup-project FeaneMVC.csproj
 
-dotnet run --project FeaneMVC
+dotnet run
 ```
 
 По умолчанию приложение доступно по адресам `https://localhost:5001` и `http://localhost:5000`.
@@ -122,14 +122,15 @@ dotnet run --project FeaneMVC
 ### 🐳 Запуск в Docker
 
 ```bash
-# Сборка образа
-docker build -t feane-mvc .
+# Сборка образа (из каталога microservice)
+cd services/frontend/FeaneMVC
+docker build -t feane-frontend .
 
 # Запуск контейнера
-docker run -it --rm -p 8080:80 \
+docker run -it --rm -p 8080:8080 \
   -e ConnectionStrings__DefaultConnection="Server=host.docker.internal;Database=FeabeDb;User Id=sa;Password=<пароль>;TrustServerCertificate=True" \
   -e JwtSettings__SecretKey="<секрет>" \
-  feane-mvc
+  feane-frontend
 ```
 
 Приложение будет доступно по адресу `http://localhost:8080`.
@@ -140,16 +141,16 @@ docker run -it --rm -p 8080:80 \
 
 ```
 FeaneMVC.sln
-├── FeaneMVC/                  # Веб-слой (Controllers, Views, Middleware, wwwroot)
-│   ├── Configuration/         # Расширения для ServiceCollection и Middleware
-│   ├── Controllers/           # MVC-контроллеры (меню, корзина, аккаунты, платежи, бронирования и др.)
-│   ├── Middleware/            # Конвейер обработки запросов, обработка ошибок
-│   ├── Views/                 # Razor-представления пользовательской части
-│   └── wwwroot/               # Статические ресурсы (CSS, JS, изображения)
-├── FeaneMVC.Application/      # CQRS-слой: команды, запросы, обработчики, валидация
-├── FeaneMVC.Domain/           # Доменные сущности, enum'ы, value object'ы, сервисы
-├── FeaneMVC.Infrastructure/   # EF Core контекст, миграции, репозитории, интеграции, Identity
-└── Dockerfile                 # Описание контейнера для деплоя
+├── services/frontend/FeaneMVC/   # Веб-слой (Controllers, Views, Middleware, wwwroot)
+│   ├── Configuration/            # Расширения для ServiceCollection и Middleware
+│   ├── Controllers/              # MVC-контроллеры (меню, корзина, аккаунты, платежи, бронирования и др.)
+│   ├── Middleware/               # Конвейер обработки запросов, обработка ошибок
+│   ├── Views/                    # Razor-представления пользовательской части
+│   └── wwwroot/                  # Статические ресурсы (CSS, JS, изображения)
+├── src/FeaneMVC.Application/     # CQRS-слой: команды, запросы, обработчики, валидация
+├── src/FeaneMVC.Domain/          # Доменные сущности, enum'ы, value object'ы, сервисы
+├── src/FeaneMVC.Infrastructure/  # EF Core контекст, миграции, репозитории, интеграции, Identity
+└── services/frontend/FeaneMVC/Dockerfile  # Описание контейнера для деплоя фронтенд-сервиса
 ```
 
 ---

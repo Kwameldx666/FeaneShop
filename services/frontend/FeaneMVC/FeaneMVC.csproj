@@ -25,9 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../FeaneMVC.Application/FeaneMVC.Application.csproj" />
-    <ProjectReference Include="../FeaneMVC.Domain/FeaneMVC.Domain.csproj" />
-    <ProjectReference Include="../FeaneMVC.Infrastructure/FeaneMVC.Infrastructure.csproj" />
+    <ProjectReference Include="../../src/FeaneMVC.Application/FeaneMVC.Application.csproj" />
+    <ProjectReference Include="../../src/FeaneMVC.Domain/FeaneMVC.Domain.csproj" />
+    <ProjectReference Include="../../src/FeaneMVC.Infrastructure/FeaneMVC.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
