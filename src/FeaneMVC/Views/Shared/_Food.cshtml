@@ -1,13 +1,6 @@
-@using System.Linq
-@model IEnumerable<FeaneMVC.Contracts.Dishes.DishResponse>
+<link rel="stylesheet" href="/css/food-section.css" />
 
-@{ 
-    var dishes = Model ?? Enumerable.Empty<FeaneMVC.Contracts.Dishes.DishResponse>();
-}
-
-<link rel="stylesheet" href="~/css/food-section.css" />
-
-<section class="food_section layout_padding-bottom" data-add-to-cart-url="@Url.Action("Add", "Cart")">
+<section class="food_section layout_padding-bottom">
     <div class="container">
         <div class="heading_container heading_center">
             <h2>Our Menu</h2>
@@ -24,46 +17,81 @@
         </ul>
 
         <div class="filters-content">
-            @if (!dishes.Any())
-            {
-                if (ViewBag.Message != null)
-                {
-                    <p>@ViewBag.Message</p>
-                }
-            }
-            else
-            {
-                <div class="row grid">
-                    @foreach (var dish in dishes)
-                    {
-                        <div class="col-sm-6 col-lg-4 all @dish.Category.ToLower()" data-name="@dish.Name" data-price="@dish.Price">
-                            <div class="box">
-                                <div>
-                                    <div class="img-box">
-                                        <img src="@(!string.IsNullOrWhiteSpace(dish.ImageUrl) ? Url.Content(dish.ImageUrl) : "~/images/default.png")" alt="@dish.Name">
-                                    </div>
-                                    <div class="detail-box">
-                                        <h5 class="name">@dish.Name</h5>
-                                        <p>@dish.Description</p>
-                                        <div class="options">
-                                            <h6 class="price">$@(dish.Price > 0 ? dish.Price.ToString("0.00") : "N/A")</h6>
-                                            <a href="#" class="cart-icon add-to-cart" data-id="@dish.Id" data-name="@dish.Name" data-price="@dish.Price" data-quantity="1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
-                                                    <circle cx="9" cy="21" r="1"></circle>
-                                                    <circle cx="20" cy="21" r="1"></circle>
-                                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    </div>
+            <div class="row grid">
+                <div class="col-sm-6 col-lg-4 all pizza" data-name="Delicious Pizza" data-price="20">
+                    <div class="box">
+                        <div>
+                            <div class="img-box">
+                                <img src="/images/f1.png" alt="Delicious Pizza" />
+                            </div>
+                            <div class="detail-box">
+                                <h5 class="name">Delicious Pizza</h5>
+                                <p>A crispy crust topped with mozzarella, basil, and tomato sauce.</p>
+                                <div class="options">
+                                    <h6 class="price">$20.00</h6>
+                                    <a href="#" class="cart-icon add-to-cart" data-id="pizza-1" data-name="Delicious Pizza" data-price="20" data-quantity="1" aria-label="Add Delicious Pizza to cart">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
+                                            <circle cx="9" cy="21" r="1"></circle>
+                                            <circle cx="20" cy="21" r="1"></circle>
+                                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                        </svg>
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    }
+                    </div>
                 </div>
-            }
+
+                <div class="col-sm-6 col-lg-4 all burger" data-name="Classic Burger" data-price="15">
+                    <div class="box">
+                        <div>
+                            <div class="img-box">
+                                <img src="/images/f2.png" alt="Classic Burger" />
+                            </div>
+                            <div class="detail-box">
+                                <h5 class="name">Classic Burger</h5>
+                                <p>Juicy beef patty with cheddar cheese, lettuce, and tomato.</p>
+                                <div class="options">
+                                    <h6 class="price">$15.00</h6>
+                                    <a href="#" class="cart-icon add-to-cart" data-id="burger-1" data-name="Classic Burger" data-price="15" data-quantity="1" aria-label="Add Classic Burger to cart">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
+                                            <circle cx="9" cy="21" r="1"></circle>
+                                            <circle cx="20" cy="21" r="1"></circle>
+                                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-lg-4 all pasta" data-name="Creamy Pasta" data-price="18">
+                    <div class="box">
+                        <div>
+                            <div class="img-box">
+                                <img src="/images/f3.png" alt="Creamy Pasta" />
+                            </div>
+                            <div class="detail-box">
+                                <h5 class="name">Creamy Pasta</h5>
+                                <p>Rich Alfredo sauce tossed with fresh fettuccine and herbs.</p>
+                                <div class="options">
+                                    <h6 class="price">$18.00</h6>
+                                    <a href="#" class="cart-icon add-to-cart" data-id="pasta-1" data-name="Creamy Pasta" data-price="18" data-quantity="1" aria-label="Add Creamy Pasta to cart">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
+                                            <circle cx="9" cy="21" r="1"></circle>
+                                            <circle cx="20" cy="21" r="1"></circle>
+                                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<script src="~/js/food-section.js"></script>
+<script src="/js/food-section.js"></script>

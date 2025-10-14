@@ -1,117 +1,156 @@
-@{ 
-    Layout = null;
-    var returnUrl = ViewData["ReturnUrl"] as string;
-    if (string.IsNullOrWhiteSpace(returnUrl))
-    {
-        returnUrl = Context?.Request?.Query["returnUrl"].ToString();
-    }
-
-    var authMode = ViewData["AuthMode"] as string;
-    if (string.IsNullOrWhiteSpace(authMode))
-    {
-        var queryAuthMode = Context?.Request?.Query["authMode"].ToString();
-        if (!string.IsNullOrWhiteSpace(queryAuthMode))
-        {
-            authMode = queryAuthMode;
-        }
-    }
-
-    var containerClass = "container";
-    if (!string.IsNullOrWhiteSpace(authMode) && authMode.Equals("register", StringComparison.OrdinalIgnoreCase))
-    {
-        containerClass += " right-panel-active";
-    }
-}
-
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
-      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
-      crossorigin="anonymous">
-<link rel="stylesheet" href="~/css/Auth.css" asp-append-version="true" />
-
-<div class="@containerClass" id="container">
-    <div class="form-container sign-up-container">
-        @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "register_form", id = "registerForm" }))
-        {
-            <input type="hidden" name="ReturnUrl" value="@returnUrl" />
-            <h1>Регистрация</h1>
-            <div class="social-container">
-                <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-                <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+    <meta charset='utf-8' />
+    <meta http-equiv='X-UA-Compatible' content='IE=edge' />
+    <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no' />
+    <link rel='stylesheet' href='/css/bootstrap.css' />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css' />
+    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css' integrity='sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ==' crossorigin='anonymous' />
+    <link rel='stylesheet' href='/css/font-awesome.min.css' />
+    <link rel='stylesheet' href='/css/style.css' />
+    <link rel='stylesheet' href='/css/responsive.css' />
+    <link rel='stylesheet' href='/css/navbar.css' />
+    <link rel='stylesheet' href='/css/Auth.css' />
+    <title>Feane — Вход и регистрация</title>
+</head>
+<body>
+    <div class='hero_area'>
+        <div class='bg-box'>
+            <img src='/images/hero-bg.jpg' alt='Restaurant background' />
+        </div>
+        <header class='header_section'>
+            <div class='container'>
+                <nav class='navbar navbar-expand-lg custom_nav-container'>
+                    <a class='navbar-brand' href='/home/index'><span>Feane</span></a>
+                    <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
+                        <span class=''> </span>
+                    </button>
+                    <div class='collapse navbar-collapse' id='navbarSupportedContent'>
+                        <ul class='navbar-nav mx-auto'>
+                            <li class='nav-item'><a class='nav-link' href='/home/index'>Home</a></li>
+                            <li class='nav-item'><a class='nav-link' href='/home/about'>About</a></li>
+                            <li class='nav-item'><a class='nav-link' href='/weather/index'>Weather</a></li>
+                            <li class='nav-item'><a class='nav-link' href='/reservation/book'>Book Table</a></li>
+                        </ul>
+                        <div class='user_option'>
+                            <a href='/account/profile' class='user_link' title='Profile'><i class='fa fa-user' aria-hidden='true'></i></a>
+                            <a class='cart_link' href='/cart/cart' title='View Cart'>
+                                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 457.627 457.627' width='24' height='24' fill='currentColor' aria-hidden='true'>
+                                    <path d='M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4C457.728,97.71,450.56,86.958,439.296,84.91z' />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
             </div>
-            @if (TempData["RegisterError"] != null)
-            {
-                <div class="alert alert-danger">
-                    @TempData["RegisterError"]
+        </header>
+    </div>
+    <main class='page-content'>
+        <section class='container py-5'>
+            <div class='row justify-content-center'>
+                <div class='col-lg-10'>
+                    <div class='auth-wrapper shadow-lg' id='container'>
+                        <div class='form-container sign-up-container p-4'>
+                    <form class='needs-validation' id='registerForm' method='post' action='/account/register' novalidate>
+                        <h1 class='h3 mb-3'>Регистрация</h1>
+                        <div class='social-container'>
+                            <a href='#' class='social'><i class='fab fa-facebook-f'></i></a>
+                            <a href='#' class='social'><i class='fab fa-google-plus-g'></i></a>
+                            <a href='#' class='social'><i class='fab fa-linkedin-in'></i></a>
+                        </div>
+                        <input class='form-control' type='text' placeholder='Name' name='Username' id='username' required />
+                        <div class='text-danger small mb-2' id='errorName'></div>
+                        <input class='form-control' type='email' placeholder='Email' name='Email' id='email' required />
+                        <div class='text-danger small mb-2' id='errorEmail'></div>
+                        <input class='form-control' type='password' placeholder='Password' name='Password' id='password' required />
+                        <div class='text-danger small mb-2' id='errorPassword'></div>
+                        <button class='btn btn-primary w-100 mt-3' type='submit'>Зарегистрироваться</button>
+                    </form>
+                        </div>
+                        <div class='form-container sign-in-container p-4'>
+                    <form class='needs-validation' id='loginForm' method='post' action='/account/login' novalidate>
+                        <h1 class='h3 mb-3'>Авторизация</h1>
+                        <div class='social-container'>
+                            <a href='#' class='social'><i class='fab fa-facebook-f'></i></a>
+                            <a href='#' class='social'><i class='fab fa-google-plus-g'></i></a>
+                            <a href='#' class='social'><i class='fab fa-linkedin-in'></i></a>
+                        </div>
+                        <input class='form-control' type='text' placeholder='Name or Email' name='Credential' id='credential' required />
+                        <div class='text-danger small mb-2' id='errorCredential'></div>
+                        <input class='form-control' type='password' placeholder='Password' name='Password' id='login_password' required />
+                        <div class='text-danger small mb-2' id='errorPassword'></div>
+                        <a class='d-block mt-2' href='/account/resetpassword'>Забыли пароль?</a>
+                        <button class='btn btn-primary w-100 mt-3' type='submit'>Вход</button>
+                    </form>
+                        </div>
+                        <div class='overlay-container'>
+                            <div class='overlay'>
+                                <div class='overlay-panel overlay-left'>
+                                    <h1>Добро пожаловать!</h1>
+                                    <p>Чтобы оставаться на связи с нами, пожалуйста, войдите с вашей личной информацией.</p>
+                                    <button class='ghost' id='signIn'>Авторизация</button>
+                                </div>
+                                <div class='overlay-panel overlay-right'>
+                                    <h1>Привет, друг!</h1>
+                                    <p>Введите свои личные данные и начните путешествие вместе с нами.</p>
+                                    <button class='ghost' id='signUp'>Регистрация</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            }
-            <input type="text" placeholder="Username" name="Username" id="username" />
-            <div class="col-md-12 form-group text-center">
-                <span id="errorName" class="text-danger"></span>
             </div>
-
-            <input type="email" placeholder="Email" name="Email" id="email" />
-            <div class="col-md-12 form-group text-center">
-                <span id="errorEmail" class="text-danger"></span>
+        </section>
+    </main>
+    <footer class='footer_section'>
+        <div class='container'>
+            <div class='row'>
+                <div class='col-md-4 footer-col'>
+                    <div class='footer_contact'>
+                        <h4>Contact Us</h4>
+                        <div class='contact_link_box'>
+                            <a href='#'><i class='fa fa-map-marker' aria-hidden='true'></i><span>Location</span></a>
+                            <a href='tel:+011234567890'><i class='fa fa-phone' aria-hidden='true'></i><span>Call +01 1234567890</span></a>
+                            <a href='mailto:demo@gmail.com'><i class='fa fa-envelope' aria-hidden='true'></i><span>demo@gmail.com</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-4 footer-col'>
+                    <div class='footer_detail'>
+                        <a href='/home/index' class='footer-logo'>Feane</a>
+                        <p>Necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with sample content.</p>
+                        <div class='footer_social'>
+                            <a href='#' aria-label='Facebook'><i class='fa fa-facebook' aria-hidden='true'></i></a>
+                            <a href='#' aria-label='Twitter'><i class='fa fa-twitter' aria-hidden='true'></i></a>
+                            <a href='#' aria-label='LinkedIn'><i class='fa fa-linkedin' aria-hidden='true'></i></a>
+                            <a href='#' aria-label='Instagram'><i class='fa fa-instagram' aria-hidden='true'></i></a>
+                            <a href='#' aria-label='Pinterest'><i class='fa fa-pinterest' aria-hidden='true'></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-4 footer-col'>
+                    <h4>Opening Hours</h4>
+                    <p>Everyday</p>
+                    <p>10.00 AM - 10.00 PM</p>
+                </div>
             </div>
-
-            <input type="password" placeholder="Password" name="Password" id="password" />
-            <div class="col-md-12 form-group text-center">
-                <span id="errorPassword" class="text-danger"></span>
-            </div>
-
-            <button type="submit">Зарегистрироваться</button>
-        }
-    </div>
-
-    <div class="form-container sign-in-container">
-        @using (Html.BeginForm("Login", "Account", FormMethod.Post, new { @class = "login_form", id = "loginForm" }))
-        {
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="ReturnUrl" value="@returnUrl" />
-
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-            }
-
-            <h1>Авторизация</h1>
-            <div class="social-container">
-                <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-                <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-            </div>
-            <input type="text" placeholder="Name or Email" name="Credential" id="credential" />
-            <div class="col-md-12 form-group text-center">
-                <span id="errorCredential" class="text-danger"></span>
-            </div>
-            <input type="password" placeholder="Password" name="Password" id="login_password" />
-            <div class="remember-me">
-                <label>
-                    <input type="checkbox" name="RememberMe" value="true" /> Запомнить меня
-                </label>
-            </div>
-            <a href="ForgotPassword">Забыли пароль?</a>
-            <button type="submit">Вход</button>
-        }
-    </div>
-
-    <div class="overlay-container">
-        <div class="overlay">
-            <div class="overlay-panel overlay-left">
-                <h1>Добро пожаловать!</h1>
-                <p>Чтобы оставаться на связи с нами, пожалуйста, войдите в систему с вашей личной информацией</p>
-                <button class="ghost" id="signIn">Авторизация</button>
-            </div>
-            <div class="overlay-panel overlay-right">
-                <h1>Привет, Друг!</h1>
-                <p>Введите свои личные данные и начните путешествие вместе с нами</p>
-                <button class="ghost" id="signUp">Регистрация</button>
+            <div class='footer-info'>
+                <p>&copy; <span id='displayYear'></span> All Rights Reserved By <a href='https://html.design/'>Free Html Templates</a><br /><br />
+                    &copy; <span id='displayYear'></span> Distributed By <a href='https://themewagon.com/' target='_blank' rel='noopener'>ThemeWagon</a>
+                </p>
             </div>
         </div>
-    </div>
-</div>
-
-<script src="~/js/Auth.js"></script>
-<script src="~/js/account-authentication.js"></script>
-
+    </footer>
+    <script src='/js/jquery-3.4.1.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js' integrity='sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo' crossorigin='anonymous'></script>
+    <script src='/js/bootstrap.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js'></script>
+    <script src='https://unpkg.com/isotope-layout@3.0.4/dist/isotope.pkgd.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js'></script>
+    <script src='/js/Auth.js'></script>
+    <script src='/js/home-authentication.js'></script>
+    <script src='/js/account-authentication.js'></script>
+    <script src='/js/custom.js'></script>
+</body>
+</html>
