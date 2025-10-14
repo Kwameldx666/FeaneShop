@@ -1,7 +1,7 @@
 (function () {
     document.addEventListener('DOMContentLoaded', function () {
 
-        const apiBase = "https://localhost:5000/api/auth"; // Gateway → AuthService
+        const apiBase = "http://localhost:5000/api/auth"; // Gateway → AuthService
 
         // ================== РЕГИСТРАЦИЯ ==================
         const registerForm = document.getElementById('registerForm');
