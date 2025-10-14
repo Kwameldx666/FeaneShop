@@ -1,8 +1,7 @@
+version: '3.9'
+
 x-auth-db-connection: &auth-db-connection
   ConnectionStrings__DefaultConnection: "${AUTH_DB_CONNECTION:-Server=${SQLSERVER_HOST:-host.docker.internal}\\${SQLSERVER_INSTANCE:-SQLEXPRESS};Database=${AUTH_DB_NAME:-Feane.AuthServiceDb};Trusted_Connection=True;MultipleActiveResultSets=true;Encrypt=False;TrustServerCertificate=True;}"
-
-x-mvc-db-connection: &mvc-db-connection
-  ConnectionStrings__DefaultConnection: "${MVC_DB_CONNECTION:-Server=${SQLSERVER_HOST:-host.docker.internal}\\${SQLSERVER_INSTANCE:-SQLEXPRESS};Database=${MVC_DB_NAME:-FeaneMvcDb};Trusted_Connection=True;MultipleActiveResultSets=true;Encrypt=False;TrustServerCertificate=True;}"
 
 services:
   auth-service:
@@ -36,22 +35,6 @@ services:
     ports:
       - "${GATEWAY_PORT:-5000}:8080"
 
-  feane-mvc:
-    build:
-      context: ./src/FeaneMVC
-      dockerfile: Dockerfile
-    environment:
-      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
-      ASPNETCORE_URLS: http://+:8080
-      <<: *mvc-db-connection
-      JwtSettings__Issuer: ${MVC_JWT_ISSUER:-FeaneMVC}
-      JwtSettings__Audience: ${MVC_JWT_AUDIENCE:-FeaneMVCUsers}
-      JwtSettings__SecretKey: ${AUTH_JWT_SECRET:-A38665B7-1B5A-4F62-A392-E9274BBA4A96}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    ports:
-      - "${FEANE_MVC_PORT:-5001}:8080"
-
   feane-frontend:
     build:
       context: ./services/frontend
@@ -63,3 +46,7 @@ services:
       - feane-gateway
     ports:
       - "${FEANE_FRONTEND_PORT:-5003}:8080"
+
+networks:
+  default:
+    driver: bridge

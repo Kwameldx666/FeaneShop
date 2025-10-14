@@ -1,24 +1,22 @@
-# Base image for running the gateway
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+﻿# ---------- Базовый рантайм ----------
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS base
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 8081
 
-# Build image used to restore, build and publish the project
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+# ---------- Этап сборки ----------
+FROM mcr.microsoft.com/dotnet/sdk:10.0-preview AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
-# Copy csproj and restore as distinct layers
-COPY services/gateway/FeaneGateway.csproj FeaneGateway/
-RUN dotnet restore "FeaneGateway/FeaneGateway.csproj"
+# Копируем csproj и восстанавливаем зависимости
+COPY FeaneGateway.csproj .
+RUN dotnet restore "FeaneGateway.csproj"
 
-# Copy the remaining source and publish
-COPY services/gateway/ FeaneGateway/
-WORKDIR /src/FeaneGateway
+# Копируем оставшиеся файлы и публикуем
+COPY . .
 RUN dotnet publish "FeaneGateway.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# Final runtime image
+# ---------- Финальный образ ----------
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
