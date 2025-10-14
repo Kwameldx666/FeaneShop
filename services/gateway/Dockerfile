@@ -10,11 +10,11 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copy csproj and restore as distinct layers
-COPY FeaneGateway/FeaneGateway.csproj FeaneGateway/
+COPY services/gateway/FeaneGateway.csproj FeaneGateway/
 RUN dotnet restore "FeaneGateway/FeaneGateway.csproj"
 
 # Copy the remaining source and publish
-COPY FeaneGateway/ FeaneGateway/
+COPY services/gateway/ FeaneGateway/
 WORKDIR /src/FeaneGateway
 RUN dotnet publish "FeaneGateway.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 

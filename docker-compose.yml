@@ -1,5 +1,3 @@
-version: "3.9"
-
 x-auth-db-connection: &auth-db-connection
   ConnectionStrings__DefaultConnection: "${AUTH_DB_CONNECTION:-Server=${SQLSERVER_HOST:-host.docker.internal}\\${SQLSERVER_INSTANCE:-SQLEXPRESS};Database=${AUTH_DB_NAME:-Feane.AuthServiceDb};Trusted_Connection=True;MultipleActiveResultSets=true;Encrypt=False;TrustServerCertificate=True;}"
 
@@ -9,8 +7,8 @@ x-mvc-db-connection: &mvc-db-connection
 services:
   auth-service:
     build:
-      context: .
-      dockerfile: services/auth-service/src/AuthService/Dockerfile
+      context: ./services/auth-service/src/AuthService
+      dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
@@ -25,8 +23,8 @@ services:
 
   feane-gateway:
     build:
-      context: .
-      dockerfile: FeaneGateway/Dockerfile
+      context: ./services/gateway
+      dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
@@ -40,8 +38,8 @@ services:
 
   feane-mvc:
     build:
-      context: .
-      dockerfile: src/FeaneMVC/Dockerfile
+      context: ./src/FeaneMVC
+      dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080
@@ -56,8 +54,8 @@ services:
 
   feane-frontend:
     build:
-      context: .
-      dockerfile: Feane.Frontend/Dockerfile
+      context: ./services/frontend
+      dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
       ASPNETCORE_URLS: http://+:8080

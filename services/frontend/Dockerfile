@@ -10,11 +10,11 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 
 # Copy csproj and restore as distinct layers
-COPY Feane.Frontend/Feane.Frontend.csproj Feane.Frontend/
+COPY services/frontend/Feane.Frontend.csproj Feane.Frontend/
 RUN dotnet restore "Feane.Frontend/Feane.Frontend.csproj"
 
 # Copy the remaining source and publish
-COPY Feane.Frontend/ Feane.Frontend/
+COPY services/frontend/ Feane.Frontend/
 WORKDIR /src/Feane.Frontend
 RUN dotnet publish "Feane.Frontend.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
