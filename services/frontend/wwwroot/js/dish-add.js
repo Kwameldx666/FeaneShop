@@ -3,7 +3,7 @@
 
     function showFeedback(container, message, type) {
         if (!container) {
-            alert(message);
+            console.log(message);
             return;
         }
 
@@ -19,12 +19,12 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        var form = document.querySelector('.contact-form');
-        var feedback = document.getElementById('contacts-feedback');
+        var form = document.getElementById('add-dish-form');
         if (!form || !window.feaneGateway) {
             return;
         }
 
+        var feedback = document.getElementById('add-dish-feedback');
         var endpoint = form.getAttribute('data-gateway-endpoint');
         if (!endpoint) {
             return;
@@ -34,26 +34,19 @@
             event.preventDefault();
 
             var formData = new FormData(form);
-            var params = new URLSearchParams();
-            formData.forEach(function (value, key) {
-                params.append(key, value == null ? '' : value.toString());
-            });
+            showFeedback(feedback, 'Submitting new dish to gateway…', 'info');
 
-            showFeedback(feedback, 'Saving contact details via gateway…', 'info');
-
-            window.feaneGateway.post(endpoint, params.toString(), {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }).then(function (data) {
-                if (data && (data.success || data.status === 'success')) {
-                    showFeedback(feedback, data.message || 'Contact information updated successfully.', 'success');
+            window.feaneGateway.post(endpoint, formData).then(function (response) {
+                if (response && (response.success || response.status === 'success')) {
+                    showFeedback(feedback, response.message || 'Dish added successfully.', 'success');
+                    form.reset();
                     return;
                 }
 
-                showFeedback((data && data.message) || 'Failed to update contact information.', 'error');
+                var message = (response && response.message) || 'Failed to add the dish.';
+                showFeedback(feedback, message, 'error');
             }).catch(function (error) {
-                showFeedback(feedback, 'An error occurred: ' + error.message, 'error');
+                showFeedback(feedback, 'Unable to add dish: ' + error.message, 'error');
             });
         });
     });

@@ -13,28 +13,31 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5">
+  <main class="container py-5" data-dish-endpoint="/api/dishes/{id}" data-update-endpoint="/api/dishes/{id}">
     <div class="form-container">
       <h2>Edit dish</h2>
-      <form id="edit-dish-form" action="http://localhost:5000/api/dishes/update" method="post" enctype="multipart/form-data">
-        <input type="hidden" id="dishId" name="Id" value="1" />
+      <div id="edit-dish-feedback" class="alert d-none" role="alert"></div>
+      <form id="edit-dish-form" action="http://localhost:5000/api/dishes/update" method="post" enctype="multipart/form-data"
+        data-gateway-endpoint="/api/dishes/{id}">
+        <input type="hidden" id="dishId" name="Id" value="" />
         <div class="form-group">
           <label for="editDishName">Dish name</label>
-          <input type="text" id="editDishName" name="Name" class="form-control" required value="Delicious Pizza" />
+          <input type="text" id="editDishName" name="Name" class="form-control" required />
         </div>
         <div class="form-group">
           <label for="editDishDescription">Description</label>
-          <textarea id="editDishDescription" name="Description" class="form-control" required>Stone-baked crust with fresh mozzarella.</textarea>
+          <textarea id="editDishDescription" name="Description" class="form-control" required></textarea>
         </div>
         <div class="form-group">
           <label for="editDishPrice">Price</label>
-          <input type="number" step="0.01" id="editDishPrice" name="Price" class="form-control" required value="20.00" />
+          <input type="number" step="0.01" id="editDishPrice" name="Price" class="form-control" required />
         </div>
         <div class="form-group">
           <label for="editDishCategory">Category</label>
           <select id="editDishCategory" name="Category" class="form-control" required>
+            <option value="">Select a category</option>
             <option value="burger">Burger</option>
-            <option value="pizza" selected>Pizza</option>
+            <option value="pizza">Pizza</option>
             <option value="pasta">Pasta</option>
             <option value="fries">Fries</option>
           </select>
@@ -55,5 +58,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/dish-edit.js"></script>
 </body>
 </html>

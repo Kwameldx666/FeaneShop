@@ -13,13 +13,14 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5">
+  <main class="container py-5" data-confirmation-endpoint="/api/payments/confirmation">
     <div class="confirmation-card text-center p-5">
       <img src="/images/Default.png" alt="Success" class="mb-4 confirmation-icon">
       <h1>Thank you!</h1>
       <p class="lead">Your payment was processed successfully. We have sent a confirmation email with your order details.</p>
       <a class="btn btn-primary mt-3" href="/Pages/Home/Index.html">Return to homepage</a>
     </div>
+    <section id="payment-details" class="card p-4 mt-4 d-none" aria-live="polite"></section>
   </main>
 
   <div data-include="/partials/footer.html"></div>
@@ -29,5 +30,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/payment-confirmation.js"></script>
 </body>
 </html>

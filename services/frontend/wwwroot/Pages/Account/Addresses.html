@@ -17,7 +17,8 @@
     <div class="row">
       <div class="col-lg-8">
         <h1 class="mb-4">Manage Address</h1>
-        <form class="address-form" action="http://localhost:5000/api/account/address" method="post">
+        <form class="address-form" action="http://localhost:5000/api/account/address" method="post"
+          data-gateway-endpoint="/api/account/address">
           <div id="addresses-feedback" class="alert d-none" role="alert"></div>
           <div class="mb-3">
             <label for="street" class="form-label">Street</label>
@@ -56,6 +57,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
   <script src="/js/account-addresses.js"></script>
 </body>
 </html>

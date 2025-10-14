@@ -13,7 +13,7 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="profile-wrapper py-5">
+  <main class="profile-wrapper py-5" data-profile-endpoint="/api/account/profile">
     <div class="container">
       <div class="row g-4">
         <div class="col-lg-4">
@@ -21,10 +21,11 @@
             <img src="/images/Default.png" alt="User avatar" class="profile-avatar mb-3">
             <h2 class="h4" id="profile-name">Guest User</h2>
             <p id="profile-email" class="text-muted">guest@example.com</p>
-            <button class="btn btn-outline-primary" id="edit-profile">Edit profile</button>
+            <button class="btn btn-outline-primary" id="edit-profile" type="button">Refresh profile</button>
           </div>
         </div>
         <div class="col-lg-8">
+          <div id="profile-feedback" class="alert d-none" role="alert"></div>
           <section class="card p-4 mb-4">
             <h3 class="h5">Personal details</h3>
             <dl class="row mb-0">
@@ -52,5 +53,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/account-profile.js"></script>
 </body>
 </html>

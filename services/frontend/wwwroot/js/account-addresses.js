@@ -1,69 +1,60 @@
 (function () {
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('.address-form');
-        const feedback = document.getElementById('addresses-feedback');
-        if (!form) {
+    'use strict';
+
+    function showFeedback(container, message, type) {
+        if (!container) {
+            alert(message);
             return;
         }
 
-        function showFeedback(message, type) {
-            if (!feedback) {
-                alert(message);
-                return;
-            }
+        container.textContent = message;
+        container.classList.remove('d-none', 'alert-success', 'alert-danger', 'alert-info');
+        if (type === 'success') {
+            container.classList.add('alert-success');
+        } else if (type === 'info') {
+            container.classList.add('alert-info');
+        } else {
+            container.classList.add('alert-danger');
+        }
+    }
 
-            feedback.textContent = message;
-            feedback.classList.remove('d-none', 'alert-success', 'alert-danger');
-            feedback.classList.add(type === 'success' ? 'alert-success' : 'alert-danger');
+    document.addEventListener('DOMContentLoaded', function () {
+        var form = document.querySelector('.address-form');
+        var feedback = document.getElementById('addresses-feedback');
+        if (!form || !window.feaneGateway) {
+            return;
         }
 
-        function handleResponse(response) {
-            return response.text().then(function (text) {
-                var data = null;
-                if (text) {
-                    try {
-                        data = JSON.parse(text);
-                    } catch (error) {
-                        data = null;
-                    }
-                }
-
-                if (!response.ok) {
-                    var message = (data && data.message) || text || response.statusText;
-                    throw new Error(message);
-                }
-
-                return data || { success: false, message: 'Unexpected server response.' };
-            });
+        var endpoint = form.getAttribute('data-gateway-endpoint');
+        if (!endpoint) {
+            return;
         }
 
         form.addEventListener('submit', function (event) {
             event.preventDefault();
 
-            const formData = new FormData(form);
-            const params = new URLSearchParams();
+            var formData = new FormData(form);
+            var payload = new URLSearchParams();
             formData.forEach(function (value, key) {
-                params.append(key, value.toString());
+                payload.append(key, value == null ? '' : value.toString());
             });
 
-            fetch(form.action, {
-                method: 'POST',
+            showFeedback(feedback, 'Saving address via gateway…', 'info');
+
+            window.feaneGateway.post(endpoint, payload.toString(), {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: params.toString()
-            })
-                .then(handleResponse)
-                .then(function (data) {
-                    if (data && data.success) {
-                        showFeedback(data.message || 'Address updated successfully.', 'success');
-                    } else {
-                        showFeedback((data && data.message) || 'Failed to update the address.', 'error');
-                    }
-                })
-                .catch(function (error) {
-                    showFeedback('An error occurred: ' + error.message, 'error');
-                });
+                }
+            }).then(function (data) {
+                if (data && (data.success || data.status === 'success')) {
+                    showFeedback(feedback, data.message || 'Address updated successfully.', 'success');
+                    return;
+                }
+
+                showFeedback((data && data.message) || 'Failed to update the address.', 'error');
+            }).catch(function (error) {
+                showFeedback(feedback, 'An error occurred: ' + error.message, 'error');
+            });
         });
     });
 })();

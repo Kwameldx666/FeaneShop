@@ -12,7 +12,7 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container text-center py-5">
+  <main class="container text-center py-5" data-error-endpoint="/api/telemetry/not-found">
     <h1 class="display-4">404</h1>
     <p class="lead">The page you are looking for could not be found.</p>
     <a class="btn btn-primary" href="/Pages/Home/Index.html">Return to homepage</a>
@@ -25,5 +25,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/error-404.js"></script>
 </body>
 </html>

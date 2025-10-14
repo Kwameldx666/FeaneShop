@@ -13,30 +13,12 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5">
+  <main class="container py-5" data-analytics-endpoint="/api/analytics/summary">
     <h1 class="mb-4">Analytics Dashboard</h1>
     <p class="text-muted">Hook this dashboard to your analytics microservice to visualize revenue, orders, and customer activity.</p>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="stat-card">
-          <h2>$12,450</h2>
-          <p>Total revenue (sample)</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="stat-card">
-          <h2>328</h2>
-          <p>Orders this month</p>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="stat-card">
-          <h2>4.7 ★</h2>
-          <p>Average rating</p>
-        </div>
-      </div>
-    </div>
-    <section class="card p-4 mt-4">
+    <div id="analytics-feedback" class="alert d-none" role="alert"></div>
+    <div id="analytics-stats" class="row g-4"></div>
+    <section class="card p-4 mt-4" id="analytics-next-steps">
       <h2 class="h5">Next steps</h2>
       <p class="mb-0">Use JavaScript charting libraries (Chart.js, ApexCharts, etc.) to replace these placeholders with real-time data.</p>
     </section>
@@ -49,5 +31,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/analytics-index.js"></script>
 </body>
 </html>

@@ -1,4 +1,7 @@
 (function () {
+  var container = document.querySelector('.cart-container');
+  var cartEndpoint = container ? container.getAttribute('data-cart-endpoint') : null;
+
   function formatCurrency(value) {
     return '$' + Number(value || 0).toFixed(2);
   }
@@ -86,9 +89,49 @@
     return items;
   }
 
+  function normalizeGatewayItems(remoteItems) {
+    if (!Array.isArray(remoteItems)) {
+      return [];
+    }
+
+    return remoteItems.map(function (item) {
+      return {
+        name: item.name || item.dishName || 'Dish',
+        price: item.price || item.unitPrice || 0,
+        quantity: item.quantity || item.count || 1
+      };
+    });
+  }
+
+  function syncGateway(items) {
+    if (!cartEndpoint || !window.feaneGateway) {
+      return Promise.resolve();
+    }
+
+    return window.feaneGateway.post(cartEndpoint, { items: items }).catch(function (error) {
+      console.warn('Failed to sync cart with gateway:', error);
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
     var items = loadCart();
-    renderCart(items);
+
+    if (cartEndpoint && window.feaneGateway) {
+      window.feaneGateway.get(cartEndpoint).then(function (response) {
+        var remoteItems = Array.isArray(response && response.items) ? response.items : response;
+        var normalised = normalizeGatewayItems(remoteItems);
+        if (normalised.length) {
+          items = normalised;
+          saveCart(items);
+        }
+        renderCart(items);
+      }).catch(function (error) {
+        console.warn('Failed to load cart from gateway:', error);
+        renderCart(items);
+      });
+    } else {
+      renderCart(items);
+    }
 
     var table = document.getElementById('cart-table');
     if (table) {
@@ -108,6 +151,7 @@
           items.splice(index, 1);
           saveCart(items);
           renderCart(items);
+          syncGateway(items);
           return;
         }
 
@@ -121,6 +165,7 @@
           items = updateQuantity(items, index, current);
           saveCart(items);
           renderCart(items);
+          syncGateway(items);
         }
       });
 
@@ -136,6 +181,7 @@
           items = updateQuantity(items, index, value);
           saveCart(items);
           renderCart(items);
+          syncGateway(items);
         }
       });
     }

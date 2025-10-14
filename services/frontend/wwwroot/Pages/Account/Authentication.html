@@ -5,11 +5,17 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <title>Feane - Авторизация</title>
-  <meta http-equiv="refresh" content="0; url=/Pages/Home/Authentication.html" />
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
 </head>
 <body>
-  <p>Redirecting to the authentication page...</p>
-  <p>If you are not redirected automatically, <a href="/Pages/Home/Authentication.html">click here</a>.</p>
+  <main class="container py-5" data-auth-status-endpoint="/api/auth/status"
+    data-auth-login-url="/Pages/Home/Authentication.html" data-auth-dashboard-url="/Pages/Account/Index.html">
+    <h1 class="mb-3">Checking your session…</h1>
+    <p id="account-auth-status">Contacting the authentication gateway.</p>
+    <p class="mt-3"><a href="/Pages/Home/Authentication.html">Go to the sign-in page</a></p>
+  </main>
+
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/account-auth-status.js"></script>
 </body>
 </html>

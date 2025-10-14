@@ -21,7 +21,7 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <section class="about_section layout_padding">
+  <section class="about_section layout_padding" data-about-endpoint="/api/content/about">
     <div class="container">
       <div class="heading_container">
         <h2>About Feane</h2>
@@ -34,14 +34,9 @@
         </div>
         <div class="col-md-6">
           <div class="detail-box">
-            <p>
-              Feane is a modern fast-food restaurant that combines vibrant flavors with quick service. We focus on quality
-              ingredients and a welcoming atmosphere, offering everything from hearty burgers to refreshing beverages.
-            </p>
-            <p>
-              Our mission is to make every visit memorable. Whether you're dining in with friends or ordering takeaway, our
-              team is here to provide a delightful experience.
-            </p>
+            <div id="about-content">
+              <p>Loading our story…</p>
+            </div>
             <a href="/Pages/Reservation/Book.html" class="btn btn-primary">Reserve a Table</a>
           </div>
         </div>
@@ -59,6 +54,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/home-about.js"></script>
   <script src="/js/custom.js"></script>
 </body>
 </html>

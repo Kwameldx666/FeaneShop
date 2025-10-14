@@ -13,7 +13,7 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5">
+  <main class="container py-5" data-weather-endpoint="/api/weather/today">
     <h1 class="mb-4">Today's Weather</h1>
     <div class="weather-card">
       <div class="weather-main">
@@ -40,5 +40,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/weather-index.js"></script>
 </body>
 </html>

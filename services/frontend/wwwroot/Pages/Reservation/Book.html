@@ -17,7 +17,9 @@
     <div class="row g-4">
       <div class="col-lg-7">
         <h1 class="mb-4">Reserve a table</h1>
-        <form class="booking-form" action="http://localhost:5000/api/reservations" method="post">
+        <div id="reservation-feedback" class="alert d-none" role="alert"></div>
+        <form class="booking-form" action="http://localhost:5000/api/reservations" method="post"
+          data-gateway-endpoint="/api/reservations">
           <div class="mb-3">
             <label for="reservationName" class="form-label">Name</label>
             <input type="text" id="reservationName" name="Name" class="form-control" required />
@@ -73,6 +75,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
   <script src="/js/reservation-book.js"></script>
   <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap"></script>

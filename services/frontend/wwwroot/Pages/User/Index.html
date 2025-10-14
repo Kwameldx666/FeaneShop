@@ -13,9 +13,10 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5">
+  <main class="container py-5" data-users-endpoint="/api/users">
     <h1 class="mb-4">Users</h1>
     <p class="text-muted">Connect this table with your user-service API to manage accounts.</p>
+    <div id="users-feedback" class="alert d-none" role="alert"></div>
     <div class="table-responsive">
       <table class="table table-striped">
         <thead>
@@ -26,18 +27,9 @@
             <th scope="col">Status</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>Sample Admin</td>
-            <td>admin@example.com</td>
-            <td>Admin</td>
-            <td><span class="badge bg-success">Active</span></td>
-          </tr>
-          <tr>
-            <td>Guest User</td>
-            <td>guest@example.com</td>
-            <td>Customer</td>
-            <td><span class="badge bg-secondary">Pending</span></td>
+        <tbody id="users-table-body">
+          <tr class="text-muted">
+            <td colspan="4" class="text-center">Loading users…</td>
           </tr>
         </tbody>
       </table>
@@ -51,5 +43,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/users-index.js"></script>
 </body>
 </html>

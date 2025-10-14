@@ -16,7 +16,9 @@
   <main class="container py-5">
     <div class="form-container">
       <h2>Add new dish</h2>
-      <form id="add-dish-form" action="http://localhost:5000/api/dishes" method="post" enctype="multipart/form-data">
+      <div id="add-dish-feedback" class="alert d-none" role="alert"></div>
+      <form id="add-dish-form" action="http://localhost:5000/api/dishes" method="post" enctype="multipart/form-data"
+        data-gateway-endpoint="/api/dishes">
         <div class="form-group">
           <label for="dishName">Dish name</label>
           <input type="text" id="dishName" name="Name" class="form-control" required />
@@ -55,5 +57,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/dish-add.js"></script>
 </body>
 </html>

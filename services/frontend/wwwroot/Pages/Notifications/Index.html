@@ -12,24 +12,14 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5">
+  <main class="container py-5" data-notifications-endpoint="/api/notifications">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="mb-0">Notifications</h1>
       <a class="btn btn-outline-secondary" href="/Pages/Notifications/Filters.html">Filters</a>
     </div>
-    <ul class="list-group">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        New reservation confirmed.
-        <span class="badge bg-primary">Just now</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        Daily sales report is ready.
-        <span class="badge bg-secondary">30 min ago</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        Customer feedback received.
-        <span class="badge bg-secondary">2 hours ago</span>
-      </li>
+    <div id="notifications-feedback" class="alert d-none" role="alert"></div>
+    <ul id="notifications-list" class="list-group" aria-live="polite">
+      <li class="list-group-item text-muted">Loading notifications…</li>
     </ul>
   </main>
 
@@ -40,5 +30,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/notifications-index.js"></script>
 </body>
 </html>

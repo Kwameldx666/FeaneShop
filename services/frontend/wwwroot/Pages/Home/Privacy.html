@@ -14,11 +14,11 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5">
+  <main class="container py-5" data-privacy-endpoint="/api/content/privacy">
     <h1>Privacy Policy</h1>
-    <p>This static front-end demonstrates the Feane experience. Integrate it with your preferred API or microservices to
-      handle personal data securely.</p>
-    <p>We recommend updating this page with your actual privacy policy before deploying the site.</p>
+    <section id="privacy-content">
+      <p>Loading privacy policy…</p>
+    </section>
   </main>
 
   <div data-include="/partials/footer.html"></div>
@@ -28,5 +28,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/home-privacy.js"></script>
 </body>
 </html>

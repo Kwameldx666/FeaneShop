@@ -13,7 +13,8 @@
 <body>
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5 admin-container">
+  <main class="container py-5 admin-container" data-dishes-endpoint="/api/dishes"
+    data-delete-template="/api/dishes/{id}">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h1 class="mb-0">Menu Items</h1>
       <a class="btn btn-primary" href="/Pages/Dish/AddDish.html">Add dish</a>
@@ -30,24 +31,9 @@
             <th class="text-end">Actions</th>
           </tr>
         </thead>
-        <tbody>
-          <tr id="dish-row-1">
-            <td>Delicious Pizza</td>
-            <td>Pizza</td>
-            <td>$20.00</td>
-            <td>Stone-baked crust with fresh mozzarella.</td>
-            <td class="text-end">
-              <a class="btn btn-outline-secondary btn-sm" href="/Pages/Dish/EditDish.html">Edit</a>
-            </td>
-          </tr>
-          <tr id="dish-row-2">
-            <td>Juicy Burger</td>
-            <td>Burger</td>
-            <td>$15.00</td>
-            <td>Beef patty with cheddar and house sauce.</td>
-            <td class="text-end">
-              <a class="btn btn-outline-secondary btn-sm" href="/Pages/Dish/EditDish.html">Edit</a>
-            </td>
+        <tbody id="dish-table-body">
+          <tr class="text-muted">
+            <td colspan="5" class="text-center">Loading dishes…</td>
           </tr>
         </tbody>
       </table>
@@ -61,5 +47,7 @@
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/js/partials-loader.js"></script>
+  <script src="/js/gateway-client.js"></script>
+  <script src="/js/dish-index.js"></script>
 </body>
 </html>
