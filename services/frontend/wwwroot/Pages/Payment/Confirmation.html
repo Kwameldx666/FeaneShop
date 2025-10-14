@@ -1,23 +1,33 @@
-﻿@{
-    Layout = null;
-}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Confirmation</title>
-    <link rel="stylesheet" href="~/css/payment-confirmation.css" />
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
+  <title>Feane - Payment Confirmation</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/payment-confirmation.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
 </head>
 <body>
+  <div data-include="/partials/navbar.html"></div>
 
-    <div class="container">
-        <h1>Payment Successful!</h1>
-        <p>Thank you for your payment. Your transaction has been completed successfully.</p>
-        <a href="/home/index">Return to Home</a>
+  <main class="container py-5">
+    <div class="confirmation-card text-center p-5">
+      <img src="/images/Default.png" alt="Success" class="mb-4 confirmation-icon">
+      <h1>Thank you!</h1>
+      <p class="lead">Your payment was processed successfully. We have sent a confirmation email with your order details.</p>
+      <a class="btn btn-primary mt-3" href="/Pages/Home/Index.html">Return to homepage</a>
     </div>
+  </main>
 
+  <div data-include="/partials/footer.html"></div>
+
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/partials-loader.js"></script>
 </body>
 </html>
-

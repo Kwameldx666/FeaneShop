@@ -1,57 +1,44 @@
-@model FeaneMVC.Contracts.Notifications.NotificationsPageModel
-@{
-    Layout = null;
-}
-<h1>Notifications</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
+  <title>Feane - Notifications</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
+</head>
+<body>
+  <div data-include="/partials/navbar.html"></div>
 
-<a asp-action="Filters">Manage Filters</a>
-
-<section class="mt-4">
-    <h2>Send email notification</h2>
-
-    @if (!string.IsNullOrEmpty(Model.SuccessMessage))
-    {
-        <div class="alert alert-success" role="alert">@Model.SuccessMessage</div>
-    }
-
-    @if (!string.IsNullOrEmpty(Model.ErrorMessage))
-    {
-        <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
-    }
-
-    <form asp-action="SendEmail" method="post" class="card card-body mt-3">
-        @Html.AntiForgeryToken()
-        <div class="mb-3">
-            <label asp-for="Email.RecipientEmail" class="form-label"></label>
-            <input asp-for="Email.RecipientEmail" class="form-control" />
-            <span asp-validation-for="Email.RecipientEmail" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Email.Subject" class="form-label"></label>
-            <input asp-for="Email.Subject" class="form-control" />
-            <span asp-validation-for="Email.Subject" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Email.Message" class="form-label"></label>
-            <textarea asp-for="Email.Message" class="form-control" rows="4"></textarea>
-            <span asp-validation-for="Email.Message" class="text-danger"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Send message</button>
-    </form>
-</section>
-
-@foreach (var group in Model.Groups)
-{
-    <h2 class="mt-5">@group.Key</h2>
-    <ul>
-        @foreach (var notification in group.Value)
-        {
-            <li>@notification.Content (ID: @notification.Id)</li>
-        }
+  <main class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="mb-0">Notifications</h1>
+      <a class="btn btn-outline-secondary" href="/Pages/Notifications/Filters.html">Filters</a>
+    </div>
+    <ul class="list-group">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        New reservation confirmed.
+        <span class="badge bg-primary">Just now</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        Daily sales report is ready.
+        <span class="badge bg-secondary">30 min ago</span>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        Customer feedback received.
+        <span class="badge bg-secondary">2 hours ago</span>
+      </li>
     </ul>
-}
+  </main>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+  <div data-include="/partials/footer.html"></div>
 
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/partials-loader.js"></script>
+</body>
+</html>

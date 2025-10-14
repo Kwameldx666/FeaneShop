@@ -1,124 +1,56 @@
-@model FeaneMVC.Contracts.Reservations.ReservationHistoryPageModel
-@using System
-@using System.Linq
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
+  <title>Feane - Profile</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/account-profile.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
+</head>
+<body>
+  <div data-include="/partials/navbar.html"></div>
 
-@{
-    Layout = "_LayoutProfile";
-    var hasReservations = Model?.Reservations?.Any() == true;
-    var now = DateTime.UtcNow;
-}
-
-@section Styles {
-    <link rel="stylesheet" href="~/css/account-profile.css" />
-}
-
-<div class="page_layout page_layout-clear">
-    <main>
-        <div class="layout">
-            <div class="layout__content">
-                <div class="checkout-v2-wrapper co-section--content_wrapper">
-                    <div class="co-sidebar--menu">
-                        <input class="co-menu-switcher" id="co-menu-toggle" type="checkbox" />
-                        <label class="co-menu-toggle" data-title="Личный кабинет" for="co-menu-toggle"></label>
-                        <div class="co-menu co-menu--personal co-checkout-block--padded">
-                            <div class="co-menu-item co-menu-item--personal">
-                                <a class="co-menu-link co-menu-link--personal co-link co-menu-link--active" asp-action="Profile">
-                                    История резерваций
-                                </a>
-                            </div>
-                            <div class="co-menu-item co-menu-item--personal">
-                                <a class="co-menu-link co-menu-link--personal co-link" asp-action="Addresses">
-                                    Адрес доставки
-                                </a>
-                            </div>
-                            <div class="co-menu-item co-menu-item--personal">
-                                <a class="co-menu-link co-menu-link--personal co-link" asp-action="Contacts">
-                                    Контактные данные
-                                </a>
-                            </div>
-                            <div class="co-menu-item co-menu-item--personal">
-                                <a class="co-menu-link co-menu-link--personal co-link" asp-action="Logout">
-                                    Выход
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="co-section--content">
-                        <div class="co-section--checkout_header co-checkout-block--padded">
-                            <h1 class="co-checkout-title co-title co-title--h1">
-                                История резерваций
-                            </h1>
-                        </div>
-
-                        @if (!string.IsNullOrWhiteSpace(Model?.StatusMessage))
-                        {
-                            <div class="alert alert-success" role="alert">@Model.StatusMessage</div>
-                        }
-                        @if (!string.IsNullOrWhiteSpace(Model?.ErrorMessage))
-                        {
-                            <div class="alert alert-danger" role="alert">@Model.ErrorMessage</div>
-                        }
-
-                        @if (hasReservations)
-                        {
-                            <div class="table-responsive">
-                                <table class="table table-striped align-middle">
-                                    <thead>
-                                        <tr>
-                                            <th>Дата резервации</th>
-                                            <th>Повод</th>
-                                            <th>Гостей</th>
-                                            <th>Статус</th>
-                                            <th>Сумма</th>
-                                            <th class="text-center">Действия</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var reservation in Model.Reservations)
-                                        {
-                                            <tr>
-                                                <td>
-                                                    <div class="fw-semibold">@reservation.ReservationDate.ToLocalTime().ToString("dd MMMM yyyy, HH:mm")</div>
-                                                    @if (!string.IsNullOrWhiteSpace(reservation.SpecialRequests))
-                                                    {
-                                                        <div class="text-muted small">@reservation.SpecialRequests</div>
-                                                    }
-                                                </td>
-                                                <td>@(reservation.Occasion ?? "—")</td>
-                                                <td>@reservation.NumberOfPeople</td>
-                                                <td>
-                                                    <span class="badge bg-light text-dark">@reservation.Status</span>
-                                                </td>
-                                                <td>@reservation.Amount.ToString("F2") BYN</td>
-                                                <td class="text-center">
-                                                    <form asp-action="CancelReservation" method="post" class="d-inline">
-                                                        @Html.AntiForgeryToken()
-                                                        <input type="hidden" name="id" value="@reservation.Id" />
-                                                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Отменить резервацию?');" @(reservation.ReservationDate <= now ? "disabled" : string.Empty)>
-                                                            Отменить
-                                                        </button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="alert alert-info" role="alert">
-                                Вы не сделали ещё ни одной резервации.
-                            </div>
-                        }
-                    </div>
-                </div>
-            </div>
+  <main class="profile-wrapper py-5">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-lg-4">
+          <div class="profile-card text-center p-4">
+            <img src="/images/Default.png" alt="User avatar" class="profile-avatar mb-3">
+            <h2 class="h4" id="profile-name">Guest User</h2>
+            <p id="profile-email" class="text-muted">guest@example.com</p>
+            <button class="btn btn-outline-primary" id="edit-profile">Edit profile</button>
+          </div>
         </div>
-    </main>
-</div>
+        <div class="col-lg-8">
+          <section class="card p-4 mb-4">
+            <h3 class="h5">Personal details</h3>
+            <dl class="row mb-0">
+              <dt class="col-sm-4">Full name</dt>
+              <dd class="col-sm-8" id="detail-name">Guest User</dd>
+              <dt class="col-sm-4">Email</dt>
+              <dd class="col-sm-8" id="detail-email">guest@example.com</dd>
+              <dt class="col-sm-4">Phone</dt>
+              <dd class="col-sm-8" id="detail-phone">Not provided</dd>
+            </dl>
+          </section>
+          <section class="card p-4">
+            <h3 class="h5">Membership</h3>
+            <p class="mb-0">Stay tuned! Profile synchronization with the user service can be connected using our REST API.</p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+  <div data-include="/partials/footer.html"></div>
+
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/partials-loader.js"></script>
+</body>
+</html>

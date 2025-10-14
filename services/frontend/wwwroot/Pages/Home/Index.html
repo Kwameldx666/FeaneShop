@@ -1,16 +1,133 @@
-﻿@{
-    Layout = "_Layout";
-}
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
 
+  <title>Feane - Home</title>
+
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link rel="stylesheet" type="text/css"
+    href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css"
+    integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ=="
+    crossorigin="anonymous" />
+  <link href="/css/font-awesome.min.css" rel="stylesheet" />
+  <link href="/css/style.css" rel="stylesheet" />
+  <link href="/css/responsive.css" rel="stylesheet" />
+  <link href="/css/navbar.css" rel="stylesheet" />
+</head>
 
 <body>
+  <div data-include="/partials/navbar.html"></div>
 
-  
-  
+  <section class="slider_section">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="detail-box">
+            <h1>
+              Fast Food Restaurant
+            </h1>
+            <p>
+              Welcome to Feane — a place where flavor meets comfort. Discover our curated menu of burgers, pizzas, pasta,
+              and desserts crafted to satisfy every craving.
+            </p>
+            <a class="btn btn-primary" href="/Pages/Reservation/Book.html">
+              Book A Table
+            </a>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="img-box">
+            <img src="/images/slider-img.png" alt="Feane dishes">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <section class="offer_section layout_padding-bottom">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="box">
+            <div class="img-box">
+              <img src="/images/o1.jpg" alt="Tasty Thursdays">
+            </div>
+            <div class="detail-box">
+              <h5>Tasty Thursdays</h5>
+              <h6><span>20%</span> Off</h6>
+              <a href="/Pages/Home/Menu.html" class="btn btn-outline-light">
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="box">
+            <div class="img-box">
+              <img src="/images/o2.jpg" alt="Pizza Days">
+            </div>
+            <div class="detail-box">
+              <h5>Pizza Days</h5>
+              <h6><span>15%</span> Off</h6>
+              <a href="/Pages/Home/Menu.html" class="btn btn-outline-light">
+                Order Now
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div data-include="/partials/food.html"></div>
+
+  <section class="about_section layout_padding">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="img-box">
+            <img src="/images/about-img.png" alt="About Feane">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="detail-box">
+            <div class="heading_container">
+              <h2>We Are Feane</h2>
+            </div>
+            <p>
+              From quick lunches to late-night cravings, Feane brings you a carefully prepared selection of dishes made with
+              fresh ingredients. Sit back, relax, and let us take care of your appetite.
+            </p>
+            <a class="btn btn-primary" href="/Pages/Home/About.html">
+              Learn More
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div data-include="/partials/footer.html"></div>
+
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js"></script>
+  <script src="/js/partials-loader.js"></script>
+  <script src="/js/food-section.js"></script>
+  <script src="/js/custom.js"></script>
 </body>
 
 </html>

@@ -1,74 +1,59 @@
-@model FeaneMVC.Domain.Entities.Cart
-@using System.Linq
-@{
-    Layout = "_LayoutProfile";
-    var items = Model?.CartItems ?? Enumerable.Empty<FeaneMVC.Domain.Entities.CartItem>();
-    var hasItems = items.Any();
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
+  <title>Feane - Cart</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link href="/css/style.css" rel="stylesheet" />
+  <link href="/css/responsive.css" rel="stylesheet" />
+  <link href="/css/navbar.css" rel="stylesheet" />
+  <link href="/css/profile.css" rel="stylesheet" />
+  <link href="/css/cart.css" rel="stylesheet" />
+</head>
+<body>
+  <div data-include="/partials/navbar.html"></div>
 
-<div class="container cart-container py-4">
-    <h1 class="mb-4">Shopping Cart</h1>
+  <div class="container cart-container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h1 class="mb-0">Shopping Cart</h1>
+      <a class="btn btn-outline-secondary" href="/Pages/Home/Menu.html">Continue Shopping</a>
+    </div>
 
-    @if (TempData["CartError"] is string cartError && !string.IsNullOrWhiteSpace(cartError))
-    {
-        <div class="alert alert-warning" role="alert">@cartError</div>
-    }
+    <div id="cart-alert" class="alert alert-info d-none" role="alert"></div>
 
-    @if (hasItems)
-    {
-        <div class="table-responsive">
-            <table class="table table-striped align-middle">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col" class="text-center">Price</th>
-                        <th scope="col" class="text-center">Quantity</th>
-                        <th scope="col" class="text-center">Total</th>
-                        <th scope="col" class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in items)
-                    {
-                        <tr>
-                            <td>@item.Name</td>
-                            <td class="text-center">@item.Price.ToString("C")</td>
-                            <td class="text-center">
-                                <form asp-action="UpdateQuantity" method="post" class="d-inline-flex align-items-center">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="dishId" value="@item.DishId" />
-                                    <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control form-control-sm me-2" />
-                                    <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
-                                </form>
-                            </td>
-                            <td class="text-center">@item.TotalPrice.ToString("C")</td>
-                            <td class="text-end">
-                                <form asp-action="Remove" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <input type="hidden" name="dishId" value="@item.DishId" />
-                                    <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
-                                </form>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+    <div class="table-responsive">
+      <table class="table table-striped align-middle" id="cart-table">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col" class="text-center">Price</th>
+            <th scope="col" class="text-center">Quantity</th>
+            <th scope="col" class="text-center">Total</th>
+            <th scope="col" class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Items will be injected with cart.js -->
+        </tbody>
+      </table>
+    </div>
 
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <h3 class="mb-0">Total: @Model.Total.ToString("C")</h3>
-            <a class="btn btn-primary" asp-controller="Payment" asp-action="Checkout" asp-route-amount="@Model.Total">Pay Now</a>
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-info" role="alert">
-            Your cart is empty.
-        </div>
-        <a asp-controller="Dish" asp-action="Index" class="btn btn-primary">Browse menu</a>
-    }
-</div>
+    <div class="d-flex justify-content-between align-items-center mt-4" id="cart-summary">
+      <h3 class="mb-0">Total: <span id="cart-total">$0.00</span></h3>
+      <a class="btn btn-primary" id="checkout-button" href="/Pages/Payment/Checkout.html">Proceed to Checkout</a>
+    </div>
+  </div>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+  <div data-include="/partials/footer.html"></div>
+
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/partials-loader.js"></script>
+  <script src="/js/cart.js"></script>
+</body>
+</html>

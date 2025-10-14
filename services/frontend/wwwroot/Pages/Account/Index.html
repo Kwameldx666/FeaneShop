@@ -1,27 +1,65 @@
-﻿@{
-    Layout = null;
-}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forgot Password</title>
-    <link rel="stylesheet" href="~/css/account-index.css" />
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
+  <title>Feane - Account Dashboard</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/account-index.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
 </head>
 <body>
-    <div class="container">
-        <button id="forgot-password-btn" class="btn">Забыли пароль?</button>
+  <div data-include="/partials/navbar.html"></div>
 
-        <div id="forgot-password-form" class="form-container hidden">
-            <h2>Восстановление пароля</h2>
-            <p>Пожалуйста, введите свою электронную почту, чтобы получить новый пароль.</p>
-            <input type="email" id="email" placeholder="Введите вашу почту" required>
-            <button id="send-password-btn" class="btn">Отправить новый пароль</button>
-        </div>
+  <main class="container py-5">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <a class="account-card" href="/Pages/Account/Profile.html">
+          <h2>Profile</h2>
+          <p>Manage your personal information and preferences.</p>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a class="account-card" href="/Pages/Account/Addresses.html">
+          <h2>Addresses</h2>
+          <p>Update shipping and billing addresses for quicker checkout.</p>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a class="account-card" href="/Pages/Account/Contacts.html">
+          <h2>Contact Info</h2>
+          <p>Control how we reach you with news and notifications.</p>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a class="account-card" href="/Pages/Cart/Cart.html">
+          <h2>Cart</h2>
+          <p>Review the dishes waiting in your shopping cart.</p>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a class="account-card" href="/Pages/Reservation/Book.html">
+          <h2>Reservations</h2>
+          <p>Plan your next visit to our restaurant.</p>
+        </a>
+      </div>
+      <div class="col-md-4">
+        <a class="account-card" href="/Pages/Home/Authentication.html">
+          <h2>Security</h2>
+          <p>Log out or change your password whenever you need.</p>
+        </a>
+      </div>
     </div>
+  </main>
 
+  <div data-include="/partials/footer.html"></div>
 
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/partials-loader.js"></script>
 </body>
 </html>
-

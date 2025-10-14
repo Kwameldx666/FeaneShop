@@ -1,29 +1,47 @@
-﻿@model List<FeaneMVC.Domain.Entities.Filter>
-@{
-    Layout = null;
-}
-<h1>Manage Filters</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
+  <title>Feane - Notification Filters</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
+</head>
+<body>
+  <div data-include="/partials/navbar.html"></div>
 
-<form asp-action="GenerateFilters" method="post">
-    <textarea name="userInput" placeholder="Enter what you like (e.g., 'I enjoy hobbies, work, and news')"></textarea>
-    <button type="submit">Generate Filters with AI</button>
-</form>
+  <main class="container py-5">
+    <h1 class="mb-4">Notification Filters</h1>
+    <form class="card p-4">
+      <div class="mb-3">
+        <label class="form-label" for="typeFilter">Type</label>
+        <select class="form-select" id="typeFilter">
+          <option selected>All</option>
+          <option>Orders</option>
+          <option>Reservations</option>
+          <option>System</option>
+        </select>
+      </div>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="emailFilter" checked>
+        <label class="form-check-label" for="emailFilter">Show email notifications</label>
+      </div>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="smsFilter">
+        <label class="form-check-label" for="smsFilter">Show SMS notifications</label>
+      </div>
+      <button type="submit" class="btn btn-primary">Apply filters</button>
+    </form>
+  </main>
 
-<form asp-action="AddFilter" method="post">
-    <input type="text" name="filterName" placeholder="Enter a single filter (e.g., 'I like sports')" />
-    <button type="submit">Add Filter</button>
-</form>
+  <div data-include="/partials/footer.html"></div>
 
-@if (TempData["Error"] != null)
-{
-    <p style="color: red;">@TempData["Error"]</p>
-}
-
-<h2>Current Filters</h2>
-<ul>
-    @foreach (var filter in Model)
-    {
-        <li>@filter.Name (ID: @filter.Name)</li> <!-- Явно указываем свойство Name -->
-    }
-</ul>
-<a asp-action="Index">Back to Notifications</a>
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/partials-loader.js"></script>
+</body>
+</html>

@@ -1,64 +1,97 @@
-@model FeaneMVC.Domain.Entities.PaymentDetails
-@using System
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
+  <title>Feane - Checkout</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/payment-checkout.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
+</head>
+<body>
+  <div data-include="/partials/navbar.html"></div>
 
-@{
-    Layout = "_LayoutProfile";
-}
-
-@section Styles {
-    <link rel="stylesheet" href="~/css/payment-checkout.css" />
-}
-
-<div class="payment-wrapper">
-    <div class="payment-card">
-        <h1 class="payment-title">Payment Information</h1>
-        <p class="payment-amount">Amount due: <strong>@Model.TotalPrice.ToString("C")</strong></p>
-
-        <form asp-action="SubmitPayment" method="post" class="payment-form">
-            @Html.AntiForgeryToken()
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="CardNumber"></label>
-                <input asp-for="CardNumber" class="form-control" autocomplete="cc-number" placeholder="1234 5678 9012 3456" />
-                <span asp-validation-for="CardNumber" class="text-danger"></span>
+  <main class="container py-5">
+    <h1 class="mb-4">Checkout</h1>
+    <form class="checkout-form" action="http://localhost:5000/api/payments/checkout" method="post">
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <section class="card p-4">
+            <h2 class="h5">Billing details</h2>
+            <div class="mb-3">
+              <label for="billingName" class="form-label">Full name</label>
+              <input type="text" id="billingName" name="Name" class="form-control" required />
             </div>
-
-            <div class="form-group">
-                <label asp-for="CardHolderName"></label>
-                <input asp-for="CardHolderName" class="form-control" autocomplete="cc-name" placeholder="John Doe" />
-                <span asp-validation-for="CardHolderName" class="text-danger"></span>
+            <div class="mb-3">
+              <label for="billingEmail" class="form-label">Email</label>
+              <input type="email" id="billingEmail" name="Email" class="form-control" required />
             </div>
-
-            <div class="form-group form-group-inline">
-                <div class="form-field">
-                    <label asp-for="ExpiryDate"></label>
-                    <input asp-for="ExpiryDate" type="month" class="form-control" min="@DateTime.UtcNow.ToString("yyyy-MM")" />
-                    <span asp-validation-for="ExpiryDate" class="text-danger"></span>
-                </div>
-                <div class="form-field">
-                    <label asp-for="CVV"></label>
-                    <input asp-for="CVV" class="form-control" autocomplete="cc-csc" placeholder="123" />
-                    <span asp-validation-for="CVV" class="text-danger"></span>
-                </div>
+            <div class="mb-3">
+              <label for="billingAddress" class="form-label">Address</label>
+              <input type="text" id="billingAddress" name="Address" class="form-control" required />
             </div>
-
-            <div class="form-group">
-                <label asp-for="Currency"></label>
-                <input asp-for="Currency" class="form-control" />
-                <span asp-validation-for="Currency" class="text-danger"></span>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="billingCity" class="form-label">City</label>
+                <input type="text" id="billingCity" name="City" class="form-control" required />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="billingPostal" class="form-label">Postal code</label>
+                <input type="text" id="billingPostal" name="PostalCode" class="form-control" required />
+              </div>
             </div>
+          </section>
 
-            <input type="hidden" asp-for="TotalPrice" />
-            <input type="hidden" asp-for="Amount" />
-
-            <div class="form-group">
-                <button type="submit" class="btn btn-primary pay-button">Pay Now</button>
+          <section class="card p-4 mt-4">
+            <h2 class="h5">Payment</h2>
+            <div class="mb-3">
+              <label for="cardNumber" class="form-label">Card number</label>
+              <input type="text" id="cardNumber" name="CardNumber" class="form-control" placeholder="xxxx xxxx xxxx xxxx" required />
             </div>
-        </form>
-    </div>
-</div>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="cardExpiry" class="form-label">Expiry date</label>
+                <input type="text" id="cardExpiry" name="Expiry" class="form-control" placeholder="MM/YY" required />
+              </div>
+              <div class="col-md-6 mb-3">
+                <label for="cardCvv" class="form-label">CVV</label>
+                <input type="text" id="cardCvv" name="CVV" class="form-control" required />
+              </div>
+            </div>
+          </section>
+        </div>
+        <div class="col-lg-5">
+          <aside class="card p-4 order-summary">
+            <h2 class="h5">Order summary</h2>
+            <ul class="list-group list-group-flush mb-3">
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Delicious Pizza</span>
+                <span>$20.00</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <span>Juicy Burger</span>
+                <span>$15.00</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between fw-bold">
+                <span>Total</span>
+                <span>$35.00</span>
+              </li>
+            </ul>
+            <button type="submit" class="btn btn-primary w-100">Pay now</button>
+          </aside>
+        </div>
+      </div>
+    </form>
+  </main>
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+  <div data-include="/partials/footer.html"></div>
+
+  <script src="/js/jquery-3.4.1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+  <script src="/js/bootstrap.js"></script>
+  <script src="/js/partials-loader.js"></script>
+</body>
+</html>
