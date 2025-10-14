@@ -1,4 +1,4 @@
-(function () {
+        (function () {
     document.addEventListener('DOMContentLoaded', function () {
 
         const apiBase = "http://localhost:5000/api/auth"; // Gateway → AuthService
