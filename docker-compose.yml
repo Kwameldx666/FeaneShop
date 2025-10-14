@@ -1,6 +1,9 @@
 x-auth-db-connection: &auth-db-connection
   ConnectionStrings__DefaultConnection: "${AUTH_DB_CONNECTION:-Server=${AUTH_DB_HOST:-sqlserver};Database=${AUTH_DB_NAME:-Feane.AuthServiceDb};User Id=${AUTH_DB_USER:-sa};Password=${AUTH_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=False;TrustServerCertificate=True;}"
 
+x-user-db-connection: &user-db-connection
+  ConnectionStrings__DefaultConnection: "${USER_DB_CONNECTION:-Server=${USER_DB_HOST:-sqlserver};Database=${USER_DB_NAME:-Feane.UserServiceDb};User Id=${USER_DB_USER:-sa};Password=${USER_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=False;TrustServerCertificate=True;}"
+
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -32,6 +35,22 @@ services:
       - "host.docker.internal:host-gateway"
     ports:
       - "${AUTH_SERVICE_PORT:-5010}:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  user-service:
+    build:
+      context: ./services/user-service/src/UserService
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:8080
+      <<: *user-db-connection
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${USER_SERVICE_PORT:-5020}:8080"
     depends_on:
       sqlserver:
         condition: service_healthy
