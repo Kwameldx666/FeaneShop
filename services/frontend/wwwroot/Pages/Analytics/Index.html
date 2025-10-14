@@ -1,0 +1,167 @@
+@using System.Linq
+@model FeaneMVC.Contracts.Analytics.AnalyticsDashboardModel
+@{
+    ViewData["Title"] = "Analytics";
+    Layout = "_LayoutProfile";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/analytics-index.css" />
+}
+
+
+<div class="container analytics-dashboard py-5">
+    <div class="row mb-4 align-items-end">
+        <div class="col-12 col-lg-8">
+            <h2 class="fw-bold mb-3">Analytics overview</h2>
+            <p class="text-muted mb-0">Monitor reservations, revenue and user activity to keep the restaurant on track.</p>
+        </div>
+        <div class="col-12 col-lg-4">
+            <form method="get" class="card card-body shadow-sm filter-form">
+                <div class="row g-2">
+                    <div class="col-12">
+                        <label class="form-label" for="startDate">Start date</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control" value="@(Model.StartDate?.ToString("yyyy-MM-dd"))" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label" for="endDate">End date</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control" value="@(Model.EndDate?.ToString("yyyy-MM-dd"))" />
+                    </div>
+                    <div class="col-12 d-grid gap-2 mt-2">
+                        <button type="submit" class="btn btn-primary">Apply filters</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">Reset</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-warning">@ViewData.ModelState[string.Empty]?.Errors.FirstOrDefault()?.ErrorMessage</div>
+    }
+
+    <div class="row g-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Total users</span>
+                <span class="value">@Model.Summary.TotalUsers</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Active users</span>
+                <span class="value">@Model.Summary.ActiveUsers</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Reservations today</span>
+                <span class="value">@Model.Summary.ReservationsToday</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Reservations this week</span>
+                <span class="value">@Model.Summary.ReservationsThisWeek</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Upcoming reservations</span>
+                <span class="value">@Model.Summary.UpcomingReservations</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Cancelled reservations</span>
+                <span class="value">@Model.Summary.CancelledReservations</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Completed reservations</span>
+                <span class="value">@Model.Summary.CompletedReservations</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Average order value</span>
+                <span class="value">@Model.Summary.AverageReservationValue.ToString("C")</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Total revenue</span>
+                <span class="value">@Model.Summary.TotalRevenue.ToString("C")</span>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="analytics-card shadow-sm">
+                <span class="label text-muted">Revenue (7 days)</span>
+                <span class="value">@Model.Summary.RevenueThisWeek.ToString("C")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5 g-4">
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Reservation status</h5>
+                    <p class="text-muted">Distribution of reservation statuses for the selected period.</p>
+                    <ul class="list-group list-group-flush">
+                        @foreach (var status in Model.Summary.ReservationStatuses)
+                        {
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>@status.Status</span>
+                                <span class="badge bg-primary rounded-pill">@status.Count</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Revenue trend</h5>
+                    <p class="text-muted">Daily revenue between @((Model.StartDate ?? DateTime.UtcNow.AddDays(-6)).ToString("dd MMM")) and @((Model.EndDate ?? DateTime.UtcNow).ToString("dd MMM")).</p>
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Transactions</th>
+                                    <th scope="col" class="text-end">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!Model.Summary.RevenueTrend.Any())
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-center text-muted">No revenue recorded for this period.</td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var point in Model.Summary.RevenueTrend)
+                                    {
+                                        <tr>
+                                            <td>@point.Date.ToString("dd MMM")</td>
+                                            <td>@point.TransactionCount</td>
+                                            <td class="text-end">@point.TotalAmount.ToString("C")</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

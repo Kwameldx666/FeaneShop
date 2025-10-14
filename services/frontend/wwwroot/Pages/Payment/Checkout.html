@@ -1,0 +1,64 @@
+@model FeaneMVC.Domain.Entities.PaymentDetails
+@using System
+
+@{
+    Layout = "_LayoutProfile";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/payment-checkout.css" />
+}
+
+<div class="payment-wrapper">
+    <div class="payment-card">
+        <h1 class="payment-title">Payment Information</h1>
+        <p class="payment-amount">Amount due: <strong>@Model.TotalPrice.ToString("C")</strong></p>
+
+        <form asp-action="SubmitPayment" method="post" class="payment-form">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="CardNumber"></label>
+                <input asp-for="CardNumber" class="form-control" autocomplete="cc-number" placeholder="1234 5678 9012 3456" />
+                <span asp-validation-for="CardNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CardHolderName"></label>
+                <input asp-for="CardHolderName" class="form-control" autocomplete="cc-name" placeholder="John Doe" />
+                <span asp-validation-for="CardHolderName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-group-inline">
+                <div class="form-field">
+                    <label asp-for="ExpiryDate"></label>
+                    <input asp-for="ExpiryDate" type="month" class="form-control" min="@DateTime.UtcNow.ToString("yyyy-MM")" />
+                    <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                </div>
+                <div class="form-field">
+                    <label asp-for="CVV"></label>
+                    <input asp-for="CVV" class="form-control" autocomplete="cc-csc" placeholder="123" />
+                    <span asp-validation-for="CVV" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Currency"></label>
+                <input asp-for="Currency" class="form-control" />
+                <span asp-validation-for="Currency" class="text-danger"></span>
+            </div>
+
+            <input type="hidden" asp-for="TotalPrice" />
+            <input type="hidden" asp-for="Amount" />
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary pay-button">Pay Now</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\Pages\Account\Authentication.html" />
-    <None Include="wwwroot\Pages\Home\Index.html" />
-    <None Include="wwwroot\Pages\Home\Privacy.html" />
+    <Content Include="wwwroot\Pages\**\*.html" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="wwwroot\Pages\**\*.css" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="wwwroot\Pages\**\*.js" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>

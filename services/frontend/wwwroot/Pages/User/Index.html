@@ -1,0 +1,75 @@
+@model FeaneMVC.Contracts.Users.UserManagementPageModel
+@{
+    Layout = "_LayoutProfile";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Users List</h2>
+
+    <div class="table-responsive mb-4">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model.Users)
+                {
+                    <tr>
+                        <td>@user.Username</td>
+                        <td>@user.Email</td>
+                        <td>@user.Roles</td>
+                        <td>
+                            <a asp-action="Index" asp-route-editId="@user.Id" class="btn btn-warning btn-sm">Edit</a>
+                            <form asp-action="DeleteConfirmed" asp-route-id="@user.Id" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.UserToEdit != null)
+    {
+        <h2>Edit User</h2>
+
+        <form asp-action="UpdateUser" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="UserToEdit.Id" />
+            <div class="form-group">
+                <label asp-for="UserToEdit.Username" class="form-label"></label>
+                <input asp-for="UserToEdit.Username" class="form-control" />
+                <span asp-validation-for="UserToEdit.Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserToEdit.Email" class="form-label"></label>
+                <input asp-for="UserToEdit.Email" class="form-control" />
+                <span asp-validation-for="UserToEdit.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="UserToEdit.Roles" class="form-label"></label>
+                <select asp-for="UserToEdit.Roles" class="form-control" asp-items="Html.GetEnumSelectList(typeof(FeaneMVC.Domain.Enums.Role))">
+                    <option value="">Select role</option>
+                </select>
+                <span asp-validation-for="UserToEdit.Roles" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <input asp-for="UserToEdit.IsActive" type="checkbox" class="form-check-input" id="isActive" />
+                <label for="isActive" class="form-check-label">Active</label>
+                <span asp-validation-for="UserToEdit.IsActive" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
