@@ -57,7 +57,6 @@ builder.Services.AddEndpointsApiExplorer();
 var app = builder.Build();
 
 // ---------- Middleware ----------
-app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
