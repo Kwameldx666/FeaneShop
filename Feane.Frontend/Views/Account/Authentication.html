@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login / Registration</title>
+
+    <!-- Icons and Styles -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/Auth.css">
+</head>
+
+<body>
+    <div class="container" id="container">
+        <!-- Registration -->
+        <div class="form-container sign-up-container">
+            <form id="registerForm" class="register_form">
+                <input type="hidden" name="ReturnUrl" id="registerReturnUrl" value="">
+                <h1>Sign Up</h1>
+
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+
+                <div id="registerError" class="alert alert-danger" style="display:none;"></div>
+
+                <input type="text" placeholder="Username" name="Username" id="username" required>
+                <span id="errorName" class="text-danger"></span>
+
+                <input type="email" placeholder="Email" name="Email" id="email" required>
+                <span id="errorEmail" class="text-danger"></span>
+
+                <input type="password" placeholder="Password" name="Password" id="password" required>
+                <span id="errorPassword" class="text-danger"></span>
+
+                <button type="submit">Register</button>
+            </form>
+        </div>
+
+        <!-- Login -->
+        <div class="form-container sign-in-container">
+            <form id="loginForm" class="login_form">
+                <input type="hidden" name="ReturnUrl" id="loginReturnUrl" value="">
+                <div id="loginError" class="alert alert-danger" style="display:none;"></div>
+
+                <h1>Sign In</h1>
+                <div class="social-container">
+                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+
+                <input type="text" placeholder="Email or Username" name="Credential" id="credential" required>
+                <span id="errorCredential" class="text-danger"></span>
+
+                <input type="password" placeholder="Password" name="Password" id="login_password" required>
+
+                <div class="remember-me">
+                    <label><input type="checkbox" name="RememberMe" value="true"> Remember me</label>
+                </div>
+
+                <a href="/Account/ForgotPassword">Forgot your password?</a>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+
+        <!-- Overlay Panels -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us, please login with your personal information</p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your personal details and start your journey with us</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS scripts -->
+    <script src="/js/account-authentication.js"></script>
+</body>
+</html>

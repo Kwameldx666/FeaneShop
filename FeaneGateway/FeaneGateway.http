@@ -1,0 +1,6 @@
+@FeaneGateway_HostAddress = http://localhost:5219
+
+GET {{FeaneGateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
