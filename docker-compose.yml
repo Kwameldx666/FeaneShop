@@ -1,9 +1,22 @@
-version: '3.9'
-
 x-auth-db-connection: &auth-db-connection
-  ConnectionStrings__DefaultConnection: "${AUTH_DB_CONNECTION:-Server=${SQLSERVER_HOST:-host.docker.internal}\\${SQLSERVER_INSTANCE:-SQLEXPRESS};Database=${AUTH_DB_NAME:-Feane.AuthServiceDb};Trusted_Connection=True;MultipleActiveResultSets=true;Encrypt=False;TrustServerCertificate=True;}"
+  ConnectionStrings__DefaultConnection: "${AUTH_DB_CONNECTION:-Server=${AUTH_DB_HOST:-sqlserver};Database=${AUTH_DB_NAME:-Feane.AuthServiceDb};User Id=${AUTH_DB_USER:-sa};Password=${AUTH_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=False;TrustServerCertificate=True;}"
 
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${AUTH_DB_PASSWORD:-YourStrong!Passw0rd}"
+    ports:
+      - "${SQLSERVER_PORT:-1433}:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${AUTH_DB_PASSWORD:-YourStrong!Passw0rd}", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   auth-service:
     build:
       context: ./services/auth-service/src/AuthService
@@ -19,6 +32,9 @@ services:
       - "host.docker.internal:host-gateway"
     ports:
       - "${AUTH_SERVICE_PORT:-5010}:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
 
   feane-gateway:
     build:
@@ -50,3 +66,6 @@ services:
 networks:
   default:
     driver: bridge
+
+volumes:
+  sqlserver-data:

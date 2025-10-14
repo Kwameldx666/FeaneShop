@@ -56,6 +56,13 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
+// ---------- Миграции базы данных ----------
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    dbContext.Database.Migrate();
+}
+
 // ---------- Middleware ----------
 app.UseCors("AllowAll");
 app.UseAuthentication();
@@ -81,15 +88,4 @@ catch (ReflectionTypeLoadException ex)
     }
     Console.ResetColor();
 }
-catch (Exception ex)
-{
-    Console.ForegroundColor = ConsoleColor.Yellow;
-    Console.WriteLine("⚠️ Общая ошибка:");
-    Console.WriteLine(ex);
-    Console.ResetColor();
-}
-
-// ---------- Fallback для SPA/HTML ----------
-app.MapFallbackToFile("index.html");
-
 app.Run();

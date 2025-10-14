@@ -9,9 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Views\Account\Authentication.html" />
-    <Content Include="Views\Home\Index.html" />
-    <Content Include="Views\Home\Privacy.html" />
+    <None Include="wwwroot\Pages\Account\Authentication.html" />
+    <None Include="wwwroot\Pages\Home\Index.html" />
+    <None Include="wwwroot\Pages\Home\Privacy.html" />
   </ItemGroup>
 
   <ItemGroup>
