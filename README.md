@@ -121,18 +121,44 @@ dotnet run --project FeaneMVC
 
 ### 🐳 Запуск в Docker
 
-```bash
-# Сборка образа
-docker build -t feane-mvc .
+В репозитории добавлен `docker-compose.yml`, который поднимает все микросервисы решения: `auth-service`, API-шлюз `feane-gateway`, MVC-приложение и статический фронтенд. Конфигурация по умолчанию рассчитана на подключение к **SQL Server с Windows-аутентификацией** (например, когда сервер развернут на хостовой машине или в домене).
 
-# Запуск контейнера
-docker run -it --rm -p 8080:80 \
-  -e ConnectionStrings__DefaultConnection="Server=host.docker.internal;Database=FeabeDb;User Id=sa;Password=<пароль>;TrustServerCertificate=True" \
-  -e JwtSettings__SecretKey="<секрет>" \
-  feane-mvc
-```
+1. Скопируйте файл окружения и укажите параметры подключения:
 
-Приложение будет доступно по адресу `http://localhost:8080`.
+   ```bash
+   cp .env.example .env
+   # отредактируйте значения SQLSERVER_HOST, SQLSERVER_INSTANCE и имена БД под свою среду
+   ```
+
+2. Убедитесь, что SQL Server уже создан и доступен. Для Windows-аутентификации контейнеры должны запускаться на Windows-хосте в режиме Windows Containers и иметь доступ к доменному аккаунту (см. раздел ниже).
+
+3. Соберите и запустите сервисы:
+
+   ```bash
+   docker compose up --build
+   ```
+
+После старта сервисы будут доступны на портах, указаных в `.env` (по умолчанию: шлюз `http://localhost:5000`, фронтенд `http://localhost:5003`, MVC `http://localhost:5001`, Auth API `http://localhost:5010`).
+
+> ℹ️ Если вы запускаете Docker в Linux-контейнерах и у вас нет необходимости в Windows-аутентификации, можно задать строку подключения через переменные `AUTH_DB_CONNECTION` и `MVC_DB_CONNECTION`, указав SQL-логин и пароль. Контейнеры автоматически подставят эти значения вместо Windows-auth строки по умолчанию.
+
+#### 🪟 SQL Server с Windows-аутентификацией
+
+Использование Windows-аутентификации из контейнеров требует дополнительных настроек:
+
+1. Переведите Docker Desktop в режим **Windows Containers**.
+2. Настройте [групповые управляемые учётные записи служб (gMSA)](https://learn.microsoft.com/windows-server/security/group-managed-service-accounts/) и экспортируйте credential spec в файл (например, `gmsa.json`).
+3. При необходимости дополните `docker-compose.yml`, указав `security_opt: ["credentialspec=file:gmsa.json"]` для сервисов, которым нужен доступ к SQL Server.
+4. Создайте необходимые БД на хостовом SQL Server. Например:
+
+   ```sql
+   CREATE DATABASE [Feane.AuthServiceDb];
+   CREATE DATABASE [FeaneMvcDb];
+   ```
+
+5. Убедитесь, что gMSA/учётная запись имеет права `db_owner` на созданные базы.
+
+Альтернатива — запуск приложений напрямую на хостовой машине (без контейнеров), где Windows-аутентификация работает «из коробки».
 
 ---
 
