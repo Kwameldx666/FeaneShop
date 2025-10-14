@@ -4,6 +4,9 @@ x-auth-db-connection: &auth-db-connection
 x-user-db-connection: &user-db-connection
   ConnectionStrings__DefaultConnection: "${USER_DB_CONNECTION:-Server=${USER_DB_HOST:-sqlserver};Database=${USER_DB_NAME:-Feane.UserServiceDb};User Id=${USER_DB_USER:-sa};Password=${USER_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=False;TrustServerCertificate=True;}"
 
+x-product-db-connection: &product-db-connection
+  ConnectionStrings__DefaultConnection: "${PRODUCT_DB_CONNECTION:-Server=${PRODUCT_DB_HOST:-sqlserver};Database=${PRODUCT_DB_NAME:-Feane.ProductServiceDb};User Id=${PRODUCT_DB_USER:-sa};Password=${PRODUCT_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=False;TrustServerCertificate=True;}"
+
 services:
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -55,6 +58,22 @@ services:
       sqlserver:
         condition: service_healthy
 
+  product-service:
+    build:
+      context: ./services/product-service/src/ProductService
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ASPNETCORE_URLS: http://+:8080
+      <<: *product-db-connection
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${PRODUCT_SERVICE_PORT:-5030}:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
   feane-gateway:
     build:
       context: ./services/gateway
@@ -67,6 +86,7 @@ services:
       JwtSettings__SecretKey: ${AUTH_JWT_SECRET:-A38665B7-1B5A-4F62-A392-E9274BBA4A96}
     depends_on:
       - auth-service
+      - product-service
     ports:
       - "${GATEWAY_PORT:-5000}:8080"
 
