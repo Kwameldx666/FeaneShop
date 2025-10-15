@@ -1,63 +1,92 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
-  <title>Feane - Addresses</title>
-  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
-  <link rel="stylesheet" href="/css/account-addresses.css" />
-  <link rel="stylesheet" href="/css/navbar.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Feane — Адрес доставки</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+    <link rel="stylesheet" href="/css/account-addresses.css" />
+    <link rel="stylesheet" href="/css/navbar.css" />
 </head>
-<body>
-  <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5">
-    <div class="row">
-      <div class="col-lg-8">
-        <h1 class="mb-4">Manage Address</h1>
-        <form class="address-form" action="http://localhost:5000/api/account/address" method="post"
-          data-gateway-endpoint="/api/account/address">
-          <div id="addresses-feedback" class="alert d-none" role="alert"></div>
-          <div class="mb-3">
-            <label for="street" class="form-label">Street</label>
-            <input type="text" class="form-control" id="street" name="Street" required />
-          </div>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label for="city" class="form-label">City</label>
-              <input type="text" class="form-control" id="city" name="City" required />
+<body class="adaptive" data-multi-lang="false">
+    <!-- ===== NAVBAR PARTIAL ===== -->
+    <div data-include="/partials/navbar.html"></div>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="py-5">
+        <div class="page_layout page_layout-clear">
+            <div class="layout container">
+                <div class="layout__content">
+                    <div class="content-wrapper section--content_wrapper d-flex flex-wrap">
+                        <!-- Sidebar -->
+                        <aside class="sidebar--menu me-4 mb-4">
+                            <div class="menu menu--personal content-block--padded shadow-sm">
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/profile">История резерваций</a>
+                                </div>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link menu-link--active" href="/account/addresses">Адрес доставки</a>
+                                </div>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/contacts">Контактные данные</a>
+                                </div>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/logout">Выход</a>
+                                </div>
+                            </div>
+                        </aside>
+
+                        <!-- Content -->
+                        <section class="section--content flex-grow-1">
+                            <div class="section--checkout_header content-block--padded">
+                                <h1 class="section-title title title--h1 mb-4">Адрес доставки</h1>
+                            </div>
+
+                            <div class="content-block--padded bg-white p-4 rounded shadow-sm">
+                                <div id="addresses-feedback" class="alert d-none" role="alert"></div>
+
+                                <form class="address-form" id="addressForm" method="post" action="/api/account/update-address">
+                                    <label for="address-street" class="form-label">Улица:</label>
+                                    <input type="text" id="address-street" name="Street" class="form-control mb-3" placeholder="Улица" />
+
+                                    <label for="address-city" class="form-label">Город:</label>
+                                    <input type="text" id="address-city" name="City" class="form-control mb-3" placeholder="Город" />
+
+                                    <label for="address-zip" class="form-label">Почтовый индекс:</label>
+                                    <input type="text" id="address-zip" name="ParcelIndex" class="form-control mb-3" placeholder="Почтовый индекс" />
+
+                                    <label for="address-country" class="form-label">Страна:</label>
+                                    <input type="text" id="address-country" name="Country" class="form-control mb-3" placeholder="Страна" />
+
+                                    <label for="address-details" class="form-label">Дополнительные детали:</label>
+                                    <textarea id="address-details" name="MoreInfo" class="form-control mb-4"
+                                              placeholder="Дополнительные детали"></textarea>
+
+                                    <button type="submit" class="btn btn-primary px-4">Сохранить изменения</button>
+                                </form>
+                            </div>
+                        </section>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6 mb-3">
-              <label for="country" class="form-label">Country</label>
-              <input type="text" class="form-control" id="country" name="Country" required />
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="postalCode" class="form-label">Postal Code</label>
-            <input type="text" class="form-control" id="postalCode" name="PostalCode" required />
-          </div>
-          <button type="submit" class="btn btn-primary">Save Address</button>
-        </form>
-      </div>
-      <div class="col-lg-4">
-        <aside class="card p-3">
-          <h2 class="h5">Helpful tips</h2>
-          <p class="mb-0">We use this address for deliveries and invoices. Make sure the information is up-to-date.</p>
-        </aside>
-      </div>
-    </div>
-  </main>
+        </div>
+    </main>
 
-  <div data-include="/partials/footer.html"></div>
+    <!-- ===== FOOTER PARTIAL ===== -->
+    <div data-include="/partials/footer.html"></div>
 
-  <script src="/js/jquery-3.4.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="/js/bootstrap.js"></script>
-  <script src="/js/partials-loader.js"></script>
-  <script src="/js/gateway-client.js"></script>
-  <script src="/js/account-addresses.js"></script>
+    <!-- ===== SCRIPTS ===== -->
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/partials-loader.js"></script>
+    <script src="/js/account-addresses.js"></script>
 </body>
 </html>

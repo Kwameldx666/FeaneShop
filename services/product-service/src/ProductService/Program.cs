@@ -17,7 +17,7 @@ builder.Services.AddScoped<IDishRepository, DishRepository>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+        policy.AllowAnyMethod().AllowAnyHeader());
 });
 
 var app = builder.Build();

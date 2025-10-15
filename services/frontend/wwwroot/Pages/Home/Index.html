@@ -1,134 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Feane — Home</title>
 
-  <title>Feane - Home</title>
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
 
-  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
-  <link rel="stylesheet" type="text/css"
-    href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-  <link rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css"
-    integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ=="
-    crossorigin="anonymous" />
-  <link href="/css/font-awesome.min.css" rel="stylesheet" />
-  <link href="/css/style.css" rel="stylesheet" />
-  <link href="/css/responsive.css" rel="stylesheet" />
-  <link href="/css/navbar.css" rel="stylesheet" />
+    <!-- Custom styles -->
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+    <link rel="stylesheet" href="/css/navbar.css" />
 </head>
 
 <body>
-  <div data-include="/partials/navbar.html"></div>
+    <!-- ===== HERO AREA ===== -->
+    <div class="hero_area">
+        <div class="bg-box">
+            <img src="/images/hero-bg.jpg" alt="Hero background">
+        </div>
 
-  <section class="slider_section">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="detail-box">
-            <h1>
-              Fast Food Restaurant
-            </h1>
-            <p>
-              Welcome to Feane — a place where flavor meets comfort. Discover our curated menu of burgers, pizzas, pasta,
-              and desserts crafted to satisfy every craving.
-            </p>
-            <a class="btn btn-primary" href="/Pages/Reservation/Book.html">
-              Book A Table
-            </a>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="img-box">
-            <img src="/images/slider-img.png" alt="Feane dishes">
-          </div>
-        </div>
-      </div>
+        <!-- ===== HEADER ===== -->
+        <header class="header_section">
+            <div class="container">
+                <nav class="navbar navbar-expand-lg custom_nav-container">
+                    <a class="navbar-brand" href="/home/index"><span>Feane</span></a>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse"
+                            data-target="#navbarSupportedContent"
+                            aria-controls="navbarSupportedContent" aria-expanded="false"
+                            aria-label="Toggle navigation">
+                        <span class=""></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav mx-auto">
+                            <li class="nav-item active"><a class="nav-link" href="/home/index">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/home/about">About</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/weather/index">Weather</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/reservation/book">Book Table</a></li>
+                        </ul>
+
+                        <div class="user_option">
+                            <a href="/account/profile" class="user_link"><i class="fa fa-user" aria-hidden="true"></i></a>
+                            <a class="cart_link" href="/cart/cart" title="View Cart">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 457.627 457.627"
+                                     width="24" height="24" fill="currentColor">
+                                    <path d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304
+                           C104.448,27.566,84.992,10.67,61.952,10.67H20.48
+                           C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472
+                           c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
+                           c4.096,27.136,27.648,47.616,55.296,47.616h212.992
+                           c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
+                           C457.728,97.71,450.56,86.958,439.296,84.91z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </header>
     </div>
-  </section>
 
-  <section class="offer_section layout_padding-bottom">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="box">
-            <div class="img-box">
-              <img src="/images/o1.jpg" alt="Tasty Thursdays">
+    <!-- ===== FOOD SECTION ===== -->
+    <section class="food_section layout_padding-bottom">
+        <div class="container">
+            <div class="heading_container heading_center mb-5">
+                <h2>Our Menu</h2>
             </div>
-            <div class="detail-box">
-              <h5>Tasty Thursdays</h5>
-              <h6><span>20%</span> Off</h6>
-              <a href="/Pages/Home/Menu.html" class="btn btn-outline-light">
-                Order Now
-              </a>
+
+            <div class="row">
+                <!-- Example dishes -->
+                <div class="col-sm-6 col-lg-4 mb-4">
+                    <div class="box">
+                        <div class="img-box">
+                            <img src="/images/pizza1.jpg" alt="Margherita Pizza">
+                        </div>
+                        <div class="detail-box">
+                            <h5>Margherita Pizza</h5>
+                            <p>Classic Italian pizza with mozzarella and tomatoes.</p>
+                            <div class="options">
+                                <h6>$8.00</h6>
+                                <a href="/cart/add?dishId=1"><i class="fa fa-shopping-cart"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-lg-4 mb-4">
+                    <div class="box">
+                        <div class="img-box">
+                            <img src="/images/burger1.jpg" alt="Chicken Burger">
+                        </div>
+                        <div class="detail-box">
+                            <h5>Chicken Burger</h5>
+                            <p>Grilled chicken patty with lettuce and cheese.</p>
+                            <div class="options">
+                                <h6>$6.50</h6>
+                                <a href="/cart/add?dishId=2"><i class="fa fa-shopping-cart"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-lg-4 mb-4">
+                    <div class="box">
+                        <div class="img-box">
+                            <img src="/images/pasta1.jpg" alt="Pasta Alfredo">
+                        </div>
+                        <div class="detail-box">
+                            <h5>Pasta Alfredo</h5>
+                            <p>Creamy pasta with mushrooms and parmesan cheese.</p>
+                            <div class="options">
+                                <h6>$7.50</h6>
+                                <a href="/cart/add?dishId=3"><i class="fa fa-shopping-cart"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
+
+            <div class="btn-box text-center mt-4">
+                <a href="/dish/index" class="btn btn-primary">View More</a>
+            </div>
         </div>
-        <div class="col-md-6">
-          <div class="box">
-            <div class="img-box">
-              <img src="/images/o2.jpg" alt="Pizza Days">
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer_section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 footer-col">
+                    <div class="footer_contact">
+                        <h4>Contact Us</h4>
+                        <div class="contact_link_box">
+                            <a href="#"><i class="fa fa-map-marker"></i><span>Location</span></a>
+                            <a href="#"><i class="fa fa-phone"></i><span>Call +01 1234567890</span></a>
+                            <a href="#"><i class="fa fa-envelope"></i><span>demo@gmail.com</span></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 footer-col">
+                    <div class="footer_detail">
+                        <a href="#" class="footer-logo">Feane</a>
+                        <p>Necessary, making this the first true generator on the Internet.</p>
+                        <div class="footer_social">
+                            <a href="#"><i class="fa fa-facebook"></i></a>
+                            <a href="#"><i class="fa fa-twitter"></i></a>
+                            <a href="#"><i class="fa fa-linkedin"></i></a>
+                            <a href="#"><i class="fa fa-instagram"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 footer-col">
+                    <h4>Opening Hours</h4>
+                    <p>Everyday</p>
+                    <p>10.00 Am - 10.00 Pm</p>
+                </div>
             </div>
-            <div class="detail-box">
-              <h5>Pizza Days</h5>
-              <h6><span>15%</span> Off</h6>
-              <a href="/Pages/Home/Menu.html" class="btn btn-outline-light">
-                Order Now
-              </a>
+            <div class="footer-info">
+                <p>
+                    &copy; <span id="displayYear"></span> All Rights Reserved By
+                    <a href="https://html.design/">Free Html Templates</a><br />
+                    &copy; <span id="displayYear"></span> Distributed By
+                    <a href="https://themewagon.com/" target="_blank">ThemeWagon</a>
+                </p>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </footer>
 
-  <div data-include="/partials/food.html"></div>
-
-  <section class="about_section layout_padding">
-    <div class="container">
-      <div class="row">
-        <div class="col-md-6">
-          <div class="img-box">
-            <img src="/images/about-img.png" alt="About Feane">
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="detail-box">
-            <div class="heading_container">
-              <h2>We Are Feane</h2>
-            </div>
-            <p>
-              From quick lunches to late-night cravings, Feane brings you a carefully prepared selection of dishes made with
-              fresh ingredients. Sit back, relax, and let us take care of your appetite.
-            </p>
-            <a class="btn btn-primary" href="/Pages/Home/About.html">
-              Learn More
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <div data-include="/partials/footer.html"></div>
-
-  <script src="/js/jquery-3.4.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="/js/bootstrap.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js"></script>
-  <script src="/js/partials-loader.js"></script>
-  <script src="/js/gateway-client.js"></script>
-  <script src="/js/food-section.js"></script>
-  <script src="/js/custom.js"></script>
+    <!-- ===== SCRIPTS ===== -->
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
 </body>
-
 </html>

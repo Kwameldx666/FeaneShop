@@ -1,31 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
-  <title>Feane - Page Not Found</title>
-  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
-  <link rel="stylesheet" href="/css/navbar.css" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    <title>Feane — Page Not Found</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/navbar.css" />
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+        }
+
+        .error-container {
+            background: rgba(0, 0, 0, 0.25);
+            padding: 40px 60px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+            .error-container h1 {
+                font-size: 8rem;
+                font-weight: 700;
+                margin: 0;
+                color: #fff;
+            }
+
+            .error-container p {
+                font-size: 1.3rem;
+                color: #f1f1f1;
+                margin-bottom: 30px;
+            }
+
+            .error-container a {
+                display: inline-block;
+                background: #fff;
+                color: #ff4b2b;
+                padding: 10px 25px;
+                border-radius: 50px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.3s ease;
+            }
+
+                .error-container a:hover {
+                    background: #ff4b2b;
+                    color: #fff;
+                    transform: translateY(-2px);
+                }
+    </style>
 </head>
+
 <body>
-  <div data-include="/partials/navbar.html"></div>
-
-  <main class="container text-center py-5" data-error-endpoint="/api/telemetry/not-found">
-    <h1 class="display-4">404</h1>
-    <p class="lead">The page you are looking for could not be found.</p>
-    <a class="btn btn-primary" href="/Pages/Home/Index.html">Return to homepage</a>
-  </main>
-
-  <div data-include="/partials/footer.html"></div>
-
-  <script src="/js/jquery-3.4.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="/js/bootstrap.js"></script>
-  <script src="/js/partials-loader.js"></script>
-  <script src="/js/gateway-client.js"></script>
-  <script src="/js/error-404.js"></script>
+    <main class="error-container" data-error-endpoint="/api/telemetry/not-found">
+        <h1>404</h1>
+        <p>The page you are looking for could not be found.</p>
+        <a href="/home/index.html">Return to homepage</a>
+    </main>
 </body>
 </html>

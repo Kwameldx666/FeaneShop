@@ -17,7 +17,7 @@ builder.Services.AddScoped<INotificationService, NotificationService>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    options.AddPolicy("AllowAll", policy => policy.AllowAnyMethod().AllowAnyHeader());
 });
 
 var app = builder.Build();
