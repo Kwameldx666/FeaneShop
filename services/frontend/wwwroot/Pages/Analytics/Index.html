@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="">
+
+  <title>Feane</title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+
+  <!--owl slider stylesheet -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+  <!-- nice select  -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css"
+        integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ=="
+        crossorigin="anonymous" />
+  <!-- font awesome style -->
+  <link href="/css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- Custom styles for this template -->
+  <link href="/css/style.css" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="/css/responsive.css" rel="stylesheet" />
+  <link href="/css/navbar.css" rel="stylesheet" />
+  <link href="/css/analytics-index.css" rel="stylesheet" />
+</head>
+<body class="sub_page">
+  <div data-include="/partials/navbar.html"></div>
+
+  <main class="container analytics-dashboard py-5">
+    <div class="row mb-4 align-items-end">
+      <div class="col-12 col-lg-8">
+        <h2 class="fw-bold mb-3">Analytics overview</h2>
+        <p class="text-muted mb-0">Monitor reservations, revenue and user activity to keep the restaurant on track.</p>
+      </div>
+      <div class="col-12 col-lg-4">
+        <form class="card card-body shadow-sm filter-form">
+          <div class="row g-2">
+            <div class="col-12">
+              <label class="form-label" for="startDate">Start date</label>
+              <input type="date" id="startDate" class="form-control" value="2025-10-01" />
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="endDate">End date</label>
+              <input type="date" id="endDate" class="form-control" value="2025-10-31" />
+            </div>
+            <div class="col-12 d-grid gap-2 mt-2">
+              <button type="submit" class="btn btn-primary" disabled>Apply filters</button>
+              <button type="button" class="btn btn-outline-secondary" disabled>Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Total users</span>
+          <span class="value">1 248</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Active users</span>
+          <span class="value">892</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Reservations today</span>
+          <span class="value">34</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Reservations this week</span>
+          <span class="value">187</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Upcoming reservations</span>
+          <span class="value">62</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Cancelled reservations</span>
+          <span class="value">11</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Completed reservations</span>
+          <span class="value">1 129</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Average order value</span>
+          <span class="value">$36.50</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Total revenue</span>
+          <span class="value">$41 280</span>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="analytics-card shadow-sm">
+          <span class="label text-muted">Revenue (7 days)</span>
+          <span class="value">$9 870</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-5 g-4">
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">Reservation status</h5>
+            <p class="text-muted">Distribution of reservation statuses for the selected period.</p>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>Completed</span>
+                <span class="badge bg-primary rounded-pill">1 129</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>Upcoming</span>
+                <span class="badge bg-primary rounded-pill">62</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>Cancelled</span>
+                <span class="badge bg-primary rounded-pill">11</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-body">
+            <h5 class="card-title">Revenue trend</h5>
+            <p class="text-muted">Daily revenue between 01 Oct and 31 Oct.</p>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Transactions</th>
+                    <th scope="col" class="text-end">Revenue</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>24 Oct</td>
+                    <td>38</td>
+                    <td class="text-end">$1 240.00</td>
+                  </tr>
+                  <tr>
+                    <td>25 Oct</td>
+                    <td>42</td>
+                    <td class="text-end">$1 360.00</td>
+                  </tr>
+                  <tr>
+                    <td>26 Oct</td>
+                    <td>33</td>
+                    <td class="text-end">$1 080.00</td>
+                  </tr>
+                  <tr>
+                    <td>27 Oct</td>
+                    <td>29</td>
+                    <td class="text-end">$915.00</td>
+                  </tr>
+                  <tr>
+                    <td>28 Oct</td>
+                    <td>44</td>
+                    <td class="text-end">$1 520.00</td>
+                  </tr>
+                  <tr>
+                    <td>29 Oct</td>
+                    <td>31</td>
+                    <td class="text-end">$1 020.00</td>
+                  </tr>
+                  <tr>
+                    <td>30 Oct</td>
+                    <td>38</td>
+                    <td class="text-end">$1 215.00</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div data-include="/partials/footer.html"></div>
+
+</body>
+</html>

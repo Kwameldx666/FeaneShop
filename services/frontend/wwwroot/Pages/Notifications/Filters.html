@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="">
+  <title>Feane</title>
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/responsive.css" />
+  <link rel="stylesheet" href="/css/navbar.css" />
+</head>
+<body class="sub_page">
+  <div data-include="/partials/navbar.html"></div>
+
+  <main class="container py-5">
+    <h1 class="mb-4">Manage Filters</h1>
+
+    <form class="card card-body shadow-sm mb-4">
+      <label class="form-label" for="userInput">Generate filters with AI</label>
+      <textarea id="userInput" class="form-control" rows="3" placeholder="Enter what you like (e.g., 'I enjoy hobbies, work, and news')"></textarea>
+      <button type="submit" class="btn btn-primary mt-3" disabled>Generate Filters</button>
+    </form>
+
+    <form class="card card-body shadow-sm mb-4">
+      <label class="form-label" for="filterName">Add a single filter</label>
+      <input id="filterName" type="text" class="form-control" placeholder="I like sports" />
+      <button type="submit" class="btn btn-outline-primary mt-3" disabled>Add Filter</button>
+    </form>
+
+    <h2 class="h4">Current Filters</h2>
+    <ul class="list-group list-group-numbered mb-4">
+      <li class="list-group-item">Loyal customers (ID: loyal-customers)</li>
+      <li class="list-group-item">Vegetarian options (ID: vegetarian)</li>
+      <li class="list-group-item">Weekend offers (ID: weekend)</li>
+    </ul>
+
+    <a class="btn btn-link" href="/Pages/Notifications/Index.html">Back to Notifications</a>
+  </main>
+
+  <div data-include="/partials/footer.html"></div>
+
+</body>
+</html>

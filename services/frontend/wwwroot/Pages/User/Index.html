@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    <title>Feane — Users</title>
+
+    <!-- Базовые стили темы -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+    <link rel="stylesheet" href="/css/navbar.css" />
+
+    <!-- Стили страницы -->
+    <link rel="stylesheet" href="/css/admin-users.css" />
+</head>
+<body class="sub_page">
+    <!-- Navbar -->
+    <div data-include="/partials/navbar.html"></div>
+
+    <main class="container py-4"
+          id="users-root"
+          data-users-endpoint="/api/users"   
+        data-roles-endpoint="/api/roles">   
+    <h1 class="h3 mb-3">Users List</h1>
+
+    <div id="users-feedback" class="alert d-none" role="alert"></div>
+
+    <div class="table-responsive mb-4">
+      <table id="users-table" class="table table-striped table-bordered align-middle">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="users-tbody"><!-- наполняется JS --></tbody>
+      </table>
+    </div>
+
+    <!-- Редактор пользователя -->
+    <section id="user-editor" class="card d-none">
+      <div class="card-body">
+        <h2 class="h5 mb-3">Edit User</h2>
+        <form id="user-form" novalidate>
+          <input type="hidden" id="user-id" />
+
+          <div class="mb-3">
+            <label for="user-username" class="form-label">Username</label>
+            <input id="user-username" type="text" class="form-control" required />
+            <div class="invalid-feedback">Введите имя пользователя.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="user-email" class="form-label">Email</label>
+            <input id="user-email" type="email" class="form-control" required />
+            <div class="invalid-feedback">Введите корректный email.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="user-role" class="form-label">Role</label>
+            <select id="user-role" class="form-select" required>
+              <!-- заполняется из API или дефолтов -->
+            </select>
+            <div class="invalid-feedback">Выберите роль.</div>
+          </div>
+
+          <div class="form-check mb-3">
+            <input id="user-active" class="form-check-input" type="checkbox" />
+            <label class="form-check-label" for="user-active">Active</label>
+          </div>
+
+          <div class="d-flex flex-wrap gap-2">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" id="user-cancel" class="btn btn-outline-secondary">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+    <!-- Footer -->
+    <div data-include="/partials/footer.html"></div>
+
+    <!-- Скрипты -->
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+
+    <!-- Лоадер партиалов -->
+    <script src="/js/partials-loader.js"></script>
+
+    <!-- Логика страницы -->
+    <script src="/js/admin-users.js?v=1"></script>
+
+    <!-- Общие эффекты темы -->
+    <script src="/js/custom.js"></script>
+</body>
+</html>

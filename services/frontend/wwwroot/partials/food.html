@@ -1,0 +1,56 @@
+<link rel="stylesheet" href="/css/food-section.css" />
+
+<section class="food_section layout_padding-bottom" data-menu-endpoint="/api/menu" data-add-to-cart-url="/Cart/Add">
+    <div class="container">
+        <div class="heading_container heading_center">
+            <h2>Our Menu</h2>
+        </div>
+
+        <div id="food-feedback" class="alert d-none" role="alert"></div>
+
+        <ul class="filters_menu">
+            <li class="active" data-filter="*">All</li>
+            <li data-filter=".burger">Burger</li>
+            <li data-filter=".pizza">Pizza</li>
+            <li data-filter=".pasta">Pasta</li>
+            <li data-filter=".fries">Fries</li>
+        </ul>
+
+        <div class="filters-content">
+            <div class="row grid" aria-live="polite" aria-busy="false">
+                <div class="col-12">
+                    <p class="text-center text-muted mb-0">Menu is loading…</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<template id="food-card-template">
+    <div class="col-sm-6 col-lg-4 all">
+        <div class="box">
+            <div>
+                <div class="img-box">
+                    <img src="/images/default.png" alt="Dish image">
+                </div>
+                <div class="detail-box">
+                    <h5 class="name">Dish name</h5>
+                    <p class="description">Dish description</p>
+                    <div class="options">
+                        <h6 class="price">$0.00</h6>
+                        <a href="#" class="cart-icon add-to-cart" data-quantity="1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shopping-cart">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script src="/js/food-section.js"></script>

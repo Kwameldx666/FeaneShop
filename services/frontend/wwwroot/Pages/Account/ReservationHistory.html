@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    <title>Feane — История резерваций</title>
+
+    <!-- Общие стили темы -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+    <link rel="stylesheet" href="/css/navbar.css" />
+    <link rel="stylesheet" href="/css/account-profile.css" />
+</head>
+<body class="sub_page">
+    <!-- Навбар (partial без скриптов внутри) -->
+    <div data-include="/partials/navbar.html"></div>
+
+    <!-- Контент страницы -->
+    <main class="container py-4" data-reservations-endpoint="/api/reservations">
+        <div class="page_layout page_layout-clear">
+            <div class="layout">
+                <div class="layout__content">
+                    <div class="checkout-v2-wrapper co-section--content_wrapper">
+
+                        <!-- Боковое меню -->
+                        <aside class="co-sidebar--menu">
+                            <label class="co-menu-toggle" data-title="Личный кабинет" for="co-menu-toggle"></label>
+                            <nav class="co-menu co-menu--personal co-checkout-block--padded">
+                                <div class="co-menu-item co-menu-item--personal">
+                                    <a class="co-menu-link co-menu-link--personal co-link co-menu-link--active" href="/profile">История резерваций</a>
+                                </div>
+                                <div class="co-menu-item co-menu-item--personal">
+                                    <a class="co-menu-link co-menu-link--personal co-link" href="/addresses">Адрес доставки</a>
+                                </div>
+                                <div class="co-menu-item co-menu-item--personal">
+                                    <a class="co-menu-link co-menu-link--personal co-link" href="/contacts">Контактные данные</a>
+                                </div>
+                                <div class="co-menu-item co-menu-item--personal">
+                                    <a class="co-menu-link co-menu-link--personal co-link" href="/logout">Выход</a>
+                                </div>
+                            </nav>
+                        </aside>
+
+                        <!-- Основной контент -->
+                        <section class="co-section--content">
+                            <div class="co-section--checkout_header co-checkout-block--padded">
+                                <h1 class="co-checkout-title co-title co-title--h1">История резерваций</h1>
+                            </div>
+
+                            <div id="reservations-feedback" class="alert d-none" role="alert"></div>
+
+                            <div class="table-responsive">
+                                <table class="table table-striped align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>Дата резервации</th>
+                                            <th>Повод</th>
+                                            <th>Гостей</th>
+                                            <th>Статус</th>
+                                            <th>Сумма</th>
+                                            <th class="text-center">Действия</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reservation-table-body"><!-- наполняется JS --></tbody>
+                                </table>
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер (partial без скриптов внутри) -->
+    <div data-include="/partials/footer.html"></div>
+
+    <!-- jQuery -->
+    <script src="/js/jquery-3.4.1.min.js"></script>
+
+    <!-- jQuery-плагины -->
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js"></script>
+
+    <!-- Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+
+    <!-- Твои -->
+    <script src="/js/partials-loader.js"></script>
+    <script src="/js/reservations-history.js"></script>
+    <script src="/js/custom.js?v=2"></script> <!-- добавил версионирование, чтобы обойти кэш -->
+
+</body>
+</html>

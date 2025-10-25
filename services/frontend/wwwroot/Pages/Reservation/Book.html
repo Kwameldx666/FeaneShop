@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    <title>Feane — Забронировать столик</title>
+
+    <!-- Базовые стили темы -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+    <link rel="stylesheet" href="/css/navbar.css" />
+
+    <!-- Стили страницы -->
+    <link rel="stylesheet" href="/css/reservation-book.css" />
+</head>
+<body class="sub_page">
+    <!-- Header / Navbar -->
+    <div data-include="/partials/navbar.html"></div>
+
+    <!-- Контент -->
+    <section class="book_section layout_padding"
+             data-reservations-endpoint="/api/reservations">
+        <div class="container">
+            <div class="heading_container">
+                <h2>Забронировать столик</h2>
+                <p class="lead">Поделитесь деталями визита, и мы подготовим идеальное место для вашей встречи.</p>
+            </div>
+
+            <div id="reservation-feedback" class="alert d-none" role="alert"></div>
+
+            <div class="row g-4 align-items-stretch">
+                <!-- Левая колонка: поля (без <form>) -->
+                <div class="col-lg-7">
+                    <div class="form_container shadow-sm">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="customerName" class="form-label">Имя</label>
+                                <input id="customerName" type="text" class="form-control" placeholder="Например, Анна" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="phoneNumber" class="form-label">Телефон</label>
+                                <input id="phoneNumber" type="tel" class="form-control" placeholder="+375 (29) 000-00-00" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="userEmail" class="form-label">Эл. почта</label>
+                                <input id="userEmail" type="email" class="form-control" placeholder="guest@example.com" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="numberOfPeople" class="form-label">Количество гостей</label>
+                                <select id="numberOfPeople" class="form-select" required>
+                                    <option value="">Сколько гостей?</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="reservationDateTime" class="form-label">Дата и время</label>
+                                <input id="reservationDateTime" type="datetime-local" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label for="budgetPerGuest" class="form-label">Бюджет на гостя</label>
+                                <div class="input-group">
+                                    <input id="budgetPerGuest" type="number" step="0.5" min="0" class="form-control" placeholder="0.00" />
+                                    <span class="input-group-text">Lei</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="occasion" class="form-label">Повод</label>
+                                <select id="occasion" class="form-select">
+                                    <option value="">Выберите повод</option>
+                                    <option>Романтический ужин</option>
+                                    <option>Семейный праздник</option>
+                                    <option>Деловая встреча</option>
+                                    <option>День рождения</option>
+                                    <option>Другое</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="seatingPreference" class="form-label">Предпочтения по рассадке</label>
+                                <select id="seatingPreference" class="form-select">
+                                    <option value="">Предпочтения по рассадке</option>
+                                    <option>У окна</option>
+                                    <option>В центре зала</option>
+                                    <option>Тихий угол</option>
+                                    <option>Терраса</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="specialRequests" class="form-label">Особые пожелания</label>
+                                <textarea id="specialRequests" class="form-control" rows="3"
+                                          placeholder="Например, детский стул или безглютеновое меню"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="btn_box">
+                            <button id="reserveSubmit" type="button" class="btn btn-primary btn-lg w-100 mt-4">
+                                Забронировать
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Правая колонка: сводка + карта -->
+                <div class="col-lg-5">
+                    <div class="booking-summary shadow-sm">
+                        <h4 class="summary-title">Сводка визита</h4>
+                        <ul class="summary-list">
+                            <li><span>Гостей:</span> <strong id="summary-guests">—</strong></li>
+                            <li><span>Дата:</span> <strong id="summary-date">—</strong></li>
+                            <li><span>Бюджет:</span> <strong id="summary-budget">—</strong></li>
+                            <li><span>Примерный чек:</span> <strong id="summary-total">—</strong></li>
+                        </ul>
+                        <p class="summary-note">
+                            После подтверждения вы получите письмо с деталями резервации и сможете отслеживать статус в профиле.
+                        </p>
+
+                        <div class="map_search mb-2">
+                            <input id="map-search" class="form-control" type="text" placeholder="Найти локацию… (необязательно)" />
+                        </div>
+                        <div class="map_container">
+                            <div id="googleMap"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <div data-include="/partials/footer.html"></div>
+
+    <!-- Скрипты: порядок важен -->
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+
+    <!-- Лоадер партиалов -->
+    <script src="/js/partials-loader.js"></script>
+
+    <!-- Заглушка gateway (если нет своей реализации) -->
+    <script>
+        window.feaneGateway = window.feaneGateway || {
+            post: (u, b) => fetch(u, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(b || {})
+            }).then(r => r.json()),
+        };
+    </script>
+
+    <!-- Логика страницы -->
+    <script src="/js/reservation-book.js?v=1"></script>
+
+    <!-- Google Maps (keyless lib, Places+callback внутри reservation-book.js) -->
+    <script src="https://cdn.jsdelivr.net/gh/somanchiu/Keyless-Google-Maps-API@v6.7/mapsJavaScriptAPI.js" async defer></script>
+
+    <!-- Общие эффекты темы -->
+    <script src="/js/custom.js"></script>
+</body>
+</html>

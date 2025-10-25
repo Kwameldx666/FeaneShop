@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    <title>Feane — Контактные данные</title>
+
+    <!-- Общие стили темы -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+    <link rel="stylesheet" href="/css/navbar.css" />
+
+    <!-- Стили страницы -->
+    <link rel="stylesheet" href="/css/account-contacts.css" />
+</head>
+<body class="adaptive sub_page">
+    <!-- Навбар (partial) -->
+    <div data-include="/partials/navbar.html"></div>
+
+    <!-- Контент страницы. endpoint укажи свой, если другой -->
+    <main class="container py-4" data-contacts-endpoint="/api/account/contacts">
+        <div class="page_layout page_layout-clear">
+            <div class="layout">
+                <div class="layout__content">
+                    <div class="content-wrapper section--content_wrapper">
+
+                        <!-- Боковое меню -->
+                        <aside class="sidebar--menu">
+                            <label class="menu-toggle" data-title="Личный кабинет" for="menu-toggle"></label>
+                            <nav class="menu menu--personal content-block--padded">
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/profile">История резерваций</a>
+                                </div>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/addresses">Адрес доставки</a>
+                                </div>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link menu-link--active" href="/account/contacts">Контактные данные</a>
+                                </div>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/logout">Выход</a>
+                                </div>
+                            </nav>
+                        </aside>
+
+                        <!-- Основной контент -->
+                        <section class="section--content">
+                            <div class="section--checkout_header content-block--padded">
+                                <h1 class="section-title title title--h1">Контактные данные</h1>
+                            </div>
+
+                            <div class="content-block--padded">
+                                <div id="contacts-feedback" class="alert d-none" role="alert"></div>
+
+                                <!-- Без <form>, просто поля + кнопка -->
+                                <div class="contact-form">
+                                    <label for="contact-name">Имя:</label>
+                                    <input type="text" id="contact-name" placeholder="Введите имя" autocomplete="name" />
+
+                                    <label for="contact-email">Электронная почта:</label>
+                                    <input type="email" id="contact-email" placeholder="you@example.com" autocomplete="email" />
+
+                                    <label for="contact-phone">Телефон:</label>
+                                    <input type="tel" id="contact-phone" placeholder="+373 600 00 000" autocomplete="tel" />
+
+                                    <label for="contact-address">Адрес:</label>
+                                    <input type="text" id="contact-address" placeholder="Город, улица, дом" autocomplete="street-address" />
+
+                                    <div class="mt-3 d-flex">
+                                        <button id="save-contacts-btn" type="button" class="btn btn-primary">Сохранить изменения</button>
+                                        <button id="reset-contacts-btn" type="button" class="btn btn-outline-secondary">Сбросить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Футер (partial) -->
+    <div data-include="/partials/footer.html"></div>
+
+    <!-- Скрипты -->
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+
+    <!-- Лоадер partial’ов -->
+    <script src="/js/partials-loader.js"></script>
+
+    <!-- Логика страницы (загрузка/сохранение контактов через feaneGateway) -->
+    <script src="/js/account-contacts.js"></script>
+
+    <!-- Общие эффекты темы (твоя защищённая версия без ошибок, как раньше) -->
+    <script src="/js/custom.js"></script>
+</body>
+</html>
