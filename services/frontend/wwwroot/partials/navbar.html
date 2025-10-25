@@ -1,5 +1,7 @@
-<div class="hero_area">
-    <div class="bg-box"></div> 
+﻿<div class="hero_area">
+    <div class="bg-box">
+        <img src="/images/hero-bg.jpg" alt="Background">
+    </div>
 
     <header class="header_section">
         <div class="container">
@@ -7,18 +9,17 @@
                 <a class="navbar-brand" href="/home/index"><span>Feane</span></a>
 
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
-                        data-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false"
-                        aria-label="Toggle navigation">
+                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
                     <span class=""></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mx-auto">
-                        <li class="nav-item"><a class="nav-link" href="/home/index">Home</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/home/menu">Menu</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/home/about">About</a></li>
-                        <li class="nav-item"><a class="nav-link" href="/reservation/book">Book Table</a></li>
+                        <li class="nav-item"><a class="nav-link" href="Pages/Home/Menu">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="Pages/Home/Menu">Menu</a></li>
+                        <li class="nav-item"><a class="nav-link" href="Pages/Home/About">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="Pages/reservation/book">Book Table</a></li>
                     </ul>
 
                     <div class="user_option">
@@ -35,6 +36,10 @@
                          C457.728,97.71,450.56,86.958,439.296,84.91z" />
                             </svg>
                         </a>
+
+                        <a href="/dish/index" class="admin_button d-none" data-role="admin,moderator">Manage Dishes</a>
+                        <a href="/user/index" class="admin_button d-none" data-role="admin">Manage Users</a>
+                        <a href="/analytics/index" class="admin_button d-none" data-role="admin,moderator">Analytics</a>
                     </div>
                 </div>
             </nav>

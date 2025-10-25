@@ -2,143 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="keywords" content="" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
     <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
-    <title>Feane — About Us</title>
+    <title>Feane — About</title>
 
-    <!-- Bootstrap -->
+    <!-- CSS (порядок не критичен, но оставим как у темы) -->
     <link rel="stylesheet" href="/css/bootstrap.css" />
     <link rel="stylesheet" href="/css/font-awesome.min.css" />
-
-    <!-- Custom styles -->
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/responsive.css" />
     <link rel="stylesheet" href="/css/navbar.css" />
+    <!-- Плагины, если используются в custom.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" />
 </head>
-
 <body class="sub_page">
+    <!-- Header / Navbar (partial) -->
+    <div data-include="/partials/navbar.html"></div>
 
-    <!-- ===== HERO AREA (фон + навигация) ===== -->
-    <div class="hero_area">
-        <div class="bg-box">
-            <img src="/images/hero-bg.jpg" alt="Hero background">
-        </div>
-
-        <header class="header_section">
-            <div class="container">
-                <nav class="navbar navbar-expand-lg custom_nav-container">
-                    <a class="navbar-brand" href="/home/index"><span>Feane</span></a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse"
-                            data-target="#navbarSupportedContent"
-                            aria-controls="navbarSupportedContent" aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span class=""></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav mx-auto">
-                            <li class="nav-item"><a class="nav-link" href="/home/index">Home</a></li>
-                            <li class="nav-item active"><a class="nav-link" href="/home/about">About <span class="sr-only">(current)</span></a></li>
-                            <li class="nav-item"><a class="nav-link" href="/weather/index">Weather</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/reservation/book">Book Table</a></li>
-                        </ul>
-
-                        <div class="user_option">
-                            <a href="/account/profile" class="user_link"><i class="fa fa-user"></i></a>
-                            <a class="cart_link" href="/cart/cart" title="View Cart">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 457.627 457.627"
-                                     width="24" height="24" fill="currentColor">
-                                    <path d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304
-                           C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                           C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472
-                           c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                           c4.096,27.136,27.648,47.616,55.296,47.616h212.992
-                           c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                           C457.728,97.71,450.56,86.958,439.296,84.91z" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </header>
-    </div>
-
-    <!-- ===== MAIN CONTENT ===== -->
+    <!-- Page content -->
     <section class="about_section layout_padding">
         <div class="container">
-            <div class="heading_container heading_center mb-5">
-                <h2>About <span>Us</span></h2>
-                <p>
-                    Welcome to <strong>Feane</strong> — your destination for delicious meals and a cozy dining experience.
-                </p>
-            </div>
-
             <div class="row align-items-center">
-                <div class="col-md-6">
-                    <img src="/images/about-img.png" alt="About Feane" class="img-fluid rounded shadow-sm" />
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="img-box">
+                        <img src="/images/about-img.png" alt="About Feane" class="img-fluid">
+                    </div>
                 </div>
                 <div class="col-md-6">
                     <div class="detail-box">
-                        <h3>We are passionate about great food</h3>
+                        <div class="heading_container">
+                            <h2>About Feane</h2>
+                        </div>
                         <p>
-                            At Feane, we serve freshly prepared dishes made from quality ingredients. Whether it’s pizza, pasta, or burgers — each plate is crafted with love and dedication by our chefs.
+                            At Feane, we pride ourselves on delivering exceptional experiences and high-quality products.
+                            Our team is dedicated to continuous innovation and excellence, ensuring every interaction is memorable.
+                            We focus on authenticity and craftsmanship so our offerings stand out and exceed expectations.
+                            Discover the difference with Feane and join us on our journey to create something extraordinary.
                         </p>
-                        <p>
-                            Our restaurant blends modern culinary trends with traditional flavors, making every visit special. Thank you for choosing Feane!
-                        </p>
-                        <a href="/reservation/book" class="btn btn-primary mt-3">Book a Table</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer_section">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 footer-col">
-                    <div class="footer_contact">
-                        <h4>Contact Us</h4>
-                        <div class="contact_link_box">
-                            <a href="#"><i class="fa fa-map-marker"></i><span>Location</span></a>
-                            <a href="#"><i class="fa fa-phone"></i><span>Call +01 1234567890</span></a>
-                            <a href="#"><i class="fa fa-envelope"></i><span>demo@gmail.com</span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 footer-col">
-                    <div class="footer_detail">
-                        <a href="#" class="footer-logo">Feane</a>
-                        <p>Necessary, making this the first true generator on the Internet.</p>
-                        <div class="footer_social">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-linkedin"></i></a>
-                            <a href="#"><i class="fa fa-instagram"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 footer-col">
-                    <h4>Opening Hours</h4>
-                    <p>Everyday</p>
-                    <p>10.00 Am - 10.00 Pm</p>
-                </div>
-            </div>
-            <div class="footer-info">
-                <p>
-                    &copy; <span id="displayYear"></span> All Rights Reserved By
-                    <a href="https://html.design/">Free Html Templates</a><br />
-                    &copy; <span id="displayYear"></span> Distributed By
-                    <a href="https://themewagon.com/" target="_blank">ThemeWagon</a>
-                </p>
-            </div>
-        </div>
-    </footer>
+    <!-- Footer (partial) -->
+    <div data-include="/partials/footer.html"></div>
 
-    <!-- ===== SCRIPTS ===== -->
+    <!-- JS: порядок важен -->
     <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="/js/bootstrap.js"></script>
+
+    <!-- Плагины, если их вызывает custom.js -->
+    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/jquery.nice-select.min.js"></script>
+
+    <!-- Лоадер partial’ов должен идти до custom.js -->
+    <script src="/js/partials-loader.js"></script>
+
+    <!-- Общие эффекты темы -->
+    <script src="/js/custom.js"></script>
 </body>
 </html>

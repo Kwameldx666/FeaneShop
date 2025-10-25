@@ -2,33 +2,36 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
     <title>Feane — Адрес доставки</title>
 
-    <!-- Bootstrap -->
+    <!-- Базовые стили темы -->
     <link rel="stylesheet" href="/css/bootstrap.css" />
     <link rel="stylesheet" href="/css/font-awesome.min.css" />
-
-    <!-- Custom styles -->
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/responsive.css" />
-    <link rel="stylesheet" href="/css/account-addresses.css" />
     <link rel="stylesheet" href="/css/navbar.css" />
-</head>
 
-<body class="adaptive" data-multi-lang="false">
-    <!-- ===== NAVBAR PARTIAL ===== -->
+    <!-- Стили страницы -->
+    <link rel="stylesheet" href="/css/account-addresses.css" />
+</head>
+<body class="adaptive sub_page" data-multi-lang="false">
+    <!-- Навбар (partial) -->
     <div data-include="/partials/navbar.html"></div>
 
-    <!-- ===== MAIN CONTENT ===== -->
-    <main class="py-5">
+    <!-- Контент страницы -->
+    <main class="container py-4" data-addresses-endpoint="/api/account/address">
         <div class="page_layout page_layout-clear">
-            <div class="layout container">
+            <div class="layout">
                 <div class="layout__content">
-                    <div class="content-wrapper section--content_wrapper d-flex flex-wrap">
-                        <!-- Sidebar -->
-                        <aside class="sidebar--menu me-4 mb-4">
-                            <div class="menu menu--personal content-block--padded shadow-sm">
+                    <div class="content-wrapper section--content_wrapper">
+
+                        <!-- Боковое меню -->
+                        <aside class="sidebar--menu">
+                            <label class="menu-toggle" data-title="Личный кабинет" for="menu-toggle"></label>
+                            <nav class="menu menu--personal content-block--padded">
                                 <div class="menu-item menu-item--personal">
                                     <a class="menu-link menu-link--personal link" href="/account/profile">История резерваций</a>
                                 </div>
@@ -41,52 +44,77 @@
                                 <div class="menu-item menu-item--personal">
                                     <a class="menu-link menu-link--personal link" href="/account/logout">Выход</a>
                                 </div>
-                            </div>
+                            </nav>
                         </aside>
 
-                        <!-- Content -->
-                        <section class="section--content flex-grow-1">
+                        <!-- Основной контент -->
+                        <section class="section--content">
                             <div class="section--checkout_header content-block--padded">
-                                <h1 class="section-title title title--h1 mb-4">Адрес доставки</h1>
+                                <h1 class="section-title title title--h1">Адрес доставки</h1>
                             </div>
 
-                            <div class="content-block--padded bg-white p-4 rounded shadow-sm">
+                            <div class="content-block--padded">
                                 <div id="addresses-feedback" class="alert d-none" role="alert"></div>
 
-                                <form class="address-form" id="addressForm" method="post" action="/api/account/update-address">
-                                    <label for="address-street" class="form-label">Улица:</label>
-                                    <input type="text" id="address-street" name="Street" class="form-control mb-3" placeholder="Улица" />
+                                <!-- Без <form>: просто поля и кнопки -->
+                                <div class="address-form">
+                                    <label for="address-street">Улица:</label>
+                                    <input type="text" id="address-street" placeholder="Улица" autocomplete="address-line1" />
 
-                                    <label for="address-city" class="form-label">Город:</label>
-                                    <input type="text" id="address-city" name="City" class="form-control mb-3" placeholder="Город" />
+                                    <label for="address-city">Город:</label>
+                                    <input type="text" id="address-city" placeholder="Город" autocomplete="address-level2" />
 
-                                    <label for="address-zip" class="form-label">Почтовый индекс:</label>
-                                    <input type="text" id="address-zip" name="ParcelIndex" class="form-control mb-3" placeholder="Почтовый индекс" />
+                                    <label for="address-zip">Почтовый индекс:</label>
+                                    <input type="text" id="address-zip" placeholder="Почтовый индекс" autocomplete="postal-code" />
 
-                                    <label for="address-country" class="form-label">Страна:</label>
-                                    <input type="text" id="address-country" name="Country" class="form-control mb-3" placeholder="Страна" />
+                                    <label for="address-country">Страна:</label>
+                                    <input type="text" id="address-country" placeholder="Страна" autocomplete="country-name" />
 
-                                    <label for="address-details" class="form-label">Дополнительные детали:</label>
-                                    <textarea id="address-details" name="MoreInfo" class="form-control mb-4"
-                                              placeholder="Дополнительные детали"></textarea>
+                                    <label for="address-details">Дополнительные детали:</label>
+                                    <textarea id="address-details" placeholder="Подъезд/этаж/домофон и т.п."></textarea>
 
-                                    <button type="submit" class="btn btn-primary px-4">Сохранить изменения</button>
-                                </form>
+                                    <!-- Поиск места и карта -->
+                                    <div class="mt-3">
+                                        <label for="map-search">Найти на карте:</label>
+                                        <input type="text" id="map-search" placeholder="Введите адрес или место" />
+                                    </div>
+                                    <div id="googleMap" class="mt-2" aria-label="Карта адреса"></div>
+
+                                    <div class="mt-3 d-flex btn-row">
+                                        <button id="save-address-btn" type="button" class="btn btn-primary">Сохранить изменения</button>
+                                        <button id="reset-address-btn" type="button" class="btn btn-outline-secondary">Сбросить</button>
+                                    </div>
+
+                                </div>
                             </div>
                         </section>
+
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- ===== FOOTER PARTIAL ===== -->
+    <!-- Футер (partial) -->
     <div data-include="/partials/footer.html"></div>
 
-    <!-- ===== SCRIPTS ===== -->
+    <!-- Скрипты -->
     <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="/js/bootstrap.js"></script>
+
+    <!-- Лоадер partial’ов (подтягивает navbar/footer) -->
     <script src="/js/partials-loader.js"></script>
+
+    <!-- Логика страницы: загрузка/сохранение адреса через feaneGateway -->
     <script src="/js/account-addresses.js"></script>
+
+    <!-- Общие эффекты темы (твоя версия с защитами) -->
+    <script src="/js/custom.js"></script>
+
+    <!-- Google Maps (под твой ключ и callback initMap из custom.js) -->
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao&libraries=places&callback=initMap">
+    </script>
 </body>
 </html>

@@ -5,7 +5,7 @@
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
                 {
-                    "Host": "auth-service",
+                    "Host": "auth-service", 
                     "Port": 8080
                 }
             ],

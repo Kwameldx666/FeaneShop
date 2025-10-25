@@ -1,46 +1,121 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
-  <title>Feane - Weather</title>
-  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
-  <link rel="stylesheet" href="/css/weather-index.css" />
-  <link rel="stylesheet" href="/css/navbar.css" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    <title>Feane — Погода</title>
+
+    <!-- Базовые стили темы -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+    <link rel="stylesheet" href="/css/navbar.css" />
+
+    <!-- Стили страницы -->
+    <link rel="stylesheet" href="/css/weather-index.css" />
 </head>
-<body>
-  <div data-include="/partials/navbar.html"></div>
+<body class="sub_page">
 
-  <main class="container py-5" data-weather-endpoint="/api/weather/today">
-    <h1 class="mb-4">Today's Weather</h1>
-    <div class="weather-card">
-      <div class="weather-main">
-        <h2 id="weather-city">Chisinau</h2>
-        <p id="weather-description">Partly cloudy</p>
-        <span id="weather-temp" class="display-4">22°C</span>
-      </div>
-      <div class="weather-details">
-        <p>Humidity: <span id="weather-humidity">58%</span></p>
-        <p>Wind: <span id="weather-wind">12 km/h</span></p>
-        <p>Feels like: <span id="weather-feels">21°C</span></p>
-      </div>
-    </div>
-    <section class="card p-4 mt-4">
-      <h2 class="h5">Integration hint</h2>
-      <p class="mb-0">Call your weather API from JavaScript and replace these sample values to keep your guests informed.</p>
-    </section>
-  </main>
+    <main class="container py-4"
+          id="weather-root"
+          data-weather-endpoint="/api/weather/current">
+        <!-- ^^^ если у тебя другой маршрут, подставь сюда.
+             Поддерживаются варианты:
+             - "/api/weather/current" (JS добавит ?city=Город)
+             - "/api/weather/{city}" (JS заменит {city})
+        -->
 
-  <div data-include="/partials/footer.html"></div>
+        <header class="mb-4">
+            <h1 class="h3 mb-0">Погода</h1>
+            <small class="text-muted">Текущие данные по выбранному городу</small>
+        </header>
 
-  <script src="/js/jquery-3.4.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="/js/bootstrap.js"></script>
-  <script src="/js/partials-loader.js"></script>
-  <script src="/js/gateway-client.js"></script>
-  <script src="/js/weather-index.js"></script>
+        <!-- Поиск города (без формы) -->
+        <div class="search-bar d-flex flex-wrap align-items-center gap-2 mb-3">
+            <label for="weather-city" class="visually-hidden">Город</label>
+            <input id="weather-city" class="form-control" type="text" placeholder="Введите город (например, Minsk)" />
+            <button id="weather-search" class="btn btn-primary">Показать</button>
+            <button id="weather-geo" class="btn btn-outline-secondary" title="Определить по геолокации">Моё местоположение</button>
+        </div>
+
+        <!-- Сообщения -->
+        <div id="weather-feedback" class="alert d-none" role="alert"></div>
+
+        <!-- Контент -->
+        <div id="weather-content" class="weather-info d-none">
+            <h2 class="h4 mb-3">Погода в <span id="w-name">—</span></h2>
+
+            <div class="row g-3">
+                <section class="col-md-6 weather-section">
+                    <h3 class="h6">Основные данные</h3>
+                    <p><strong>Температура:</strong> <span id="w-temp">—</span></p>
+                    <p><strong>Ощущается как:</strong> <span id="w-feels">—</span></p>
+                    <p><strong>Мин. температура:</strong> <span id="w-min">—</span></p>
+                    <p><strong>Макс. температура:</strong> <span id="w-max">—</span></p>
+                    <p><strong>Давление:</strong> <span id="w-pressure">—</span></p>
+                    <p><strong>Влажность:</strong> <span id="w-humidity">—</span></p>
+                </section>
+
+                <section class="col-md-6 weather-section">
+                    <h3 class="h6">Погода</h3>
+                    <div id="w-conditions"><!-- сюда JS добавит строки состояний/описаний --></div>
+                </section>
+
+                <section class="col-md-6 weather-section">
+                    <h3 class="h6">Координаты</h3>
+                    <p><strong>Широта:</strong> <span id="w-lat">—</span></p>
+                    <p><strong>Долгота:</strong> <span id="w-lon">—</span></p>
+                </section>
+
+                <section class="col-md-6 weather-section">
+                    <h3 class="h6">Ветер</h3>
+                    <p><strong>Скорость:</strong> <span id="w-wind-speed">—</span></p>
+                    <p><strong>Направление:</strong> <span id="w-wind-deg">—</span></p>
+                </section>
+
+                <section class="col-md-6 weather-section">
+                    <h3 class="h6">Облачность</h3>
+                    <p><strong>Процент облаков:</strong> <span id="w-clouds">—</span></p>
+                </section>
+
+                <section class="col-md-6 weather-section">
+                    <h3 class="h6">Системные данные</h3>
+                    <p><strong>Страна:</strong> <span id="w-country">—</span></p>
+                    <p><strong>Восход солнца:</strong> <span id="w-sunrise">—</span></p>
+                    <p><strong>Закат солнца:</strong> <span id="w-sunset">—</span></p>
+                </section>
+
+                <section class="col-12 weather-section">
+                    <h3 class="h6">Дополнительно</h3>
+                    <p><strong>Видимость:</strong> <span id="w-visibility">—</span></p>
+                    <p><strong>Время данных:</strong> <span id="w-datetime">—</span></p>
+                    <p><strong>Часовой пояс:</strong> <span id="w-timezone">—</span></p>
+                    <p class="text-muted small mb-0"><strong>ID города:</strong> <span id="w-id">—</span></p>
+                </section>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- Скрипты -->
+    <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="/js/bootstrap.js"></script>
+    <script src="/js/partials-loader.js"></script>
+
+    <!-- Заглушка gateway (если нет своей реализации) -->
+    <script>
+    window.feaneGateway = window.feaneGateway || {
+      get: (url) => fetch(url, { credentials: 'include' }).then(r => r.json()),
+    };
+    </script>
+
+    <!-- Логика страницы -->
+    <script src="/js/weather-index.js?v=1"></script>
+
+    <!-- Общие эффекты темы -->
+    <script src="/js/custom.js"></script>
 </body>
 </html>

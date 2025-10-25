@@ -1,6 +1,8 @@
 (function () {
     'use strict';
 
+    var INITIALISED_FLAG = 'data-profile-ready';
+
     function showFeedback(container, message, type) {
         if (!container) {
             console.log(message);
@@ -18,27 +20,57 @@
         }
     }
 
-    function populateProfile(data) {
-        document.getElementById('profile-name').textContent = data.displayName || data.name || 'Guest User';
-        document.getElementById('profile-email').textContent = data.email || 'guest@example.com';
-        document.getElementById('detail-name').textContent = data.fullName || data.name || 'Guest User';
-        document.getElementById('detail-email').textContent = data.email || 'guest@example.com';
-        document.getElementById('detail-phone').textContent = data.phone || data.phoneNumber || 'Not provided';
+    function setText(id, value, fallback) {
+        var element = document.getElementById(id);
+        if (element) {
+            element.textContent = value != null && value !== '' ? value : fallback;
+        }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        var main = document.querySelector('main[data-profile-endpoint]');
-        if (!main || !window.feaneGateway) {
+    function formatDate(isoString) {
+        if (!isoString) {
+            return '—';
+        }
+        var date = new Date(isoString);
+        if (Number.isNaN(date.getTime())) {
+            return isoString;
+        }
+        return date.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    }
+
+    function populateProfile(data) {
+        var name = data.displayName || data.fullName || data.name || 'Guest User';
+        var email = data.email || data.primaryEmail || 'guest@example.com';
+        var phone = data.phone || data.phoneNumber || data.mobilePhone || 'Not provided';
+        var altPhone = data.alternatePhone || data.secondaryPhone || phone || 'Not provided';
+        var memberSince = data.createdAt || data.memberSince || '';
+
+        setText('profile-name', name);
+        setText('profile-email', email);
+        setText('detail-name', name);
+        setText('detail-email', email);
+        setText('detail-phone', phone);
+        setText('detail-phone-secondary', altPhone);
+        setText('profile-member-since', formatDate(memberSince));
+    }
+
+    function initialiseProfile(main) {
+        if (!main || main.hasAttribute(INITIALISED_FLAG)) {
             return;
         }
+        main.setAttribute(INITIALISED_FLAG, 'true');
 
         var endpoint = main.getAttribute('data-profile-endpoint');
-        var feedback = document.getElementById('profile-feedback');
-        var refreshButton = document.getElementById('edit-profile');
-
-        if (!endpoint) {
+        if (!endpoint || !window.feaneGateway) {
             return;
         }
+
+        var feedback = document.getElementById('profile-feedback');
+        var refreshButton = document.getElementById('edit-profile');
 
         function loadProfile() {
             showFeedback(feedback, 'Loading profile from gateway…', 'info');
@@ -56,11 +88,17 @@
         }
 
         if (refreshButton) {
-            refreshButton.addEventListener('click', function () {
-                loadProfile();
-            });
+            refreshButton.addEventListener('click', loadProfile);
         }
 
         loadProfile();
-    });
+    }
+
+    function init() {
+        var main = document.querySelector('main[data-profile-endpoint]');
+        initialiseProfile(main);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('feane:page-ready', init);
 })();

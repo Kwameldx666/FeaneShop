@@ -1,94 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Авторизация и регистрация</title>
+    <meta charset="utf-8" />
+    <meta name="gateway-origin" content="http://localhost:5000">
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Auth</title>
 
-    <!-- Иконки -->
     <link rel="stylesheet"
           href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
           integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
-          crossorigin="anonymous">
-
-    <!-- Стили -->
-    <link rel="stylesheet" href="/css/Auth.css">
+          crossorigin="anonymous" />
+    <link rel="stylesheet" href="/css/Auth.css" />
 </head>
-
 <body>
+
     <div class="container" id="container">
-        <!-- Регистрация -->
+        <!-- REGISTRATION -->
         <div class="form-container sign-up-container">
-            <form id="registerForm">
+            <form action="/Account/Register" method="post" class="register_form" id="registerForm">
+                <input type="hidden" name="ReturnUrl" id="returnUrlRegister" value="" />
                 <h1>Регистрация</h1>
 
                 <div class="social-container">
-                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social" aria-label="Google"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                 </div>
 
-                <input type="text" placeholder="Username" id="username" />
-                <span id="errorName" class="text-danger"></span>
+                <div class="alert alert-danger d-none" id="registerError"></div>
 
-                <input type="email" placeholder="Email" id="email" />
-                <span id="errorEmail" class="text-danger"></span>
+                <input type="text" placeholder="Username" name="Username" id="username" />
+                <div class="col-md-12 form-group text-center"><span id="errorName" class="text-danger"></span></div>
 
-                <input type="password" placeholder="Password" id="password" />
-                <span id="errorPassword" class="text-danger"></span>
+                <input type="email" placeholder="Email" name="Email" id="email" />
+                <div class="col-md-12 form-group text-center"><span id="errorEmail" class="text-danger"></span></div>
+
+                <input type="password" placeholder="Password" name="Password" id="password" />
+                <div class="col-md-12 form-group text-center"><span id="errorPassword" class="text-danger"></span></div>
 
                 <button type="submit">Зарегистрироваться</button>
             </form>
         </div>
 
-        <!-- Авторизация -->
+        <!-- LOGIN -->
         <div class="form-container sign-in-container">
-            <form id="loginForm">
-                <h1>Авторизация</h1>
+            <form action="/Account/Login" method="post" class="login_form" id="loginForm">
+                <input type="hidden" name="ReturnUrl" id="returnUrlLogin" value="" />
+                <div class="alert alert-danger d-none" id="loginError"></div>
 
+                <h1>Авторизация</h1>
                 <div class="social-container">
-                    <a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-                    <a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social" aria-label="Google"><i class="fab fa-google-plus-g"></i></a>
+                    <a href="#" class="social" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                 </div>
 
-                <input type="text" placeholder="Name or Email" id="credential" />
-                <span id="errorCredential" class="text-danger"></span>
+                <input type="text" placeholder="Name or Email" name="Credential" id="credential" />
+                <div class="col-md-12 form-group text-center"><span id="errorCredential" class="text-danger"></span></div>
 
-                <input type="password" placeholder="Password" id="login_password" />
-                <span id="errorPasswordLogin" class="text-danger"></span>
+                <input type="password" placeholder="Password" name="Password" id="login_password" />
 
                 <div class="remember-me">
-                    <label>
-                        <input type="checkbox" id="rememberMe" />
-                        Запомнить меня
-                    </label>
+                    <label><input type="checkbox" name="RememberMe" value="true" /> Запомнить меня</label>
                 </div>
 
-
+                <a href="/Pages/Account/ResetPassword">Забыли пароль?</a>
                 <button type="submit">Вход</button>
             </form>
         </div>
 
-
-        <!-- Панели -->
+        <!-- OVERLAY -->
         <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
                     <h1>Добро пожаловать!</h1>
-                    <p>Чтобы оставаться на связи с нами, войдите в систему</p>
-                    <button class="ghost" id="signIn">Авторизация</button>
+                    <p>Чтобы оставаться на связи с нами, пожалуйста, войдите в систему с вашей личной информацией</p>
+                    <button class="ghost" id="signIn" type="button">Авторизация</button>
                 </div>
                 <div class="overlay-panel overlay-right">
                     <h1>Привет, Друг!</h1>
-                    <p>Введите свои данные и начните путешествие вместе с нами</p>
-                    <button class="ghost" id="signUp">Регистрация</button>
+                    <p>Введите свои личные данные и начните путешествие вместе с нами</p>
+                    <button class="ghost" id="signUp" type="button">Регистрация</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JS -->
-    <script src="/js/auth.js"></script>
-    <script src="/js/account-authentication.js"></script>
+    <!-- Сначала переключение UI, потом сетевые запросы -->
+    <script src="/js/auth-ui-toggle.js" defer></script>
+    <script src="/js/auth-ocelot.js" defer></script>
 </body>
 </html>

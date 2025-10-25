@@ -1,101 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Basic -->
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <link rel="shortcut icon" href="/images/favicon.png" type="image/png">
-  <title>Feane - Checkout</title>
+  <!-- Site Metas -->
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <link rel="shortcut icon" href="/images/favicon.png" type="">
+
+  <title>Feane</title>
+
+  <!-- bootstrap core css -->
   <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
-  <link rel="stylesheet" href="/css/payment-checkout.css" />
-  <link rel="stylesheet" href="/css/navbar.css" />
+
+  <!--owl slider stylesheet -->
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
+  <!-- nice select  -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css"
+        integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ=="
+        crossorigin="anonymous" />
+  <!-- font awesome style -->
+  <link href="/css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- Custom styles for this template -->
+  <link href="/css/style.css" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="/css/responsive.css" rel="stylesheet" />
+  <link href="/css/navbar.css" rel="stylesheet" />
+  <link href="/css/payment-checkout.css" rel="stylesheet" />
 </head>
-<body>
+<body class="sub_page">
   <div data-include="/partials/navbar.html"></div>
 
-  <main class="container py-5">
-    <h1 class="mb-4">Checkout</h1>
-    <div id="checkout-feedback" class="alert d-none" role="alert"></div>
-    <form class="checkout-form" action="http://localhost:5000/api/payments/checkout" method="post"
-      data-gateway-endpoint="/api/payments/checkout">
-      <div class="row g-4">
-        <div class="col-lg-7">
-          <section class="card p-4">
-            <h2 class="h5">Billing details</h2>
-            <div class="mb-3">
-              <label for="billingName" class="form-label">Full name</label>
-              <input type="text" id="billingName" name="Name" class="form-control" required />
-            </div>
-            <div class="mb-3">
-              <label for="billingEmail" class="form-label">Email</label>
-              <input type="email" id="billingEmail" name="Email" class="form-control" required />
-            </div>
-            <div class="mb-3">
-              <label for="billingAddress" class="form-label">Address</label>
-              <input type="text" id="billingAddress" name="Address" class="form-control" required />
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="billingCity" class="form-label">City</label>
-                <input type="text" id="billingCity" name="City" class="form-control" required />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="billingPostal" class="form-label">Postal code</label>
-                <input type="text" id="billingPostal" name="PostalCode" class="form-control" required />
-              </div>
-            </div>
-          </section>
+  <div class="payment-wrapper">
+    <div class="payment-card">
+      <h1 class="payment-title">Payment Information</h1>
+      <p class="payment-amount">Amount due: <strong>$49.99</strong></p>
 
-          <section class="card p-4 mt-4">
-            <h2 class="h5">Payment</h2>
-            <div class="mb-3">
-              <label for="cardNumber" class="form-label">Card number</label>
-              <input type="text" id="cardNumber" name="CardNumber" class="form-control" placeholder="xxxx xxxx xxxx xxxx" required />
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="cardExpiry" class="form-label">Expiry date</label>
-                <input type="text" id="cardExpiry" name="Expiry" class="form-control" placeholder="MM/YY" required />
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="cardCvv" class="form-label">CVV</label>
-                <input type="text" id="cardCvv" name="CVV" class="form-control" required />
-              </div>
-            </div>
-          </section>
+      <form class="payment-form" action="#" method="post" novalidate>
+        <div class="form-group">
+          <label for="cardNumber">Card Number</label>
+          <input id="cardNumber" name="cardNumber" class="form-control" autocomplete="cc-number" placeholder="1234 5678 9012 3456" />
         </div>
-        <div class="col-lg-5">
-          <aside class="card p-4 order-summary">
-            <h2 class="h5">Order summary</h2>
-            <ul class="list-group list-group-flush mb-3">
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Delicious Pizza</span>
-                <span>$20.00</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Juicy Burger</span>
-                <span>$15.00</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between fw-bold">
-                <span>Total</span>
-                <span>$35.00</span>
-              </li>
-            </ul>
-            <button type="submit" class="btn btn-primary w-100">Pay now</button>
-          </aside>
+
+        <div class="form-group">
+          <label for="cardHolder">Card Holder Name</label>
+          <input id="cardHolder" name="cardHolder" class="form-control" autocomplete="cc-name" placeholder="John Doe" />
         </div>
-      </div>
-    </form>
-  </main>
+
+        <div class="form-group form-group-inline">
+          <div class="form-field">
+            <label for="expiryDate">Expiry Date</label>
+            <input id="expiryDate" name="expiryDate" type="month" class="form-control" />
+          </div>
+          <div class="form-field">
+            <label for="cardCvv">CVV</label>
+            <input id="cardCvv" name="cardCvv" class="form-control" autocomplete="cc-csc" placeholder="123" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="currency">Currency</label>
+          <input id="currency" name="currency" class="form-control" value="USD" />
+        </div>
+
+        <input type="hidden" name="totalPrice" value="49.99" />
+        <input type="hidden" name="amount" value="49.99" />
+
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary pay-button">Pay Now</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <div data-include="/partials/footer.html"></div>
 
-  <script src="/js/jquery-3.4.1.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"
-    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-  <script src="/js/bootstrap.js"></script>
-  <script src="/js/partials-loader.js"></script>
-  <script src="/js/gateway-client.js"></script>
-  <script src="/js/payment-checkout.js"></script>
 </body>
 </html>
+
+
+

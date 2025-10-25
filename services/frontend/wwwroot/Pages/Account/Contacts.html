@@ -2,93 +2,52 @@
 <html lang="ru">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
     <title>Feane — Контактные данные</title>
 
-    <!-- Bootstrap core css -->
+    <!-- Общие стили темы -->
     <link rel="stylesheet" href="/css/bootstrap.css" />
     <link rel="stylesheet" href="/css/font-awesome.min.css" />
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/responsive.css" />
-    <link rel="stylesheet" href="/css/account-contacts.css" />
     <link rel="stylesheet" href="/css/navbar.css" />
+
+    <!-- Стили страницы -->
+    <link rel="stylesheet" href="/css/account-contacts.css" />
 </head>
+<body class="adaptive sub_page">
+    <!-- Навбар (partial) -->
+    <div data-include="/partials/navbar.html"></div>
 
-<body class="adaptive" data-multi-lang="false">
-    <!-- ===== HERO AREA (фон + хэдер) ===== -->
-    <div class="hero_area">
-        <div class="bg-box">
-            <img src="/images/hero-bg.jpg" alt="Hero background">
-        </div>
-
-        <!-- ===== HEADER ===== -->
-        <header class="header_section">
-            <div class="container">
-                <nav class="navbar navbar-expand-lg custom_nav-container">
-                    <a class="navbar-brand" href="/home/index"><span>Feane</span></a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse"
-                            data-target="#navbarSupportedContent"
-                            aria-controls="navbarSupportedContent" aria-expanded="false"
-                            aria-label="Toggle navigation">
-                        <span class=""></span>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <ul class="navbar-nav mx-auto">
-                            <li class="nav-item"><a class="nav-link" href="/home/index">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/home/about">About</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/weather/index">Weather</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/reservation/book">Book Table</a></li>
-                        </ul>
-
-                        <div class="user_option">
-                            <a href="/account/profile" class="user_link">
-                                <i class="fa fa-user" aria-hidden="true"></i>
-                            </a>
-                            <a class="cart_link" href="/cart/cart" title="View Cart">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 457.627 457.627"
-                                     width="24" height="24" fill="currentColor">
-                                    <path d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304
-                           C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                           C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472
-                           c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                           c4.096,27.136,27.648,47.616,55.296,47.616h212.992
-                           c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                           C457.728,97.71,450.56,86.958,439.296,84.91z" />
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
-                </nav>
-            </div>
-        </header>
-    </div>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <main>
+    <!-- Контент страницы. endpoint укажи свой, если другой -->
+    <main class="container py-4" data-contacts-endpoint="/api/account/contacts">
         <div class="page_layout page_layout-clear">
             <div class="layout">
                 <div class="layout__content">
                     <div class="content-wrapper section--content_wrapper">
+
                         <!-- Боковое меню -->
                         <aside class="sidebar--menu">
-                            <div class="menu menu--personal content-block--padded">
-                                <div class="menu-item">
-                                    <a class="menu-link" href="/account/profile">История резерваций</a>
+                            <label class="menu-toggle" data-title="Личный кабинет" for="menu-toggle"></label>
+                            <nav class="menu menu--personal content-block--padded">
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/profile">История резерваций</a>
                                 </div>
-                                <div class="menu-item">
-                                    <a class="menu-link" href="/account/addresses">Адрес доставки</a>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/addresses">Адрес доставки</a>
                                 </div>
-                                <div class="menu-item">
-                                    <a class="menu-link menu-link--active" href="/account/contacts">Контактные данные</a>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link menu-link--active" href="/account/contacts">Контактные данные</a>
                                 </div>
-                                <div class="menu-item">
-                                    <a class="menu-link" href="/account/logout">Выход</a>
+                                <div class="menu-item menu-item--personal">
+                                    <a class="menu-link menu-link--personal link" href="/account/logout">Выход</a>
                                 </div>
-                            </div>
+                            </nav>
                         </aside>
 
-                        <!-- Контент -->
+                        <!-- Основной контент -->
                         <section class="section--content">
                             <div class="section--checkout_header content-block--padded">
                                 <h1 class="section-title title title--h1">Контактные данные</h1>
@@ -97,75 +56,49 @@
                             <div class="content-block--padded">
                                 <div id="contacts-feedback" class="alert d-none" role="alert"></div>
 
-                                <form class="contact-form" id="contactForm" method="post" action="/account/updatecontacts">
+                                <!-- Без <form>, просто поля + кнопка -->
+                                <div class="contact-form">
                                     <label for="contact-name">Имя:</label>
-                                    <input type="text" id="contact-name" name="Username" placeholder="Ваше имя" required />
+                                    <input type="text" id="contact-name" placeholder="Введите имя" autocomplete="name" />
 
                                     <label for="contact-email">Электронная почта:</label>
-                                    <input type="email" id="contact-email" name="Email" placeholder="Ваш email" required />
+                                    <input type="email" id="contact-email" placeholder="you@example.com" autocomplete="email" />
 
                                     <label for="contact-phone">Телефон:</label>
-                                    <input type="tel" id="contact-phone" name="PhoneNumber" placeholder="+373 xxx-xx-xxх" required />
+                                    <input type="tel" id="contact-phone" placeholder="+373 600 00 000" autocomplete="tel" />
 
                                     <label for="contact-address">Адрес:</label>
-                                    <input type="text" id="contact-address" name="Address" placeholder="Ваш адрес" required />
+                                    <input type="text" id="contact-address" placeholder="Город, улица, дом" autocomplete="street-address" />
 
-                                    <button type="submit">Сохранить изменения</button>
-                                </form>
+                                    <div class="mt-3 d-flex">
+                                        <button id="save-contacts-btn" type="button" class="btn btn-primary">Сохранить изменения</button>
+                                        <button id="reset-contacts-btn" type="button" class="btn btn-outline-secondary">Сбросить</button>
+                                    </div>
+                                </div>
                             </div>
                         </section>
+
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- ===== FOOTER ===== -->
-    <footer class="footer_section">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-4 footer-col">
-                    <div class="footer_contact">
-                        <h4>Contact Us</h4>
-                        <div class="contact_link_box">
-                            <a href="#"><i class="fa fa-map-marker"></i><span>Location</span></a>
-                            <a href="#"><i class="fa fa-phone"></i><span>Call +01 1234567890</span></a>
-                            <a href="#"><i class="fa fa-envelope"></i><span>demo@gmail.com</span></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 footer-col">
-                    <div class="footer_detail">
-                        <a href="#" class="footer-logo">Feane</a>
-                        <p>Necessary, making this the first true generator on the Internet.</p>
-                        <div class="footer_social">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-linkedin"></i></a>
-                            <a href="#"><i class="fa fa-instagram"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4 footer-col">
-                    <h4>Opening Hours</h4>
-                    <p>Everyday</p>
-                    <p>10.00 Am - 10.00 Pm</p>
-                </div>
-            </div>
-            <div class="footer-info">
-                <p>
-                    &copy; <span id="displayYear"></span> All Rights Reserved By
-                    <a href="https://html.design/">Free Html Templates</a><br />
-                    &copy; <span id="displayYear"></span> Distributed By
-                    <a href="https://themewagon.com/" target="_blank">ThemeWagon</a>
-                </p>
-            </div>
-        </div>
-    </footer>
+    <!-- Футер (partial) -->
+    <div data-include="/partials/footer.html"></div>
 
-    <!-- ===== SCRIPTS ===== -->
+    <!-- Скрипты -->
     <script src="/js/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="/js/bootstrap.js"></script>
+
+    <!-- Лоадер partial’ов -->
+    <script src="/js/partials-loader.js"></script>
+
+    <!-- Логика страницы (загрузка/сохранение контактов через feaneGateway) -->
     <script src="/js/account-contacts.js"></script>
+
+    <!-- Общие эффекты темы (твоя защищённая версия без ошибок, как раньше) -->
+    <script src="/js/custom.js"></script>
 </body>
 </html>
