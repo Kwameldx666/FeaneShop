@@ -1,11 +1,11 @@
-x-auth-db-connection: &auth-db-connection
-  ConnectionStrings__DefaultConnection: "${AUTH_DB_CONNECTION:-Server=${AUTH_DB_HOST:-sqlserver};Database=${AUTH_DB_NAME:-Feane.AuthServiceDb};User Id=${AUTH_DB_USER:-sa};Password=${AUTH_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=False;TrustServerCertificate=True;}"
+﻿x-auth-db-connection: &auth-db-connection
+  ConnectionStrings__DefaultConnection: "${AUTH_DB_CONNECTION:-Server=${AUTH_DB_HOST:-sqlserver};Database=${AUTH_DB_NAME:-Feane.AuthServiceDb};User Id=${AUTH_DB_USER:-sa};Password=${AUTH_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=True;TrustServerCertificate=True;}"
 
 x-user-db-connection: &user-db-connection
-  ConnectionStrings__DefaultConnection: "${USER_DB_CONNECTION:-Server=${USER_DB_HOST:-sqlserver};Database=${USER_DB_NAME:-Feane.UserServiceDb};User Id=${USER_DB_USER:-sa};Password=${USER_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=False;TrustServerCertificate=True;}"
+  ConnectionStrings__DefaultConnection: "${USER_DB_CONNECTION:-Server=${USER_DB_HOST:-sqlserver};Database=${USER_DB_NAME:-Feane.UserServiceDb};User Id=${USER_DB_USER:-sa};Password=${USER_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=True;TrustServerCertificate=True;}"
 
 x-product-db-connection: &product-db-connection
-  ConnectionStrings__DefaultConnection: "${PRODUCT_DB_CONNECTION:-Server=${PRODUCT_DB_HOST:-sqlserver};Database=${PRODUCT_DB_NAME:-Feane.ProductServiceDb};User Id=${PRODUCT_DB_USER:-sa};Password=${PRODUCT_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=False;TrustServerCertificate=True;}"
+  ConnectionStrings__DefaultConnection: "${PRODUCT_DB_CONNECTION:-Server=${PRODUCT_DB_HOST:-sqlserver};Database=${PRODUCT_DB_NAME:-Feane.ProductServiceDb};User Id=${PRODUCT_DB_USER:-sa};Password=${PRODUCT_DB_PASSWORD:-YourStrong!Passw0rd};Encrypt=True;TrustServerCertificate=True;}"
 
 services:
   sqlserver:
@@ -13,15 +13,17 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "${AUTH_DB_PASSWORD:-YourStrong!Passw0rd}"
+      MSSQL_PID: "Developer"
     ports:
       - "${SQLSERVER_PORT:-1433}:1433"
     volumes:
       - sqlserver-data:/var/opt/mssql
     healthcheck:
-      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${AUTH_DB_PASSWORD:-YourStrong!Passw0rd}", "-Q", "SELECT 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
+      test: ["CMD-SHELL", "bash -lc 'echo > /dev/tcp/127.0.0.1/1433'"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
 
   auth-service:
     build:
