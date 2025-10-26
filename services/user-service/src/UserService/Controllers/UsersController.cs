@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
@@ -13,12 +12,10 @@ namespace UserService.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserRepository _userRepository;
-    private readonly ILogger<UsersController> _logger;
 
-    public UsersController(IUserRepository userRepository, ILogger<UsersController> logger)
+    public UsersController(IUserRepository userRepository)
     {
         _userRepository = userRepository ?? throw new ArgumentNullException(nameof(userRepository));
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     [HttpGet]
@@ -35,27 +32,34 @@ public class UsersController : ControllerBase
         return result.Status ? Ok(result) : NotFound(result);
     }
 
-    [HttpPost]
-    public ActionResult<OperationResult<UserProfile>> CreateUser([FromBody] UserData user)
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<OperationResult<UserProfile>>> UpdateProfile(Guid id, [FromBody] UserProfileUpdateRequest request)
     {
-        if (user == null)
+        if (!ModelState.IsValid || request == null)
         {
-            return BadRequest(OperationResult<UserProfile>.Failure("User payload is required."));
+            return ValidationProblem(ModelState);
         }
 
-        var result = _userRepository.AddUser(user);
-        return result.Status ? Ok(result) : BadRequest(result);
-    }
-
-    [HttpPut("{id:guid}")]
-    public async Task<ActionResult<OperationResult<UserProfile>>> UpdateUser(Guid id, [FromBody] UserData user)
-    {
-        if (user == null || id != user.Id)
+        if (id != request.AuthUserId)
         {
             return BadRequest(OperationResult<UserProfile>.Failure("User identifier mismatch."));
         }
 
-        var result = await _userRepository.UpdateUser(user);
+        var profile = new UserData
+        {
+            Id = request.AuthUserId,
+            AuthUserId = request.AuthUserId,
+            Username = request.Username.Trim(),
+            NormalizedUserName = request.Username.Trim().ToUpperInvariant(),
+            Email = request.Email.Trim(),
+            NormalizedEmail = request.Email.Trim().ToUpperInvariant(),
+            PhoneNumber = request.PhoneNumber?.Trim(),
+            Address = request.Address?.Trim(),
+            Roles = request.Role,
+            IsActive = request.IsActive
+        };
+
+        var result = await _userRepository.UpdateUser(profile);
         return result.Status ? Ok(result) : NotFound(result);
     }
 
@@ -73,35 +77,11 @@ public class UsersController : ControllerBase
         return Ok(users);
     }
 
-    [HttpPost("authenticate")]
-    public ActionResult<OperationResult<UserProfile>> Authenticate([FromBody] AuthenticateRequest request)
-    {
-        if (request == null)
-        {
-            return BadRequest(OperationResult<UserProfile>.Failure("Authentication payload is required."));
-        }
-
-        var result = _userRepository.AuthenticateUser(request.Credential, request.Password);
-        return result.Status ? Ok(result) : Unauthorized(result);
-    }
-
     [HttpGet("{id:guid}/roles")]
     public ActionResult<IEnumerable<Role>> GetUserRoles(Guid id)
     {
         var roles = _userRepository.GetUserRoles(id);
         return Ok(roles);
-    }
-
-    [HttpPost("change-password")]
-    public ActionResult<OperationResult<UserProfile>> ChangePassword([FromBody] ChangePasswordRequest request)
-    {
-        if (request == null)
-        {
-            return BadRequest(OperationResult<UserProfile>.Failure("Email is required."));
-        }
-
-        var result = _userRepository.ChangeUserPassword(request.Email);
-        return result.Status ? Ok(result) : NotFound(result);
     }
 
     [HttpGet("{id:guid}/exists")]
@@ -130,13 +110,6 @@ public class UsersController : ControllerBase
         return result.Status ? Ok(result) : NotFound(result);
     }
 
-    [HttpGet("{id:guid}/address")]
-    public async Task<ActionResult<OperationResult<DeliveryAddress>>> GetAddress(Guid id)
-    {
-        var result = await _userRepository.GetOneAddressByUserIdAsync(id);
-        return result.Status ? Ok(result) : NotFound(result);
-    }
-
     [HttpPut("{id:guid}/address")]
     public async Task<ActionResult<OperationResult<UserProfile>>> UpdateAddress(Guid id, [FromBody] DeliveryAddress address)
     {
@@ -145,52 +118,14 @@ public class UsersController : ControllerBase
             return BadRequest(OperationResult<UserProfile>.Failure("Address payload is required."));
         }
 
-        var user = new UserData { Id = id };
-        var result = await _userRepository.UpdateAddress(user, address);
+        var result = await _userRepository.UpdateAddress(id, address);
         return result.Status ? Ok(result) : NotFound(result);
     }
 
-    [HttpPost("user-data")]
-    public ActionResult<OperationResult<UserProfile>> GetUserData([FromBody] UserCredentialRequest request)
+    [HttpGet("{id:guid}/address")]
+    public async Task<ActionResult<OperationResult<DeliveryAddress>>> GetAddress(Guid id)
     {
-        if (request == null)
-        {
-            return BadRequest(OperationResult<UserProfile>.Failure("Credential payload is required."));
-        }
-
-        var user = new UserData { Credential = request.Credential, Password = request.Password };
-        var result = _userRepository.GetUserData(user);
-        return result.Status ? Ok(result) : Unauthorized(result);
-    }
-
-    [HttpPost("by-cookie")]
-    public async Task<ActionResult<UserData?>> GetUserByCookie([FromBody] CookieRequest request)
-    {
-        if (request == null)
-        {
-            return BadRequest("Cookie payload is required.");
-        }
-
-        var user = await _userRepository.GetUserByCookie(request.CookieValue);
-        return user == null ? NotFound() : Ok(user);
-    }
-
-    [HttpPost("logout")]
-    public ActionResult<OperationResult> Logout()
-    {
-        var result = _userRepository.UserLogout();
-        return Ok(result);
-    }
-
-    [HttpPost("login-audit")]
-    public async Task<ActionResult> UpdateLoginAudit([FromBody] LoginAuditRequest request)
-    {
-        if (request == null)
-        {
-            return BadRequest("Login audit payload is required.");
-        }
-
-        var updated = await _userRepository.UpdateUserLoginAuditAsync(request.UserId, request.CookieValue, request.LoginTime);
-        return updated ? Ok() : StatusCode(StatusCodes.Status500InternalServerError);
+        var result = await _userRepository.GetOneAddressByUserIdAsync(id);
+        return result.Status ? Ok(result) : NotFound(result);
     }
 }

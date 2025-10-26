@@ -1,12 +1,14 @@
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ProductService.Migrations
 {
-    public partial class InitialCreate : Migration
+    /// <inheritdoc />
+    public partial class initial : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -34,12 +36,17 @@ namespace ProductService.Migrations
             migrationBuilder.InsertData(
                 table: "Dishes",
                 columns: new[] { "Id", "Category", "CreatedAt", "Description", "ImageBase64", "ImageMimeType", "IsAvailable", "IsFeatured", "Name", "PopularityScore", "Price", "UpdatedAt" },
-                values: new object[,]
-                {
-                    { new Guid("3F1A3C78-556C-4E8B-B9DD-5E72D6A5D82F"), "burger", new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), "Juicy beef patty with cheddar cheese, lettuce, tomato and signature sauce.", null, null, true, true, "Classic Burger", 85, 12.50m, new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                    { new Guid("E5B28A3D-ED0C-4F4F-A26A-F879C0DEB9C6"), "pizza", new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), "Thin crust pizza topped with spicy chicken, mozzarella and jalapeños.", null, null, true, true, "Spicy Chicken Pizza", 92, 15.90m, new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-                    { new Guid("8C41C36C-C5C6-49DF-B3B7-16E785AC6F75"), "pasta", new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc), "Tagliatelle tossed in a creamy mushroom sauce with parmesan flakes.", null, null, true, false, "Creamy Mushroom Pasta", 74, 13.40m, new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
-                });
+                values: new object[] { new Guid("3f1a3c78-556c-4e8b-b9dd-5e72d6a5d82f"), "burger", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Juicy beef patty with cheddar cheese, lettuce, tomato and signature sauce.", null, null, true, true, "Classic Burger", 85, 12.50m, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
+
+            migrationBuilder.InsertData(
+                table: "Dishes",
+                columns: new[] { "Id", "Category", "CreatedAt", "Description", "ImageBase64", "ImageMimeType", "IsAvailable", "Name", "PopularityScore", "Price", "UpdatedAt" },
+                values: new object[] { new Guid("8c41c36c-c5c6-49df-b3b7-16e785ac6f75"), "pasta", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Tagliatelle tossed in a creamy mushroom sauce with parmesan flakes.", null, null, true, "Creamy Mushroom Pasta", 74, 13.40m, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
+
+            migrationBuilder.InsertData(
+                table: "Dishes",
+                columns: new[] { "Id", "Category", "CreatedAt", "Description", "ImageBase64", "ImageMimeType", "IsAvailable", "IsFeatured", "Name", "PopularityScore", "Price", "UpdatedAt" },
+                values: new object[] { new Guid("e5b28a3d-ed0c-4f4f-a26a-f879c0deb9c6"), "pizza", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Thin crust pizza topped with spicy chicken, mozzarella and jalapeños.", null, null, true, true, "Spicy Chicken Pizza", 92, 15.90m, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc) });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dishes_Category",
@@ -57,6 +64,7 @@ namespace ProductService.Migrations
                 column: "IsFeatured");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

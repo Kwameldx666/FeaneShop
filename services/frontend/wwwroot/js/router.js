@@ -295,18 +295,21 @@
   }
 
   function navigate(path, { replaceState = false } = {}) {
-    const { path: resolvedPath, file, match } = resolveRoute(path);
+    const url = new URL(path, window.location.origin);
+    const { path: resolvedPath, file, match } = resolveRoute(url.pathname + url.search + url.hash);
 
     if (!file) {
       return Promise.resolve();
     }
 
-    const urlPath = resolvedPath === defaultRoute ? '/' : resolvedPath;
+    const targetPath = resolvedPath === defaultRoute ? '/' : resolvedPath;
+    const targetUrl = `${targetPath}${url.search}${url.hash}`;
+    const historyState = { path: resolvedPath, search: url.search, hash: url.hash };
 
     if (!replaceState) {
-      history.pushState({ path: resolvedPath }, '', urlPath);
+      history.pushState(historyState, '', targetUrl);
     } else {
-      history.replaceState({ path: resolvedPath }, '', urlPath);
+      history.replaceState(historyState, '', targetUrl);
     }
 
     setLoading(true);
@@ -381,11 +384,14 @@
     document.addEventListener('submit', handleFormSubmit, true);
 
     window.addEventListener('popstate', (event) => {
-      const path = event.state?.path || normalizePath(window.location.pathname);
-      navigate(path, { replaceState: true });
+      const state = event.state || {};
+      const path = state.path || normalizePath(window.location.pathname);
+      const search = typeof state.search === 'string' ? state.search : window.location.search;
+      const hash = typeof state.hash === 'string' ? state.hash : window.location.hash;
+      navigate(`${path}${search}${hash}`, { replaceState: true });
     });
 
-    const initialPath = normalizePath(window.location.pathname);
+    const initialPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
     navigate(initialPath, { replaceState: true });
   }
 

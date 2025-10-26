@@ -25,6 +25,30 @@
             "UpstreamHttpMethod": [ "Get", "Post", "Options" ]
         },
         {
+            "DownstreamPathTemplate": "/api/users",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "user-service",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/api/users",
+            "UpstreamHttpMethod": [ "Get", "Post", "Options" ]
+        },
+        {
+            "DownstreamPathTemplate": "/api/users/{everything}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "user-service",
+                    "Port": 8080
+                }
+            ],
+            "UpstreamPathTemplate": "/api/users/{everything}",
+            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Options" ]
+        },
+        {
             "DownstreamPathTemplate": "/api/dishes/{everything}",
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [

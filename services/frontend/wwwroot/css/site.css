@@ -18,5 +18,62 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  margin: 0;
 }
+
+body.feane-app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body.feane-app #app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+}
+
+body.feane-app #app > footer.footer_section {
+  margin-top: auto;
+  flex-shrink: 0;
+  width: 100%;
+}
+
+body.feane-app .footer_section {
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+body.feane-app #app .page-content {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+body.feane-app #app .page-content > section {
+  flex: 1 0 auto;
+}
+
+
+body.sub_page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+body.sub_page .page-content {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+body.sub_page .page-content > section {
+  flex: 1 0 auto;
+}
+
+body.sub_page .footer_section {
+  margin-top: auto;
+  width: 100%;
+}
+

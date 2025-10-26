@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -127,6 +127,29 @@
             color: var(--muted);
         }
 
+        .toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .toggle input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent);
+        }
+
+        .current-image img {
+            max-width: 160px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: block;
+        }
+
         /* Controls */
         .form-control, .dish-edit textarea, .dish-edit select {
             width: 100%;
@@ -230,7 +253,7 @@
 
 <body class="sub_page">
 
-    <main class="dish-edit">
+    <main class="dish-edit" data-dish-endpoint-template="/api/dishes/{id}">
         <div class="header">
             <div class="badge">✦</div>
             <div>
@@ -239,22 +262,29 @@
             </div>
         </div>
 
-        <form action="#" method="post" enctype="multipart/form-data">
+        <div id="edit-dish-feedback" class="alert d-none" role="alert"></div>
+
+        <form id="edit-dish-form"
+              action="#"
+              method="post"
+              enctype="multipart/form-data"
+              data-update-endpoint-template="/api/dishes/{id}">
+            <input type="hidden" id="dishId" name="id" value="" />
             <div class="form-group">
                 <label for="editDishName">Dish Name</label>
-                <input id="editDishName" name="name" class="form-control" value="Margherita Pizza" required />
+                <input id="editDishName" name="name" class="form-control" required />
                 <small class="hint">Make it short and appetizing.</small>
             </div>
 
             <div class="form-group">
                 <label for="editDishPrice">Price</label>
-                <input id="editDishPrice" name="price" type="number" step="0.01" min="0" class="form-control" value="12.00" required />
+                <input id="editDishPrice" name="price" type="number" step="0.01" min="0" class="form-control" required />
                 <small class="hint">Use a dot for decimals (e.g., 9.99).</small>
             </div>
 
             <div class="form-group full">
                 <label for="editDishDescription">Description</label>
-                <textarea id="editDishDescription" name="description" class="form-control" rows="4" required>Classic pizza with mozzarella, tomatoes and basil.</textarea>
+                <textarea id="editDishDescription" name="description" class="form-control" rows="4" required></textarea>
                 <small class="hint">Share the key ingredients or a short story.</small>
             </div>
 
@@ -263,7 +293,7 @@
                 <select id="editDishCategory" name="category" class="form-control" required>
                     <option value="">Select a category</option>
                     <option value="burger">Burger</option>
-                    <option value="pizza" selected>Pizza</option>
+                    <option value="pizza">Pizza</option>
                     <option value="pasta">Pasta</option>
                     <option value="fries">Fries</option>
                 </select>
@@ -272,7 +302,38 @@
             <div class="form-group">
                 <label for="editDishImage">Image</label>
                 <input type="file" id="editDishImage" name="imageFile" class="form-control" />
-                <small class="hint">PNG/JPG/WebP · 1–3 MB is usually enough.</small>
+                <small class="hint">PNG/JPG/WebP - 1-3 MB is usually enough.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="editDishPopularity">Popularity Score</label>
+                <input id="editDishPopularity"
+                       name="popularityScore"
+                       type="number"
+                       class="form-control"
+                       min="0"
+                       step="1"
+                       value="0" />
+                <small class="hint">Optional. Higher numbers bubble dishes up in featured lists.</small>
+            </div>
+
+            <div class="form-group full">
+                <label>Flags</label>
+                <div class="d-flex gap-3 flex-wrap">
+                    <label class="toggle d-inline-flex align-items-center gap-2">
+                        <input type="checkbox" id="editDishIsAvailable" name="isAvailable" />
+                        <span>Available</span>
+                    </label>
+                    <label class="toggle d-inline-flex align-items-center gap-2">
+                        <input type="checkbox" id="editDishIsFeatured" name="isFeatured" />
+                        <span>Featured</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group full">
+                <label>Current Image</label>
+                <div id="editDishImagePreview" class="current-image text-muted">No image uploaded.</div>
             </div>
 
             <div class="actions full">
@@ -282,5 +343,7 @@
         </form>
     </main>
 
+    <script src="/js/gateway-client.js"></script>
+    <script src="/js/dish-edit.js"></script>
 </body>
 </html>

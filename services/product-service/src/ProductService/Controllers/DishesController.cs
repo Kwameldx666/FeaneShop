@@ -47,6 +47,8 @@ public class DishesController : ControllerBase
 
         return Ok(new
         {
+            success = true,
+            message = "Dishes retrieved successfully.",
             items = responses,
             totalCount = total,
             page = options.Page ?? 1,
@@ -70,7 +72,7 @@ public class DishesController : ControllerBase
     public async Task<IActionResult> GetCategories(CancellationToken cancellationToken)
     {
         var categories = await _dishRepository.GetCategoriesAsync(cancellationToken);
-        return Ok(new { items = categories });
+        return Ok(new { success = true, items = categories });
     }
 
     [HttpPost]
@@ -115,7 +117,8 @@ public class DishesController : ControllerBase
         {
             success = true,
             message = "Dish created successfully.",
-            item = response
+            item = response,
+            redirectUrl = "/dish/index"
         });
     }
 
@@ -168,7 +171,13 @@ public class DishesController : ControllerBase
         }
 
         var response = updated.ToResponse();
-        return Ok(new { success = true, message = "Dish updated successfully.", item = response });
+        return Ok(new
+        {
+            success = true,
+            message = "Dish updated successfully.",
+            item = response,
+            redirectUrl = "/dish/index"
+        });
     }
 
     [HttpDelete("{id:guid}")]

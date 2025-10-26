@@ -69,43 +69,101 @@
             }
 
             dishes.forEach(function (dish) {
-                var id = dish.id || dish.Id || dish.dishId;
+                var id = dish.id || dish.Id || dish.dishId || '';
                 var name = dish.name || dish.Name || 'Dish';
-                var category = dish.category || dish.Category || '—';
-                var price = dish.price || dish.Price || 0;
                 var description = dish.description || dish.Description || '';
+                var rawPrice = dish.price;
+                if (rawPrice == null) {
+                    rawPrice = dish.Price;
+                }
+                var price = Number(rawPrice);
+                if (!Number.isFinite(price)) {
+                    price = 0;
+                }
+                var category = dish.category || dish.Category || '-';
+                var imageMime = dish.imageMimeType || dish.ImageMimeType || 'image/jpeg';
+                var imageBase64 = dish.imageBase64 || dish.ImageBase64 || '';
+                var imageUrl = dish.imageUrl || dish.ImageUrl || '';
+
+                var imageSource = '';
+                if (imageUrl) {
+                    imageSource = imageUrl;
+                } else if (imageBase64) {
+                    imageSource = 'data:' + imageMime + ';base64,' + imageBase64;
+                }
+
+                var imageCell = imageSource
+                    ? '<img class="thumb" src="' + escapeHtml(imageSource) + '" alt="' + escapeHtml(name) + '" />'
+                    : '<span class="text-muted">No image</span>';
+
+                var editHref = '/dish/editdish';
+                if (id) {
+                    editHref += '?id=' + encodeURIComponent(id);
+                }
 
                 var row = document.createElement('tr');
                 row.setAttribute('data-id', id);
                 row.innerHTML = '' +
                     '<td>' + escapeHtml(name) + '</td>' +
-                    '<td>' + escapeHtml(category) + '</td>' +
-                    '<td>' + formatCurrency(price) + '</td>' +
                     '<td>' + escapeHtml(description) + '</td>' +
+                    '<td>' + formatCurrency(price) + '</td>' +
+                    '<td>' + escapeHtml(category) + '</td>' +
+                    '<td>' + imageCell + '</td>' +
                     '<td class="text-end">' +
-                    '  <a class="btn btn-outline-secondary btn-sm me-2" href="/dish/editdish' + (id ? ('?id=' + encodeURIComponent(id)) : '') + '">Edit</a>' +
-                    '  <button type="button" class="btn btn-outline-danger btn-sm" data-role="delete-dish" data-id="' + escapeHtml(id || '') + '">Delete</button>' +
+                    '  <a class="btn btn-outline-secondary btn-sm me-2" href="' + editHref + '" data-role="edit-dish" data-id="' + escapeHtml(id) + '">Edit</a>' +
+                    '  <button type="button" class="btn btn-outline-danger btn-sm" data-role="delete-dish" data-id="' + escapeHtml(id) + '">Delete</button>' +
                     '</td>';
                 tableBody.appendChild(row);
+
+                if (id && window.sessionStorage) {
+                    try {
+                        sessionStorage.setItem('feane.editDish.' + id, JSON.stringify(dish));
+                    } catch (error) {
+                        console.warn('Unable to cache dish for editing', error);
+                    }
+                }
             });
         }
 
         function loadDishes() {
-            showFeedback('Loading dishes from gateway…', 'info', feedback);
-            window.feaneGateway.get(listEndpoint).then(function (response) {
-                if (response && Array.isArray(response.items)) {
-                    renderRows(response.items);
-                } else {
-                    renderRows(response);
-                }
-                showFeedback('Dishes are up to date.', 'success', feedback);
-            }).catch(function (error) {
-                renderRows([]);
-                showFeedback('Failed to load dishes: ' + error.message, 'error', feedback);
-            });
+            showFeedback('Loading dishes from gateway...', 'info', feedback);
+
+            window.feaneGateway.get(listEndpoint)
+                .then(function (response) {
+                    var items = [];
+
+                    if (response && typeof response === 'object' && Array.isArray(response.items)) {
+                        items = response.items;
+                    } else if (Array.isArray(response)) {
+                        items = response;
+                    }
+
+                    renderRows(items);
+
+                    var isSuccess = !response || response.success !== false;
+                    var message = (response && response.message) || (isSuccess ? 'Dishes are up to date.' : 'Unable to load dishes.');
+                    showFeedback(message, isSuccess ? 'success' : 'error', feedback);
+                })
+                .catch(function (error) {
+                    renderRows([]);
+                    showFeedback('Failed to load dishes: ' + error.message, 'error', feedback);
+                });
         }
 
         container.addEventListener('click', function (event) {
+            var editLink = event.target instanceof Element ? event.target.closest('[data-role="edit-dish"]') : null;
+            if (editLink) {
+                var editId = editLink.getAttribute('data-id');
+                if (editId && window.sessionStorage) {
+                    try {
+                        sessionStorage.setItem('feane.editDishId', editId);
+                    } catch (storageError) {
+                        console.warn('Unable to persist edit dish id', storageError);
+                    }
+                }
+                return;
+            }
+
             var button = event.target instanceof Element ? event.target.closest('[data-role="delete-dish"]') : null;
             if (!button) {
                 return;
@@ -123,7 +181,7 @@
 
             var deleteEndpoint = deleteTemplate ? deleteTemplate.replace('{id}', encodeURIComponent(id)) : (listEndpoint + '/' + encodeURIComponent(id));
 
-            showFeedback('Deleting dish…', 'info', feedback);
+            showFeedback('Deleting dish...', 'info', feedback);
             window.feaneGateway.delete(deleteEndpoint).then(function (response) {
                 if (response && (response.success || response.status === 'success')) {
                     showFeedback(response.message || 'Dish deleted successfully.', 'success', feedback);

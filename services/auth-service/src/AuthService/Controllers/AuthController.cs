@@ -14,11 +14,13 @@ public class AuthController : ControllerBase
     private readonly IUserRepository _users;
     private readonly IJwtTokenService _jwt;
     private readonly ILogger<AuthController> _logger;
+    private readonly IUserProfileClient _profiles;
 
-    public AuthController(IUserRepository users, IJwtTokenService jwt, ILogger<AuthController> logger)
+    public AuthController(IUserRepository users, IJwtTokenService jwt, IUserProfileClient profiles, ILogger<AuthController> logger)
     {
         _users = users ?? throw new ArgumentNullException(nameof(users));
         _jwt = jwt ?? throw new ArgumentNullException(nameof(jwt));
+        _profiles = profiles ?? throw new ArgumentNullException(nameof(profiles));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
@@ -38,6 +40,8 @@ public class AuthController : ControllerBase
             _logger.LogWarning("Registration failed for {Email}: {Message}", request.Email, result.Message);
             return BadRequest(result);
         }
+
+        await _profiles.SyncProfileAsync(result.Data, cancellationToken);
 
         return Ok(new
         {

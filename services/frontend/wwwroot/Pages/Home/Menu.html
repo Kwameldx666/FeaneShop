@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -7,118 +7,89 @@
     <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
     <title>Feane — Our Menu</title>
 
-    <!-- Базовые стили -->
     <link rel="stylesheet" href="/css/bootstrap.css" />
     <link rel="stylesheet" href="/css/font-awesome.min.css" />
     <link rel="stylesheet" href="/css/style.css" />
     <link rel="stylesheet" href="/css/responsive.css" />
     <link rel="stylesheet" href="/css/navbar.css" />
 
-    <!-- Плагины (если нужны в custom.js) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" />
-
-    <!-- Стили секции меню -->
     <link rel="stylesheet" href="/css/food-section.css" />
 </head>
 <body class="sub_page">
-    <!-- Navbar (partials-loader подставит содержимое) -->
     <div data-include="/partials/navbar.html"></div>
 
-    <!-- Шаблон карточки -->
-    <template id="food-card-template">
-        <div class="col-sm-6 col-lg-4 all">
-            <div class="box">
-                <div>
-                    <div class="img-box">
-                        <img src="/images/default.png" alt="">
-                    </div>
-                    <div class="detail-box">
-                        <h5 class="name"></h5>
-                        <p class="description"></p>
-                        <div class="options">
-                            <h6 class="price"></h6>
-                            <a href="#" class="cart-icon add-to-cart"
-                               data-id="" data-name="" data-price="" data-quantity="1"
-                               title="Add to cart">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
-                                     viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                     stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="9" cy="21" r="1"></circle>
-                                    <circle cx="20" cy="21" r="1"></circle>
-                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                                </svg>
-                            </a>
+    <main class="page-content">
+        <template id="food-card-template">
+            <div class="col-sm-6 col-lg-4 all">
+                <div class="box">
+                    <div>
+                        <div class="img-box">
+                            <img src="/images/default.png" alt="Dish preview">
+                        </div>
+                        <div class="detail-box">
+                            <h5 class="name"></h5>
+                            <p class="description"></p>
+                            <div class="options">
+                                <h6 class="price"></h6>
+                                <a href="#"
+                                   class="cart-icon add-to-cart"
+                                   data-id=""
+                                   data-name=""
+                                   data-price=""
+                                   data-quantity="1"
+                                   title="Add to cart">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22"
+                                         viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="9" cy="21" r="1"></circle>
+                                        <circle cx="20" cy="21" r="1"></circle>
+                                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                    </svg>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </template>
+        </template>
 
-    <!-- Секция меню -->
-    <section class="food_section layout_padding-bottom"
-             data-menu-endpoint="/api/dishes"
-             data-add-to-cart-url="/api/cart/add"
-             data-currency="$">
-        <div class="container">
-            <div class="heading_container heading_center">
-                <h2>Our Menu</h2>
+        <section class="food_section layout_padding-bottom"
+                 data-menu-endpoint="/api/dishes"
+                 data-add-to-cart-url="/api/cart/add"
+                 data-currency="$">
+            <div class="container">
+                <div class="heading_container heading_center">
+                    <h2>Our Menu</h2>
+                </div>
+
+                <div id="food-feedback" class="alert d-none" role="alert"></div>
+
+                <ul class="filters_menu" aria-label="Menu filters">
+                    <li class="active" data-filter="*">All</li>
+                    <li data-filter=".burger">Burger</li>
+                    <li data-filter=".pizza">Pizza</li>
+                    <li data-filter=".pasta">Pasta</li>
+                    <li data-filter=".fries">Fries</li>
+                </ul>
+
+                <div class="filters-content">
+                    <div class="row grid"></div>
+                </div>
             </div>
+        </section>
+    </main>
 
-            <div id="food-feedback" class="alert d-none" role="alert"></div>
 
-            <ul class="filters_menu" aria-label="Menu filters">
-                <li class="active" data-filter="*">All</li>
-                <li data-filter=".burger">Burger</li>
-                <li data-filter=".pizza">Pizza</li>
-                <li data-filter=".pasta">Pasta</li>
-                <li data-filter=".fries">Fries</li>
-            </ul>
 
-            <div class="filters-content">
-                <div class="row grid"><!-- карточки вставит JS --></div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer (partials) -->
-    <div data-include="/partials/footer.html"></div>
-
-    <!-- Скрипты: порядок критичен -->
     <script src="/js/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="/js/bootstrap.js"></script>
-
-    <!-- Плагины (если используются в custom.js) -->
     <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/jquery.nice-select.min.js"></script>
-
-    <!-- Лоадер партиалов -->
     <script src="/js/partials-loader.js"></script>
-
-    <!-- Заглушка gateway на случай отсутствия реального -->
-    <script>
-        window.feaneGateway = window.feaneGateway || {
-            get: (u) => fetch(u, { credentials: 'include' })
-                .then(r => r.ok ? r.json() : { items: [] })
-                .catch(() => ({ items: [] })),
-            post: (u, b) => fetch(u, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify(b || {})
-            })
-                .then(r => r.ok ? r.json() : { success: true })
-                .catch(() => ({ success: true }))
-        };
-    </script>
-
-    <!-- Логика секции меню (переписанная версия) -->
     <script src="/js/food-section.js?v=2"></script>
-
-    <!-- Общие эффекты темы (если нужны плагины выше) -->
     <script src="/js/custom.js"></script>
 </body>
 </html>

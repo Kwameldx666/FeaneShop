@@ -3,13 +3,20 @@ using UserService.Domain.Enums;
 
 namespace UserService.Domain.Entities;
 
+/// <summary>
+/// User profile stored in the user-service. Authentication data is owned by the auth-service.
+/// </summary>
 public class UserData
 {
     [Key]
     public Guid Id { get; set; }
 
-    public Guid CartId { get; set; }
-    public Cart? Cart { get; set; }
+    /// <summary>
+    /// Identifier of the user in the authentication service. Mirrors <see cref="Id"/>.
+    /// </summary>
+    [Required]
+    public Guid AuthUserId { get; set; }
+
 
     [Required]
     public string Username { get; set; } = string.Empty;
@@ -22,27 +29,8 @@ public class UserData
 
     public string? NormalizedEmail { get; set; }
 
-    public bool EmailConfirmed { get; set; }
-
-    [Required]
-    public string Password { get; set; } = string.Empty;
-
     [Required]
     public Role Roles { get; set; }
-
-    public string? SecurityStamp { get; set; }
-
-    public string? ConcurrencyStamp { get; set; }
-
-    public bool TwoFactorEnabled { get; set; }
-
-    public int AccessFailedCount { get; set; }
-
-    public bool LockoutEnabled { get; set; }
-
-    public DateTimeOffset? LockoutEnd { get; set; }
-
-    public string? Credential { get; set; }
 
     public bool IsActive { get; set; }
 
@@ -51,8 +39,6 @@ public class UserData
     public DateTime? FirstLoginTime { get; set; }
 
     public string? IP { get; set; }
-
-    public string? CookieValue { get; set; }
 
     public string? Address { get; set; }
 
