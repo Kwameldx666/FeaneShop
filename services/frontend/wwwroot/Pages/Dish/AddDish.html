@@ -1,30 +1,275 @@
-<!DOCTYPE html>
-<html lang="ru">
+<!doctype html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reset Password</title>
-    <link rel="stylesheet" href="/css/reset-password.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Add New Dish</title>
+
+    <style>
+        :root {
+            --bg: #0f1115;
+            --card: #151922;
+            --text: #e7eaf0;
+            --muted: #9aa4b2;
+            --primary: #6c8cff;
+            --primary-600: #5576ff;
+            --danger: #ff6b6b;
+            --success: #3bd88f;
+            --ring: 0 0 0 3px rgba(108,140,255,.25);
+            --radius: 14px;
+            --shadow: 0 10px 25px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        html, body {
+            height: 100%
+        }
+
+        body {
+            margin: 0;
+            background: radial-gradient(1200px 600px at -10% -10%, #182033 0%, transparent 60%), radial-gradient(1200px 600px at 120% 110%, #1d2440 0%, transparent 60%), var(--bg);
+            color: var(--text);
+            font: 500 16px/1.55 Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+        }
+
+        /* container */
+        .form-container {
+            width: min(880px, 92vw);
+            margin: clamp(24px, 6vh, 72px) auto;
+            background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)), var(--card);
+            border: 1px solid rgba(255,255,255,.06);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: clamp(18px, 4vw, 36px);
+        }
+
+            .form-container h2 {
+                margin: 0 0 6px;
+                letter-spacing: .3px;
+                font-size: clamp(20px, 3.2vw, 28px);
+            }
+
+        /* groups */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #cfd6e4;
+        }
+
+        .hint {
+            margin-top: 4px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* controls */
+        .form-control,
+        textarea,
+        select {
+            width: 100%;
+            color: var(--text);
+            background: #0f1320;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 12px;
+            padding: 12px 14px;
+            outline: none;
+            transition: .18s border-color,.18s box-shadow,.18s background;
+        }
+
+            .form-control::placeholder, textarea::placeholder {
+                color: #7f8aa3;
+            }
+
+            .form-control:focus,
+            textarea:focus,
+            select:focus {
+                border-color: var(--primary);
+                box-shadow: var(--ring);
+                background: #0d1220;
+            }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* select caret */
+        select {
+            appearance: none;
+            background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+            background-position: calc(100% - 18px) 55%, calc(100% - 12px) 55%;
+            background-size: 6px 6px, 6px 6px;
+            background-repeat: no-repeat;
+        }
+
+        /* file input (простая стилизация) */
+        input[type="file"].form-control {
+            padding: 10px 12px;
+            background: #0f1320;
+            color: #cfd6e4;
+        }
+
+        /* feedback + helpers */
+        .alert {
+            padding: 12px 14px;
+            border-radius: 12px;
+            margin-top: 8px;
+            font-size: 14px;
+            border: 1px solid rgba(255,255,255,.08);
+        }
+
+        .alert-success {
+            background: rgba(59,216,143,.08);
+            color: #a8f1cf;
+            border-color: rgba(59,216,143,.25);
+        }
+
+        .alert-danger {
+            background: rgba(255,107,107,.08);
+            color: #ffc2c2;
+            border-color: rgba(255,107,107,.25);
+        }
+
+        .alert-info {
+            background: rgba(108,140,255,.08);
+            color: #c9d3ff;
+            border-color: rgba(108,140,255,.25);
+        }
+
+        .d-none {
+            display: none !important;
+        }
+
+        /* button */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            border: 0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform .08s ease, box-shadow .18s ease, background .18s ease;
+            user-select: none;
+        }
+
+            .btn:active {
+                transform: translateY(1px);
+            }
+
+        .btn-primary {
+            background: linear-gradient(180deg, var(--primary), var(--primary-600));
+            color: white;
+            box-shadow: 0 10px 22px rgba(108,140,255,.25);
+        }
+
+            .btn-primary:hover {
+                filter: brightness(1.02);
+            }
+
+            .btn-primary:focus {
+                box-shadow: var(--ring);
+                outline: none;
+            }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <button id="forgot-password-btn" class="btn">Забыли пароль?</button>
 
-        <div id="forgot-password-panel" class="panel hidden" aria-hidden="true">
-            <h2>Восстановление пароля</h2>
-            <p>Введите E-mail, чтобы получить инструкции по сбросу.</p>
+    <main class="form-container">
+        <h2>Add New Dish</h2>
 
-            <label for="reset-email" class="sr-only">Электронная почта</label>
-            <input id="reset-email" type="email" placeholder="Введите вашу почту"
-                   autocomplete="email" inputmode="email" />
+        <form id="add-dish-form"
+              action="/api/dishes"
+              method="post"
+              enctype="multipart/form-data"
+              autocomplete="on">
 
-            <button id="reset-send-btn" class="btn">Отправить</button>
+            <!-- Dish Name -->
+            <div class="form-group">
+                <label for="dish-name">Dish Name</label>
+                <input id="dish-name"
+                       name="name"
+                       type="text"
+                       class="form-control"
+                       placeholder="e.g., Margherita"
+                       minlength="2"
+                       maxlength="100"
+                       required />
+                <small class="hint">2–100 characters.</small>
+            </div>
 
-            <div id="reset-ok" class="alert alert-success hidden" role="status" aria-live="polite"></div>
-            <div id="reset-err" class="alert alert-danger  hidden" role="alert" aria-live="assertive"></div>
-        </div>
-    </div>
+            <!-- Description -->
+            <div class="form-group">
+                <label for="dish-description">Description</label>
+                <textarea id="dish-description"
+                          name="description"
+                          class="form-control"
+                          rows="4"
+                          placeholder="Short description of the dish"
+                          minlength="4"
+                          maxlength="1000"
+                          required></textarea>
+                <small class="hint">Tell customers what makes it great.</small>
+            </div>
 
-    <script src="/js/reset-password.js"></script>
+            <!-- Price -->
+            <div class="form-group">
+                <label for="dish-price">Price</label>
+                <input id="dish-price"
+                       name="price"
+                       type="number"
+                       class="form-control"
+                       placeholder="0.00"
+                       step="0.01"
+                       min="0"
+                       inputmode="decimal"
+                       required />
+                <small class="hint">Use a dot as decimal separator, e.g., 9.99.</small>
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+                <label for="dish-category">Category</label>
+                <select id="dish-category"
+                        name="category"
+                        class="form-control"
+                        required>
+                    <option value="" selected disabled>Select a category</option>
+                    <option value="burger">Burger</option>
+                    <option value="pizza">Pizza</option>
+                    <option value="pasta">Pasta</option>
+                    <option value="fries">Fries</option>
+                </select>
+            </div>
+
+            <!-- Image -->
+            <div class="form-group">
+                <label for="dish-image">Image</label>
+                <input id="dish-image"
+                       name="imageFile"
+                       type="file"
+                       class="form-control"
+                       accept="image/*" />
+                <small class="hint">Optional. JPG/PNG/WebP recommended.</small>
+            </div>
+
+            <!-- Feedback (optional) -->
+            <div id="form-feedback" class="alert d-none" role="alert" aria-live="polite"></div>
+
+            <button type="submit" class="btn btn-primary">Add Dish</button>
+        </form>
+    </main>
+
 </body>
 </html>

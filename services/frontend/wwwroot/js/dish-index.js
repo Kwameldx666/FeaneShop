@@ -83,7 +83,7 @@
                     '<td>' + formatCurrency(price) + '</td>' +
                     '<td>' + escapeHtml(description) + '</td>' +
                     '<td class="text-end">' +
-                    '  <a class="btn btn-outline-secondary btn-sm me-2" href="/Pages/Dish/EditDish.html' + (id ? ('?id=' + encodeURIComponent(id)) : '') + '">Edit</a>' +
+                    '  <a class="btn btn-outline-secondary btn-sm me-2" href="/dish/editdish' + (id ? ('?id=' + encodeURIComponent(id)) : '') + '">Edit</a>' +
                     '  <button type="button" class="btn btn-outline-danger btn-sm" data-role="delete-dish" data-id="' + escapeHtml(id || '') + '">Delete</button>' +
                     '</td>';
                 tableBody.appendChild(row);

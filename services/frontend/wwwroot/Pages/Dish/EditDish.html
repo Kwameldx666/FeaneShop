@@ -1,57 +1,286 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <link rel="shortcut icon" href="/images/favicon.png" type="">
-  <title>Feane</title>
-  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
-  <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="/css/responsive.css" />
-  <link rel="stylesheet" href="/css/navbar.css" />
-  <link rel="stylesheet" href="/css/dish-form.css" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="shortcut icon" href="/images/favicon.png" type="">
+    <title>Feane · Edit Dish</title>
+
+    <!-- Base styles already used in the project -->
+    <link rel="stylesheet" href="/css/bootstrap.css" />
+    <link rel="stylesheet" href="/css/style.css" />
+    <link rel="stylesheet" href="/css/responsive.css" />
+    <link rel="stylesheet" href="/css/navbar.css" />
+
+    <!-- Page-specific aesthetic (scoped) -->
+    <style>
+        :root {
+            --accent: #ffbe33; /* Feane brand orange */
+            --accent-2: #ff7a1a; /* warm gradient mate */
+            --bg: #0f1115; /* page bg */
+            --card: #141924; /* card bg */
+            --ink: #eef2fb; /* main text */
+            --muted: #9aa4b2; /* secondary text */
+            --line: rgba(255,255,255,.08);
+            --radius: 18px;
+            --ring: 0 0 0 3px rgba(255,190,51,.25);
+            --shadow: 0 18px 40px rgba(0,0,0,.35);
+        }
+
+        /* Atmosphere */
+        body.sub_page {
+            background: radial-gradient(1200px 600px at -10% -10%, #1b2236 0%, transparent 60%), radial-gradient(1100px 600px at 110% 120%, #1b2033 0%, transparent 55%), var(--bg);
+            color: var(--ink);
+        }
+
+        /* Wrapper */
+        .dish-edit {
+            width: min(980px, 94vw);
+            margin: clamp(28px, 6vh, 64px) auto;
+            background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)), var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: clamp(18px, 4vw, 36px);
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+            /* Subtle corner glow */
+            .dish-edit::before {
+                content: "";
+                position: absolute;
+                inset: auto -20% -40% auto;
+                width: 360px;
+                height: 360px;
+                border-radius: 50%;
+                background: radial-gradient(closest-side, rgba(255,190,51,.2), transparent);
+                filter: blur(24px);
+                z-index: -1;
+            }
+
+            .dish-edit .header {
+                display: flex;
+                align-items: flex-start;
+                gap: 16px;
+                margin-bottom: 14px;
+            }
+
+            .dish-edit .badge {
+                width: 42px;
+                height: 42px;
+                border-radius: 12px;
+                display: grid;
+                place-items: center;
+                color: #1b1103;
+                background: linear-gradient(180deg, var(--accent), var(--accent-2));
+                box-shadow: 0 10px 26px rgba(255,190,51,.35);
+                font-weight: 800;
+            }
+
+            .dish-edit h2 {
+                margin: 0;
+                letter-spacing: .4px;
+                font-size: clamp(22px, 3.2vw, 28px);
+                line-height: 1.15;
+            }
+
+            .dish-edit .subtitle {
+                margin: .35rem 0 1.2rem;
+                color: var(--muted);
+                font-size: 14px;
+            }
+
+            /* Form grid */
+            .dish-edit form {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+        @media (min-width: 720px) {
+            .dish-edit form {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .dish-edit .full {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+            .form-group label {
+                font-size: 13px;
+                color: #cfd6e4;
+                letter-spacing: .2px;
+            }
+
+        .hint {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        /* Controls */
+        .form-control, .dish-edit textarea, .dish-edit select {
+            width: 100%;
+            color: var(--ink);
+            background: #0f1320;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 12px 14px;
+            outline: none;
+            transition: .18s border-color, .18s box-shadow, .18s background, .18s transform;
+        }
+
+            .form-control::placeholder, .dish-edit textarea::placeholder {
+                color: #7f8aa3;
+            }
+
+            .form-control:focus, .dish-edit textarea:focus, .dish-edit select:focus {
+                border-color: var(--accent);
+                box-shadow: var(--ring);
+                background: #0c111e;
+            }
+
+        .dish-edit textarea {
+            min-height: 130px;
+            resize: vertical;
+        }
+
+        /* Select caret (pure CSS) */
+        .dish-edit select {
+            appearance: none;
+            background-image: linear-gradient(45deg, transparent 50%, #7f8aa3 50%), linear-gradient(135deg, #7f8aa3 50%, transparent 50%), linear-gradient(90deg, transparent 0%, transparent 70%, rgba(255,255,255,.05) 70%);
+            background-position: calc(100% - 20px) 54%, calc(100% - 14px) 54%, 0 0;
+            background-size: 6px 6px, 6px 6px, 100% 100%;
+            background-repeat: no-repeat;
+        }
+
+        /* File input */
+        input[type="file"].form-control {
+            padding: 10px 12px;
+            background: #0e1220;
+            color: #cfd6e4;
+            border-style: dashed;
+        }
+
+            input[type="file"].form-control:hover {
+                background: #0d1120;
+                border-color: rgba(255,190,51,.45);
+            }
+
+        /* Button row */
+        .actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            border: 0;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-weight: 700;
+            cursor: pointer;
+            user-select: none;
+            transition: transform .08s ease, box-shadow .18s ease, filter .18s ease;
+        }
+
+            .btn:active {
+                transform: translateY(1px);
+            }
+
+        .btn-primary {
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            color: #1b1103;
+            box-shadow: 0 12px 28px rgba(255,190,51,.32);
+        }
+
+            .btn-primary:hover {
+                filter: brightness(1.05);
+            }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--line);
+        }
+
+            .btn-ghost:hover {
+                border-color: rgba(255,255,255,.18);
+            }
+
+        /* Tiny helpers */
+        .text-muted {
+            color: var(--muted) !important;
+        }
+    </style>
 </head>
+
 <body class="sub_page">
-  <div data-include="/partials/navbar.html"></div>
 
-  <main class="form-container">
-    <h2>Edit Dish</h2>
-    <p class="text-muted">Static version of the MVC edit form. Populate fields with the dish data when integrating.</p>
-    <form action="#" method="post" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="editDishName">Dish Name</label>
-        <input id="editDishName" name="name" class="form-control" value="Margherita Pizza" required />
-      </div>
-      <div class="form-group">
-        <label for="editDishDescription">Description</label>
-        <textarea id="editDishDescription" name="description" class="form-control" rows="4" required>Classic pizza with mozzarella, tomatoes and basil.</textarea>
-      </div>
-      <div class="form-group">
-        <label for="editDishPrice">Price</label>
-        <input id="editDishPrice" name="price" type="number" step="0.01" min="0" class="form-control" value="12.00" required />
-      </div>
-      <div class="form-group">
-        <label for="editDishCategory">Category</label>
-        <select id="editDishCategory" name="category" class="form-control" required>
-          <option value="">Select a category</option>
-          <option value="burger">Burger</option>
-          <option value="pizza" selected>Pizza</option>
-          <option value="pasta">Pasta</option>
-          <option value="fries">Fries</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="editDishImage">Image</label>
-        <input type="file" id="editDishImage" name="imageFile" class="form-control" />
-      </div>
-      <button type="submit">Save</button>
-    </form>
-  </main>
+    <main class="dish-edit">
+        <div class="header">
+            <div class="badge">✦</div>
+            <div>
+                <h2>Edit Dish</h2>
+                <p class="subtitle">Polish the details and keep your menu looking delicious.</p>
+            </div>
+        </div>
 
-  <div data-include="/partials/footer.html"></div>
+        <form action="#" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="editDishName">Dish Name</label>
+                <input id="editDishName" name="name" class="form-control" value="Margherita Pizza" required />
+                <small class="hint">Make it short and appetizing.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="editDishPrice">Price</label>
+                <input id="editDishPrice" name="price" type="number" step="0.01" min="0" class="form-control" value="12.00" required />
+                <small class="hint">Use a dot for decimals (e.g., 9.99).</small>
+            </div>
+
+            <div class="form-group full">
+                <label for="editDishDescription">Description</label>
+                <textarea id="editDishDescription" name="description" class="form-control" rows="4" required>Classic pizza with mozzarella, tomatoes and basil.</textarea>
+                <small class="hint">Share the key ingredients or a short story.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="editDishCategory">Category</label>
+                <select id="editDishCategory" name="category" class="form-control" required>
+                    <option value="">Select a category</option>
+                    <option value="burger">Burger</option>
+                    <option value="pizza" selected>Pizza</option>
+                    <option value="pasta">Pasta</option>
+                    <option value="fries">Fries</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="editDishImage">Image</label>
+                <input type="file" id="editDishImage" name="imageFile" class="form-control" />
+                <small class="hint">PNG/JPG/WebP · 1–3 MB is usually enough.</small>
+            </div>
+
+            <div class="actions full">
+                <a class="btn btn-ghost" href="/dish">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </main>
+
 </body>
 </html>

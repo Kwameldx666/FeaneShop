@@ -1,4 +1,4 @@
-(function () {
+﻿(function () {
     'use strict';
 
     function showFeedback(container, message, type) {
@@ -39,7 +39,7 @@
                 payload.append(key, value == null ? '' : value.toString());
             });
 
-            showFeedback(feedback, 'Processing payment via gateway…', 'info');
+            showFeedback(feedback, 'Processing payment via gatewayâ€¦', 'info');
 
             window.feaneGateway.post(endpoint, payload.toString(), {
                 headers: {
@@ -68,7 +68,7 @@
 
                         if (response.orderId || response.paymentId) {
                             var identifier = response.orderId || response.paymentId;
-                            window.location.href = '/Pages/Payment/Confirmation.html?orderId=' + encodeURIComponent(identifier);
+                            window.location.href = '/payment/confirmation?orderId=' + encodeURIComponent(identifier);
                             return;
                         }
                     }

@@ -1,17 +1,35 @@
 (function () {
   const routes = {
-    '/': '/Pages/Home/Index.html',
-    '/home': '/Pages/Home/Index.html',
-    '/home/index': '/Pages/Home/Index.html',
+    '/': '/Pages/Home/Menu.html',
+    '/home': '/Pages/Home/Menu.html',
+    '/home/index': '/Pages/Home/Menu.html',
     '/home/about': '/Pages/Home/About.html',
     '/home/menu': '/Pages/Home/Menu.html',
     '/home/privacy': '/Pages/Home/Privacy.html',
+    '/menu': '/Pages/Home/Menu.html',
+    '/about': '/Pages/Home/About.html',
+    '/privacy': '/Pages/Home/Privacy.html',
 
+    '/account': '/Pages/Account/ReservationHistory.html',
+    '/account/index': '/Pages/Account/ReservationHistory.html',
     '/account/addresses': '/Pages/Account/Addresses.html',
     '/account/authentication': '/Pages/Account/Authentication.html',
     '/account/contacts': '/Pages/Account/Contacts.html',
-    '/account/profile': '/Pages/Account/Profile.html',
+    '/account/reservationhistory': '/Pages/Account/ReservationHistory.html',
+    '/account/reservation-history': '/Pages/Account/ReservationHistory.html',
+    '/account/reservations': '/Pages/Account/ReservationHistory.html',
+    '/account/history': '/Pages/Account/ReservationHistory.html',
+    '/account/login': '/Pages/Account/Authentication.html',
+    '/account/signin': '/Pages/Account/Authentication.html',
+    '/account/register': '/Pages/Account/Authentication.html',
+    '/account/profile': '/Pages/Account/ReservationHistory.html',
     '/account/resetpassword': '/Pages/Account/ResetPassword.html',
+    '/account/reset-password': '/Pages/Account/ResetPassword.html',
+    '/account/logout': '/Pages/Account/Authentication.html',
+
+    '/addresses': '/Pages/Account/Addresses.html',
+    '/contacts': '/Pages/Account/Contacts.html',
+    '/profile': '/Pages/Account/ReservationHistory.html',
 
     '/analytics': '/Pages/Analytics/Index.html',
     '/analytics/index': '/Pages/Analytics/Index.html',
@@ -25,6 +43,7 @@
     '/dish/editdish': '/Pages/Dish/EditDish.html',
 
     '/error/404': '/Pages/Error/Error404.html',
+    '/404': '/Pages/Error/Error404.html',
 
     '/notifications': '/Pages/Notifications/Index.html',
     '/notifications/index': '/Pages/Notifications/Index.html',
@@ -33,6 +52,7 @@
     '/payment/checkout': '/Pages/Payment/Checkout.html',
     '/payment/confirmation': '/Pages/Payment/Confirmation.html',
 
+    '/reservation': '/Pages/Reservation/Book.html',
     '/reservation/book': '/Pages/Reservation/Book.html',
 
     '/user': '/Pages/User/Index.html',
@@ -42,7 +62,7 @@
     '/weather/index': '/Pages/Weather/Index.html'
   };
 
-  const defaultRoute = '/home/index';
+  const defaultRoute = '/';
   const notFoundRoute = '/error/404';
 
   const appRoot = document.getElementById('app');
@@ -54,11 +74,16 @@
     try {
       const url = new URL(path, window.location.origin);
       let pathname = url.pathname.toLowerCase();
+
+      pathname = pathname
+        .replace(/\.html?$/i, '')         // /home/menu.html -> /home/menu
+        .replace(/^\/pages(?=\/|$)/i, ''); // /pages/home/menu -> /home/menu
+
       if (pathname !== '/' && pathname.endsWith('/')) {
         pathname = pathname.slice(0, -1);
       }
       return pathname || '/';
-    } catch (error) {
+    } catch {
       return '/';
     }
   }
@@ -66,16 +91,16 @@
   function resolveRoute(path) {
     const normalized = normalizePath(path);
     if (routes[normalized]) {
-      return { key: normalized, file: routes[normalized] };
+      return { path: normalized, file: routes[normalized], match: normalized };
     }
 
-    // Try /path/index variant
-    const withIndex = normalized === '/' ? defaultRoute : `${normalized}/index`;
-    if (routes[withIndex]) {
-      return { key: withIndex, file: routes[withIndex] };
+    // Try /path/index variant (keep the originally requested path for history)
+    const indexKey = normalized === '/' ? '/' : `${normalized}/index`;
+    if (routes[indexKey]) {
+      return { path: normalized, file: routes[indexKey], match: indexKey };
     }
 
-    return { key: notFoundRoute, file: routes[notFoundRoute] };
+    return { path: notFoundRoute, file: routes[notFoundRoute], match: notFoundRoute };
   }
 
   function setLoading(isLoading) {
@@ -152,6 +177,33 @@
     return execution;
   }
 
+  const managedHeadAttr = 'data-feane-router-head';
+
+  function shouldAdoptHeadNode(node) {
+    if (!(node instanceof Element)) {
+      return false;
+    }
+
+    const tag = node.tagName.toLowerCase();
+    if (tag === 'title' || tag === 'script') {
+      return false;
+    }
+    if (tag === 'link') {
+      const rel = (node.getAttribute('rel') || '').toLowerCase();
+      return ['stylesheet', 'icon', 'shortcut icon', 'apple-touch-icon', 'preload', 'prefetch'].includes(rel);
+    }
+    if (tag === 'meta' || tag === 'style') {
+      return true;
+    }
+    return false;
+  }
+
+  function adoptHeadNode(node, head) {
+    const clone = node.cloneNode(true);
+    clone.setAttribute(managedHeadAttr, 'true');
+    head.appendChild(clone);
+  }
+
   function updateHead(doc) {
     if (!doc) {
       return;
@@ -161,9 +213,61 @@
     if (title) {
       document.title = title.textContent;
     }
+
+    const sourceHead = doc.head;
+    if (!sourceHead) {
+      return;
+    }
+
+    const head = document.head;
+    head.querySelectorAll(`[${managedHeadAttr}]`).forEach(node => node.remove());
+
+    Array.from(sourceHead.children)
+      .filter(shouldAdoptHeadNode)
+      .forEach(node => {
+        const tag = node.tagName.toLowerCase();
+
+        if (tag === 'link') {
+          const rel = (node.getAttribute('rel') || '').toLowerCase();
+          const href = node.getAttribute('href');
+          if (href) {
+            const absoluteHref = new URL(href, window.location.origin).href;
+            const alreadyPresent = Array.from(head.querySelectorAll(`link[rel="${rel}"]`))
+              .some(existing => existing.getAttribute('href') && new URL(existing.getAttribute('href'), window.location.origin).href === absoluteHref);
+            if (alreadyPresent) {
+              return;
+            }
+          }
+        }
+
+        if (tag === 'meta') {
+          const name = node.getAttribute('name');
+          const property = node.getAttribute('property');
+          const httpEquiv = node.getAttribute('http-equiv');
+          const selectorParts = [];
+          if (name) {
+            selectorParts.push(`meta[name="${name}"]`);
+          }
+          if (property) {
+            selectorParts.push(`meta[property="${property}"]`);
+          }
+          if (httpEquiv) {
+            selectorParts.push(`meta[http-equiv="${httpEquiv}"]`);
+          }
+          if (selectorParts.length) {
+            head.querySelectorAll(selectorParts.join(',')).forEach(existing => {
+              if (existing.hasAttribute(managedHeadAttr)) {
+                existing.remove();
+              }
+            });
+          }
+        }
+
+        adoptHeadNode(node, head);
+      });
   }
 
-  function render(htmlText, routeKey) {
+  function render(htmlText, routeKey, matchedRoute) {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlText, 'text/html');
     const body = doc.body;
@@ -177,7 +281,11 @@
 
     return executeScripts(appRoot || document.body).then(() => {
       document.dispatchEvent(new CustomEvent('feane:page-ready', {
-        detail: { route: routeKey }
+        detail: {
+          route: routeKey,
+          resolvedRoute: matchedRoute,
+          file: matchedRoute ? routes[matchedRoute] : null
+        }
       }));
 
       // Re-trigger DOMContentLoaded listeners for legacy scripts
@@ -187,16 +295,18 @@
   }
 
   function navigate(path, { replaceState = false } = {}) {
-    const { key, file } = resolveRoute(path);
+    const { path: resolvedPath, file, match } = resolveRoute(path);
 
     if (!file) {
       return Promise.resolve();
     }
 
+    const urlPath = resolvedPath === defaultRoute ? '/' : resolvedPath;
+
     if (!replaceState) {
-      history.pushState({ path: key }, '', key === defaultRoute ? '/' : key);
+      history.pushState({ path: resolvedPath }, '', urlPath);
     } else {
-      history.replaceState({ path: key }, '', key === defaultRoute ? '/' : key);
+      history.replaceState({ path: resolvedPath }, '', urlPath);
     }
 
     setLoading(true);
@@ -208,9 +318,9 @@
         }
         return response.text();
       })
-      .then(html => render(html, key))
+      .then(html => render(html, resolvedPath, match))
       .catch(() => {
-        if (key !== notFoundRoute) {
+        if (resolvedPath !== notFoundRoute) {
           return navigate(notFoundRoute, { replaceState: true });
         }
         return Promise.resolve();

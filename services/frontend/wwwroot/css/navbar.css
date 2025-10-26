@@ -1,24 +1,24 @@
-﻿/* ===== Hero wrapper (без фиксированной высоты) ===== */
+/* ===== Hero wrapper (??? ????????????? ??????) ===== */
 .hero_area {
   position: relative;
   z-index: 1;
 }
 
-/* ===== Header как фоновой блок ===== */
+/* ===== Header ??? ??????? ???? ===== */
 .header_section{
   position: relative;
   z-index: 2;
-  /* высота навбара регулируется этими паддингами */
-  padding: 8px 0; /* увеличишь/уменьшишь — станет выше/ниже */
+  /* ?????? ??????? ???????????? ????? ?????????? */
+  padding: 8px 0; /* ?????????/????????? � ?????? ????/???? */
 
-  /* фон шапки */
+  /* ??? ????? */
   background-image: url('/images/hero-bg.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
-/* полупрозрачное затемнение поверх фона для читаемости */
+/* ?????????????? ?????????? ?????? ???? ??? ?????????? */
 .header_section::after{
   content:"";
   position:absolute; inset:0;
@@ -26,29 +26,29 @@
   z-index: 0;
 }
 
-/* контент навбара должен быть поверх затемнения */
+/* ??????? ??????? ?????? ???? ?????? ?????????? */
 .header_section > .container{
   position: relative;
   z-index: 1;
 }
 
-/* ===== Блок навигации ===== */
+/* ===== ???? ????????? ===== */
 .custom_nav-container.navbar{
   padding-top: 0;
   padding-bottom: 0;
   min-height: unset;
 }
 
-/* Бренд */
+/* ????? */
 .custom_nav-container .navbar-brand{
-  font-size: 1.6rem; /* компактнее */
+  font-size: 1.6rem; /* ?????????? */
   line-height: 1.1;
   padding: 0;
   margin-right: 1rem;
 }
 .custom_nav-container .navbar-brand span{ color:#fff; font-weight:700; }
 
-/* Пункты меню */
+/* ?????? ???? */
 .custom_nav-container .navbar-nav .nav-link{
   font-size: 1.05rem;
   color: #fff;
@@ -63,7 +63,7 @@
   text-decoration: none;
 }
 
-/* Пользовательские кнопки справа */
+/* ???????????????? ?????? ?????? */
 .user_option{
   display: flex; align-items: center; gap: 10px;
 }
@@ -75,10 +75,14 @@
 }
 .user_option a:hover{ color:#f39c12; }
 
-/* Размер svg корзины */
-.user_option .cart_link svg{ width:22px; height:22px; display:block; }
+/* ?????? svg ??????? */
+.user_option .cart_link svg{
+  width:22px;
+  height:22px;
+  display:block;
+}
 
-/* Бургер-кнопка (чтобы не растягивала высоту) */
+/* ??????-?????? (????? ?? ??????????? ??????) */
 .navbar-toggler{
   padding: .15rem .25rem;
   line-height: 1;
@@ -95,7 +99,7 @@
 .navbar-toggler span::before{ top:-6px; }
 .navbar-toggler span::after { top: 6px; }
 
-/* Ролевые кнопки (если используешь) */
+/* ??????? ?????? (???? ???????????) */
 .analytics_button{
   display:inline-block;
   background: linear-gradient(90deg,#f39c12,#f1c40f);
@@ -106,22 +110,31 @@
 }
 .analytics_button:hover{ background:linear-gradient(90deg,#f1c40f,#f39c12); transform:scale(1.05); border-color:#f1c40f; }
 
-.admin_button{
-  display:inline-block; background:#e74c3c; color:#fff;
-  padding:8px 16px; border-radius:50px; font-size:15px; font-weight:700; text-transform:uppercase;
-  text-decoration:none; transition: background .3s ease, transform .3s ease, border-color .3s ease;
-  border:2px solid transparent; margin-left:8px;
+.admin_button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e74c3c;
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: .02em;
+  text-decoration: none;
+  transition: background .25s ease, transform .25s ease, border-color .25s ease;
+  border: 2px solid transparent;
+  margin-left: 10px;
+  min-width: 140px;
+  text-align: center;
+  white-space: nowrap;
 }
-.admin_button:hover{ background:#c0392b; transform:scale(1.05); border-color:#e74c3c; }
+.admin_button:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+  border-color: #e74c3c;
+}
 
-/* Мобильные правки: оставим кликабельность больше */
-@media (max-width: 991.98px){
-  .header_section{ padding: 12px 0; }
-  .custom_nav-container .navbar-nav .nav-link{
-    font-size:1.1rem;
-    padding:.5rem .75rem;
-    margin-right:0;
-  }
-  .user_option{ gap:8px; }
-  .user_option .cart_link svg{ width:24px; height:24px; }
-}
+@media (max-width: 991.98px) {`n  .header_section { padding: 12px 0; }`n  .custom_nav-container .navbar-nav .nav-link {`n    font-size: 1.1rem;`n    padding: .5rem .75rem;`n    margin-right: 0;`n  }`n  .user_option {`n    flex-direction: column;`n    align-items: stretch;`n    gap: 8px;`n  }`n  .admin_button {`n    margin-left: 0;`n    width: 100%;`n    white-space: normal;`n  }`n  .user_option .cart_link svg {`n    width: 24px;`n    height: 24px;`n  }`n}`n
+

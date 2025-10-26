@@ -10,7 +10,7 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/auth/{everything}",
-            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ]
+            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Options" ]
         },
         {
             "DownstreamPathTemplate": "/api/dishes",
@@ -22,7 +22,7 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/dishes",
-            "UpstreamHttpMethod": [ "Get", "Post" ]
+            "UpstreamHttpMethod": [ "Get", "Post", "Options" ]
         },
         {
             "DownstreamPathTemplate": "/api/dishes/{everything}",
@@ -34,7 +34,7 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/dishes/{everything}",
-            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ]
+            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Options" ]
         },
         {
             "DownstreamPathTemplate": "/api/menu",
@@ -46,7 +46,7 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/menu",
-            "UpstreamHttpMethod": [ "Get" ]
+            "UpstreamHttpMethod": [ "Get", "Options" ]
         },
         {
             "DownstreamPathTemplate": "/api/analytics/{everything}",
@@ -58,7 +58,7 @@
                 }
             ],
             "UpstreamPathTemplate": "/api/analytics/{everything}",
-            "UpstreamHttpMethod": [ "Get" ]
+            "UpstreamHttpMethod": [ "Get", "Options" ]
         }
     ],
     "GlobalConfiguration": {
