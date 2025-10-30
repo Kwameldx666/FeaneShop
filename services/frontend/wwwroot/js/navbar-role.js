@@ -13,9 +13,12 @@
   function syncRoleArtifacts(role) {
     try {
       var meta = document.querySelector('meta[name="feane-user-role"]');
-      if (meta) {
-        meta.setAttribute('content', role || '');
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.setAttribute('name', 'feane-user-role');
+        document.head.appendChild(meta);
       }
+      meta.setAttribute('content', role || '');
     } catch (_) { }
 
     if (document && document.body && document.body.setAttribute) {
@@ -27,14 +30,14 @@
     }
   }
 
-  function decodeRoleFromJwt(token) {
+  function decodeRolesFromJwt(token) {
     if (!token) {
-      return null;
+      return [];
     }
 
     var parts = token.split('.');
     if (parts.length < 2) {
-      return null;
+      return [];
     }
 
     var payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
@@ -50,18 +53,74 @@
         || data.roles;
 
       if (!claim) {
-        return null;
+        return [];
       }
 
       if (Array.isArray(claim)) {
-        return claim.join(' ');
+        return claim.map(function (value) { return String(value); }).filter(Boolean);
       }
 
-      return String(claim);
+      if (typeof claim === 'string') {
+        return claim.split(/[;,\\s]+/)
+          .map(function (segment) { return segment.trim(); })
+          .filter(Boolean);
+      }
+
+      return [String(claim)];
     } catch (error) {
       console.warn('Failed to decode JWT role', error);
-      return null;
+      return [];
     }
+  }
+
+  function expandRoles(baseRoles) {
+    var set = new Set();
+
+    for (var i = 0; i < baseRoles.length; i += 1) {
+      var role = baseRoles[i];
+      if (!role) {
+        continue;
+      }
+
+      switch (role) {
+        case 'administrator':
+        case 'admin':
+          set.add('admin');
+          set.add('administrator');
+          set.add('moderator');
+          set.add('user');
+          break;
+        case 'moderator':
+          set.add('moderator');
+          set.add('user');
+          break;
+        case 'vip':
+          set.add('vip');
+          set.add('user');
+          break;
+        case 'auth':
+        case 'authenticated':
+          set.add('authenticated');
+          set.add('auth');
+          break;
+        default:
+          set.add(role);
+          break;
+      }
+    }
+
+    if (set.size > 1 && set.has('guest')) {
+      set.delete('guest');
+    }
+
+    if (!set.size) {
+      set.add('guest');
+    }
+
+    set.add('authenticated');
+    set.add('auth');
+
+    return Array.from(set);
   }
 
   function collectRoles() {
@@ -87,10 +146,7 @@
         tokens.push(localRole);
       }
       var localJwt = localStorage.getItem('jwt');
-      var decoded = decodeRoleFromJwt(localJwt);
-      if (decoded) {
-        tokens.push(decoded);
-      }
+      tokens = tokens.concat(decodeRolesFromJwt(localJwt));
     } catch (_) { }
 
     try {
@@ -99,10 +155,7 @@
         tokens.push(sessionRole);
       }
       var sessionJwt = sessionStorage.getItem('jwt');
-      var decodedSession = decodeRoleFromJwt(sessionJwt);
-      if (decodedSession) {
-        tokens.push(decodedSession);
-      }
+      tokens = tokens.concat(decodeRolesFromJwt(sessionJwt));
     } catch (_) { }
 
     if (window && window.__FEANE_USER_ROLE__) {
@@ -112,14 +165,10 @@
     var normalized = normalizeRole(tokens.join(' '));
 
     if (!normalized.length) {
-      return ['guest'];
+      return ['guest', 'authenticated', 'auth'];
     }
 
-    var set = new Set(normalized);
-    set.add('authenticated');
-    set.add('auth');
-
-    return Array.from(set);
+    return expandRoles(normalized);
   }
 
   function shouldShow(element, currentRoles) {
@@ -166,12 +215,30 @@
       return;
     }
 
+    primeRoleFromJwt();
+
     var currentRoles = collectRoles();
     var nodes = root.querySelectorAll('[data-role]');
+
+    try {
+      console.debug('[navbar-role] roles:', currentRoles, 'nodes:', nodes.length);
+    } catch (_) { }
+
+    try {
+      document.body.setAttribute('data-role-debug', currentRoles.join(','));
+    } catch (_) { }
 
     Array.prototype.forEach.call(nodes, function (node) {
       toggleForRole(node, shouldShow(node, currentRoles));
     });
+
+    if (currentRoles.indexOf('admin') !== -1) {
+      var adminNodes = document.querySelectorAll('.feane-admin');
+      Array.prototype.forEach.call(adminNodes, function (node) {
+        node.classList.remove('d-none');
+        node.removeAttribute('aria-hidden');
+      });
+    }
   }
 
   function setUserRole(role) {
@@ -186,12 +253,77 @@
 
     window.__FEANE_USER_ROLE__ = storeValue;
     syncRoleArtifacts(storeValue === 'guest' ? '' : storeValue);
+    try {
+      console.debug('[navbar-role] setUserRole ->', storeValue);
+    } catch (_) { }
     handleRoleAwareElements(document);
   }
 
   window.feaneSetUserRole = setUserRole;
 
+  function selectPrimaryRole(roles) {
+    if (!roles || !roles.length) {
+      return null;
+    }
+
+    var lowered = roles.map(function (r) { return String(r || '').toLowerCase(); });
+
+    if (lowered.indexOf('admin') !== -1 || lowered.indexOf('administrator') !== -1) {
+      return 'admin';
+    }
+
+    if (lowered.indexOf('moderator') !== -1) {
+      return 'moderator';
+    }
+
+    if (lowered.indexOf('vip') !== -1) {
+      return 'vip';
+    }
+
+    if (lowered.indexOf('user') !== -1) {
+      return 'user';
+    }
+
+    if (lowered.indexOf('authenticated') !== -1) {
+      return 'authenticated';
+    }
+
+    return lowered[0];
+  }
+
+  function primeRoleFromJwt() {
+    var token = null;
+
+    try {
+      token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
+    } catch (_) { }
+
+    if (!token) {
+      return;
+    }
+
+    var decodedRoles = decodeRolesFromJwt(token);
+    if (!decodedRoles.length) {
+      return;
+    }
+
+    var primary = selectPrimaryRole(decodedRoles);
+    if (!primary) {
+      return;
+    }
+
+    try {
+      var existing = localStorage.getItem('userRole');
+      if (existing && existing.toLowerCase() === primary) {
+        return;
+      }
+    } catch (_) { }
+
+    setUserRole(primary);
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
+    primeRoleFromJwt();
     handleRoleAwareElements(document);
   });
 
@@ -216,5 +348,6 @@
       handleRoleAwareElements(document);
     }
   });
-})();
 
+  handleRoleAwareElements(document);
+})();

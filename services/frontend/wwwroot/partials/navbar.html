@@ -37,6 +37,17 @@
           </ul>
 
           <div class="user_option">
+            <div class="admin_links">
+              <a href="/dish/index" class="feane-admin d-none admin_button" data-role="admin,moderator">
+                Manage Dishes
+              </a>
+              <a href="/user/index" class="feane-admin d-none admin_button" data-role="admin">
+                Manage Users
+              </a>
+              <a href="/analytics/index" class="feane-admin d-none admin_button" data-role="admin,moderator">
+                Analytics
+              </a>
+            </div>
             <a href="/account/authentication" class="feane-icon d-none" data-role="guest" title="Sign in">
               <i class="fa fa-sign-in" aria-hidden="true"></i><span class="sr-only">Sign in</span>
             </a>
@@ -53,16 +64,6 @@
           C457.728,97.71,450.56,86.958,439.296,84.91z" />
               </svg>
             </a>
-
-            <a href="/dish/index" class="feane-admin d-none" data-role="admin,moderator">
-              Manage Dishes
-            </a>
-            <a href="/user/index" class="feane-admin d-none" data-role="admin">
-              Manage Users
-            </a>
-            <a href="/analytics/index" class="feane-admin d-none" data-role="admin,moderator">
-              Analytics
-            </a>
           </div>
         </div>
       </nav>
@@ -70,3 +71,34 @@
   </header>
 </div>
 <script src="/js/navbar-role.js"></script>
+<script>
+  (function () {
+    var style = document.createElement('style');
+    style.textContent = 'body[data-role-debug*="admin"] .feane-admin{display:inline-flex !important;visibility:visible !important;opacity:1 !important;}';
+    document.head.appendChild(style);
+
+    function showAdminLinks() {
+      var role = null;
+      try {
+        role = (localStorage.getItem('userRole') || sessionStorage.getItem('userRole') || '').toLowerCase();
+      } catch (_) { }
+
+      if (role === 'admin') {
+        try {
+          document.body.setAttribute('data-role-debug', 'admin');
+        } catch (_) { }
+
+        var nodes = document.querySelectorAll('.feane-admin');
+        nodes.forEach(function (node) {
+          node.classList.remove('d-none');
+          node.removeAttribute('aria-hidden');
+          node.style.removeProperty('display');
+        });
+      }
+    }
+
+    document.addEventListener('feane:user-role-changed', showAdminLinks);
+    document.addEventListener('DOMContentLoaded', showAdminLinks);
+    showAdminLinks();
+  })();
+</script>
