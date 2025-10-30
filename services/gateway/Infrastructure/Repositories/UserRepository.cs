@@ -1,3 +1,4 @@
+using AuthService.Application.Clients;
 using AuthService.Application.DTOs;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Entities;
@@ -13,11 +14,13 @@ public class UserRepository : IUserRepository
 {
     private readonly AuthDbContext _context;
     private readonly ILogger<UserRepository> _logger;
+    private readonly IUserProfileClient _userProfileClient;
 
-    public UserRepository(AuthDbContext context, ILogger<UserRepository> logger)
+    public UserRepository(AuthDbContext context, ILogger<UserRepository> logger, IUserProfileClient userProfileClient)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _userProfileClient = userProfileClient ?? throw new ArgumentNullException(nameof(userProfileClient));
     }
 
     public async Task<OperationResult<User>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
@@ -56,6 +59,15 @@ public class UserRepository : IUserRepository
 
             await _context.Users.AddAsync(user, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
+
+            var profileCreated = await _userProfileClient.CreateUserProfileAsync(user, request.Password, cancellationToken);
+            if (!profileCreated)
+            {
+                _logger.LogWarning("Rolling back auth user creation because user-service provisioning failed for {Email}", request.Email);
+                _context.Users.Remove(user);
+                await _context.SaveChangesAsync(cancellationToken);
+                return OperationResult<User>.Failure("Failed to create user profile.");
+            }
 
             return OperationResult<User>.Success(user, "User registered successfully");
         }

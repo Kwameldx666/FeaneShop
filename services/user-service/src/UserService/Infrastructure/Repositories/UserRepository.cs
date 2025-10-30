@@ -46,7 +46,6 @@ public class UserRepository : IUserRepository
 
             var user = await _context.Users
                 .AsNoTracking()
-                .Include(u => u.Delivery)
                 .FirstOrDefaultAsync(u => u.Id == id);
 
             if (user == null)
@@ -54,7 +53,7 @@ public class UserRepository : IUserRepository
                 return OperationResult<UserProfile>.Failure("User not found");
             }
 
-            return OperationResult<UserProfile>.Success(new UserProfile { User = user, DeliveryAddress = user.Delivery }, "User retrieved successfully");
+            return OperationResult<UserProfile>.Success(new UserProfile { User = user }, "User retrieved successfully");
         }
         catch (Exception ex)
         {
@@ -99,110 +98,15 @@ public class UserRepository : IUserRepository
             user.SecurityStamp ??= Guid.NewGuid().ToString();
             user.ConcurrencyStamp ??= Guid.NewGuid().ToString();
 
-            var cart = new Cart
-            {
-                CartId = Guid.NewGuid(),
-                UserId = user.Id
-            };
-
-            var deliveryAddress = new DeliveryAddress
-            {
-                Id = Guid.NewGuid(),
-                UserId = user.Id
-            };
-
-            user.DeliveryId = deliveryAddress.Id;
-            user.CartId = cart.CartId;
-            user.Delivery = deliveryAddress;
-            user.Cart = cart;
-
-            _context.Cart.Add(cart);
-            _context.DeliveryAddresses.Add(deliveryAddress);
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return OperationResult<UserProfile>.Success(new UserProfile { User = user, DeliveryAddress = deliveryAddress }, "User added successfully");
+            return OperationResult<UserProfile>.Success(new UserProfile { User = user }, "User added successfully");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "An error occurred while adding a user.");
             return OperationResult<UserProfile>.Failure("An error occurred while adding the user.");
-        }
-    }
-
-    public async Task<OperationResult<UserProfile>> UpdateAddress(UserData addressOld, DeliveryAddress newAddress)
-    {
-        try
-        {
-            if (newAddress == null)
-            {
-                return OperationResult<UserProfile>.Failure("No new data provided.");
-            }
-
-            var delivery = await _context.DeliveryAddresses.SingleOrDefaultAsync(d => d.UserId == addressOld.Id);
-            if (delivery == null)
-            {
-                return OperationResult<UserProfile>.Failure("Address not found.");
-            }
-
-            if (!string.IsNullOrEmpty(newAddress.MoreInfo))
-            {
-                delivery.MoreInfo = newAddress.MoreInfo;
-            }
-
-            if (!string.IsNullOrEmpty(newAddress.City))
-            {
-                delivery.City = newAddress.City;
-            }
-
-            if (!string.IsNullOrEmpty(newAddress.Street))
-            {
-                delivery.Street = newAddress.Street;
-            }
-
-            if (!string.IsNullOrEmpty(newAddress.Country))
-            {
-                delivery.Country = newAddress.Country;
-            }
-
-            if (!string.IsNullOrEmpty(newAddress.ParcelIndex))
-            {
-                delivery.ParcelIndex = newAddress.ParcelIndex;
-            }
-
-            var user = await _context.Users.SingleOrDefaultAsync(u => u.Id == addressOld.Id);
-            if (user != null)
-            {
-                user.Delivery = delivery;
-            }
-
-            await _context.SaveChangesAsync();
-
-            return OperationResult<UserProfile>.Success(new UserProfile { User = user, DeliveryAddress = delivery }, "Address updated successfully");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while updating the address for user {UserId}.", addressOld.Id);
-            return OperationResult<UserProfile>.Failure("An error occurred while updating the address.");
-        }
-    }
-
-    public async Task<OperationResult<DeliveryAddress>> GetOneAddressByUserIdAsync(Guid userId)
-    {
-        try
-        {
-            var delivery = await _context.DeliveryAddresses.AsNoTracking().FirstOrDefaultAsync(d => d.UserId == userId);
-            if (delivery == null)
-            {
-                return OperationResult<DeliveryAddress>.Failure("Address not found.");
-            }
-
-            return OperationResult<DeliveryAddress>.Success(delivery, "Address retrieved successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while retrieving the address for user {UserId}.", userId);
-            return OperationResult<DeliveryAddress>.Failure("An error occurred while retrieving the address.");
         }
     }
 
@@ -246,23 +150,11 @@ public class UserRepository : IUserRepository
             }
 
             var user = _context.Users
-                .Include(u => u.Cart)
-                .Include(u => u.Delivery)
                 .FirstOrDefault(u => u.Id == id);
 
             if (user == null)
             {
                 return OperationResult<UserProfile>.Failure("User not found");
-            }
-
-            if (user.Cart != null)
-            {
-                _context.Cart.Remove(user.Cart);
-            }
-
-            if (user.Delivery != null)
-            {
-                _context.DeliveryAddresses.Remove(user.Delivery);
             }
 
             _context.Users.Remove(user);
@@ -545,3 +437,4 @@ public class UserRepository : IUserRepository
         }
     }
 }
+

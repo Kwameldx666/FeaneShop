@@ -1,328 +1,72 @@
-﻿<!-- ====== Fancy Gradient Navbar (no image) ====== -->
-<header class="feane-header" role="banner">
-    <div class="feane-nav-wrap">
-        <a class="feane-brand" href="/">Feane</a>
+﻿<link rel="stylesheet" href="/css/navbar.css" />
 
-        <button class="feane-burger" id="feaneBurger"
-                aria-label="Toggle navigation"
-                aria-controls="feaneNav"
-                aria-expanded="false">
-            <span></span><span></span><span></span>
+<div class="hero_area">
+  <div class="bg-box" aria-hidden="true">
+    <img src="/images/hero-bg.jpg" alt="Feane background" />
+  </div>
+  <header class="header_section">
+    <div class="container">
+      <nav class="navbar navbar-expand-lg custom_nav-container">
+        <a class="navbar-brand" href="/">
+          <span>Feane</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+          <span></span>
         </button>
 
-        <nav class="feane-nav" id="feaneNav" role="navigation">
-            <a class="feane-link" href="/">Home</a>
-            <a class="feane-link" href="/home/menu">Menu</a>
-            <a class="feane-link" href="/home/about">About</a>
-            <a class="feane-link" href="/weather/index">Weather</a>
-            <a class="feane-link" href="/reservation/book">Book Table</a>
-        </nav>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mx-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/home/about">About</a>
+            </li>
+            <li class="nav-item d-none" data-role="authenticated">
+              <a class="nav-link" href="/reservation">Book Table</a>
+            </li>
+            <li class="nav-item d-none" data-role="guest">
+              <a class="nav-link" href="/account/authentication?redir=/reservation">Book Table</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/weather/index">Weather</a>
+            </li>
+          </ul>
 
-        <div class="feane-actions">
-            <a href="/account/reservationhistory" class="feane-icon" title="Profile">
-                <i class="fa fa-user" aria-hidden="true"></i><span class="sr-only">Profile</span>
+          <div class="user_option">
+            <a href="/account/authentication" class="feane-icon d-none" data-role="guest" title="Sign in">
+              <i class="fa fa-sign-in" aria-hidden="true"></i><span class="sr-only">Sign in</span>
             </a>
 
-            <a class="feane-icon" href="/cart/cart" title="View Cart" aria-label="Cart">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 457.627 457.627" width="22" height="22" fill="currentColor" aria-hidden="true">
-                    <path d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
+            <a href="/account/reservationhistory" class="feane-icon d-none" data-role="authenticated" title="Profile">
+              <i class="fa fa-user" aria-hidden="true"></i><span class="sr-only">Profile</span>
+            </a>
+
+            <a href="/cart/cart" class="feane-icon" title="View Cart">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 457.627 457.627" width="22" height="22" fill="currentColor" aria-hidden="true">
+                <path d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
           C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
           c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
           C457.728,97.71,450.56,86.958,439.296,84.91z" />
-                </svg>
+              </svg>
             </a>
 
-            <!-- Admin buttons (скрыты по умолчанию; показывай через JS по роли) -->
-            <a href="/dish/index" class="feane-admin d-none" data-role="admin,moderator">Manage Dishes</a>
-            <a href="/user/index" class="feane-admin d-none" data-role="admin">Manage Users</a>
-            <a href="/analytics/index" class="feane-admin d-none" data-role="admin,moderator">Analytics</a>
+            <a href="/dish/index" class="feane-admin d-none" data-role="admin,moderator">
+              Manage Dishes
+            </a>
+            <a href="/user/index" class="feane-admin d-none" data-role="admin">
+              Manage Users
+            </a>
+            <a href="/analytics/index" class="feane-admin d-none" data-role="admin,moderator">
+              Analytics
+            </a>
+          </div>
         </div>
+      </nav>
     </div>
-    <div class="feane-glow"></div>
-</header>
-
-<style>
-    :root {
-        --hdr-h: 68px;
-        --accent: #ffbe33;
-        --accent2: #ff7a1a;
-        --ink: #f5f7ff;
-        --ink-dim: #c7d0e2;
-        --line: rgba(255,255,255,.12);
-        --bg1: #0e0f14;
-        --bg2: #141b2e;
-        --bg3: #0f1322;
-        --radius: 16px;
-    }
-
-    /* Base header with animated gradient */
-    .feane-header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background: linear-gradient(120deg, #101521, #141b2e, #0f1322);
-        background-size: 200% 200%;
-        animation: feaneGradient 16s ease infinite;
-        backdrop-filter: saturate(140%) blur(6px);
-        border-bottom: 1px solid var(--line);
-        box-shadow: 0 10px 30px rgba(0,0,0,.35);
-    }
-
-    @keyframes feaneGradient {
-        0% {
-            background-position: 0% 50%;
-        }
-
-        50% {
-            background-position: 100% 50%;
-        }
-
-        100% {
-            background-position: 0% 50%;
-        }
-    }
-
-    /* Subtle glow line */
-    .feane-glow {
-        height: 2px;
-        width: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,190,51,.65), transparent);
-        filter: blur(.3px);
-    }
-
-    /* Layout */
-    .feane-nav-wrap {
-        max-width: 1200px;
-        margin: 0 auto;
-        height: var(--hdr-h);
-        padding: 0 16px;
-        display: grid;
-        grid-template-columns: auto 1fr auto;
-        align-items: center;
-        gap: 12px;
-        color: var(--ink);
-    }
-
-    /* Brand */
-    .feane-brand {
-        display: inline-flex;
-        align-items: center;
-        font-weight: 800;
-        letter-spacing: .5px;
-        text-decoration: none;
-        font-size: 22px;
-        background: linear-gradient(90deg, #fff, #ffd79a, #fff);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    /* Burger */
-    .feane-burger {
-        display: none;
-        width: 40px;
-        height: 40px;
-        align-items: center;
-        justify-content: center;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        background: transparent;
-        color: var(--ink);
-        cursor: pointer;
-    }
-
-        .feane-burger span {
-            display: block;
-            width: 20px;
-            height: 2px;
-            background: var(--ink);
-            margin: 3px 0;
-            transition: .2s transform, .2s opacity;
-        }
-
-        .feane-burger[aria-expanded="true"] span:nth-child(1) {
-            transform: translateY(5px) rotate(45deg);
-        }
-
-        .feane-burger[aria-expanded="true"] span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .feane-burger[aria-expanded="true"] span:nth-child(3) {
-            transform: translateY(-5px) rotate(-45deg);
-        }
-
-    /* Nav links */
-    .feane-nav {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: clamp(10px, 2.4vw, 26px);
-    }
-
-    .feane-link {
-        position: relative;
-        color: var(--ink);
-        text-decoration: none;
-        font-weight: 600;
-        padding: 8px 2px;
-        opacity: .92;
-    }
-
-        .feane-link::after {
-            content: "";
-            position: absolute;
-            left: 0;
-            bottom: 2px;
-            height: 2px;
-            width: 0%;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-            border-radius: 2px;
-            transition: width .18s ease;
-        }
-
-        .feane-link:hover {
-            opacity: 1;
-        }
-
-            .feane-link:hover::after {
-                width: 100%;
-            }
-
-    /* Actions to the right */
-    .feane-actions {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .feane-icon {
-        color: var(--ink);
-        opacity: .9;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 12px;
-        border: 1px solid var(--line);
-        transition: .16s transform, .16s opacity, .16s border-color;
-    }
-
-        .feane-icon:hover {
-            opacity: 1;
-            transform: translateY(-1px);
-            border-color: rgba(255,255,255,.22);
-        }
-
-        .feane-icon i {
-            font-size: 16px;
-        }
-
-    .feane-admin {
-        display: inline-flex;
-        align-items: center;
-        gap: .5rem;
-        height: 40px;
-        padding: 0 12px;
-        color: #1b1507;
-        text-decoration: none;
-        font-weight: 800;
-        background: linear-gradient(180deg, var(--accent), var(--accent2));
-        border-radius: 12px;
-        border: 0;
-        box-shadow: 0 10px 28px rgba(255,190,51,.25);
-        transition: .16s transform, .16s filter;
-        white-space: nowrap;
-    }
-
-        .feane-admin:hover {
-            transform: translateY(-1px);
-            filter: brightness(1.03);
-        }
-
-    .d-none {
-        display: none !important;
-    }
-
-    .sr-only {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        padding: 0;
-        margin: -1px;
-        overflow: hidden;
-        clip: rect(0,0,0,0);
-        border: 0;
-    }
-
-    /* Responsive */
-    @media (max-width: 992px) {
-        .feane-burger {
-            display: inline-flex;
-        }
-
-        .feane-nav-wrap {
-            grid-template-columns: auto auto 1fr;
-        }
-
-        .feane-nav {
-            position: absolute;
-            left: 12px;
-            right: 12px;
-            top: calc(var(--hdr-h) + 8px);
-            flex-direction: column;
-            gap: 6px;
-            background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)), #0f1422;
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            padding: 10px;
-            max-height: 0;
-            overflow: hidden;
-            opacity: 0;
-            transform: translateY(-6px);
-            transition: .22s ease;
-        }
-
-        .feane-header.is-open .feane-nav {
-            max-height: 320px;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .feane-actions {
-            justify-self: end;
-            gap: 8px;
-        }
-
-        .feane-admin {
-            display: none;
-        }
-        /* можно показать внутри меню, если нужно */
-    }
-</style>
-
-<script>
-  // Minimal JS for the burger
-  (function () {
-    const header = document.querySelector('.feane-header');
-    const burger = document.getElementById('feaneBurger');
-    if (!header || !burger) return;
-
-    burger.addEventListener('click', () => {
-      const expanded = burger.getAttribute('aria-expanded') === 'true';
-      burger.setAttribute('aria-expanded', String(!expanded));
-      header.classList.toggle('is-open', !expanded);
-    });
-
-    // Close on outside click
-    document.addEventListener('click', (e) => {
-      if (!header.classList.contains('is-open')) return;
-      if (!header.contains(e.target)) {
-        burger.setAttribute('aria-expanded', 'false');
-        header.classList.remove('is-open');
-      }
-    });
-  })();
-</script>
+  </header>
+</div>
+<script src="/js/navbar-role.js"></script>

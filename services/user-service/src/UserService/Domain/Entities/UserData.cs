@@ -8,9 +8,6 @@ public class UserData
     [Key]
     public Guid Id { get; set; }
 
-    public Guid CartId { get; set; }
-    public Cart? Cart { get; set; }
-
     [Required]
     public string Username { get; set; } = string.Empty;
 
@@ -58,7 +55,4 @@ public class UserData
 
     [Phone]
     public string? PhoneNumber { get; set; }
-
-    public Guid DeliveryId { get; set; }
-    public DeliveryAddress? Delivery { get; set; }
 }

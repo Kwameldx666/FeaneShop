@@ -1,18 +1,6 @@
 ﻿{
     "Routes": [
         {
-            "DownstreamPathTemplate": "/api/auth/{everything}",
-            "DownstreamScheme": "http",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "auth-service", 
-                    "Port": 8080
-                }
-            ],
-            "UpstreamPathTemplate": "/api/auth/{everything}",
-            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Options" ]
-        },
-        {
             "DownstreamPathTemplate": "/api/dishes",
             "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [

@@ -1,43 +1,43 @@
-body {
+﻿.book_page {
     background-color: #f8f9fa;
 }
 
-.book_section {
+.book_page .book_section {
     padding-top: 60px;
     padding-bottom: 80px;
 }
 
-.form_container {
+.book_page .form_container {
     background: #ffffff;
     border-radius: 16px;
     padding: 32px;
 }
 
-.form_container .form-label {
+.book_page .form_container .form-label {
     font-weight: 600;
     color: #1a1a1a;
 }
 
-.form_container .form-control,
-.form_container .form-select {
+.book_page .form_container .form-control,
+.book_page .form_container .form-select {
     border-radius: 10px;
     padding: 12px 16px;
 }
 
-.form_container .input-group-text {
+.book_page .form_container .input-group-text {
     background-color: #f0f2f5;
     border-radius: 0 10px 10px 0;
     font-weight: 600;
 }
 
-.btn_box button {
+.book_page .btn_box button {
     border-radius: 12px;
     padding: 14px 20px;
     font-size: 1.1rem;
     letter-spacing: .5px;
 }
 
-.booking-summary {
+.book_page .booking-summary {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(242, 242, 242, 0.85));
     border-radius: 16px;
     padding: 32px;
@@ -48,12 +48,12 @@ body {
     gap: 24px;
 }
 
-.summary-title {
+.book_page .summary-title {
     font-weight: 700;
     color: #1a1a1a;
 }
 
-.summary-list {
+.book_page .summary-list {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -62,32 +62,32 @@ body {
     gap: 12px;
 }
 
-.summary-list li {
+.book_page .summary-list li {
     display: flex;
     justify-content: space-between;
     font-size: 1rem;
     color: #444;
 }
 
-.summary-note {
+.book_page .summary-note {
     margin: 0;
     font-size: 0.95rem;
     color: #555;
 }
 
-.map_container {
+.book_page .map_container {
     border-radius: 12px;
     overflow: hidden;
     height: 240px;
 }
 
-#map {
+.book_page #googleMap {
     width: 100%;
     height: 100%;
 }
 
 @media (max-width: 991.98px) {
-    .booking-summary {
+    .book_page .booking-summary {
         margin-top: 24px;
     }
 }

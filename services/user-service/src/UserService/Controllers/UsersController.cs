@@ -130,26 +130,6 @@ public class UsersController : ControllerBase
         return result.Status ? Ok(result) : NotFound(result);
     }
 
-    [HttpGet("{id:guid}/address")]
-    public async Task<ActionResult<OperationResult<DeliveryAddress>>> GetAddress(Guid id)
-    {
-        var result = await _userRepository.GetOneAddressByUserIdAsync(id);
-        return result.Status ? Ok(result) : NotFound(result);
-    }
-
-    [HttpPut("{id:guid}/address")]
-    public async Task<ActionResult<OperationResult<UserProfile>>> UpdateAddress(Guid id, [FromBody] DeliveryAddress address)
-    {
-        if (address == null)
-        {
-            return BadRequest(OperationResult<UserProfile>.Failure("Address payload is required."));
-        }
-
-        var user = new UserData { Id = id };
-        var result = await _userRepository.UpdateAddress(user, address);
-        return result.Status ? Ok(result) : NotFound(result);
-    }
-
     [HttpPost("user-data")]
     public ActionResult<OperationResult<UserProfile>> GetUserData([FromBody] UserCredentialRequest request)
     {

@@ -1,8 +1,14 @@
-{
+﻿{
   "Logging": {
     "LogLevel": {
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning"
     }
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=Feane.AuthServiceDb;User Id=sa;Password=YourStrong!Passw0rd;Encrypt=True;TrustServerCertificate=True;"
+  },
+  "UserService": {
+    "BaseUrl": "http://user-service:8080"
   }
 }

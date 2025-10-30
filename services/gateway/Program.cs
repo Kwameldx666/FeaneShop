@@ -1,24 +1,51 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using AuthService.Application.Clients;
+using AuthService.Application.Configuration;
+using AuthService.Application.Interfaces;
+using AuthService.Infrastructure.Persistence;
+using AuthService.Infrastructure.Repositories;
+using AuthService.Infrastructure.Services;
+using AuthService.Middleware;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using System.Text;
-using System.Linq;
-using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
 
-var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-if (!jwtSettings.Exists())
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
+var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+    ?? throw new InvalidOperationException("JWT settings are not configured.");
+
+if (!jwtOptions.IsValid())
 {
-    throw new InvalidOperationException("JwtSettings section is missing. Provide Issuer, Audience and SecretKey values.");
+    throw new InvalidOperationException("JWT settings are not configured correctly.");
 }
 
-var issuer = jwtSettings["Issuer"] ?? throw new InvalidOperationException("JwtSettings:Issuer is not configured.");
-var audience = jwtSettings["Audience"] ?? throw new InvalidOperationException("JwtSettings:Audience is not configured.");
-var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JwtSettings:SecretKey is not configured.");
+var userServiceBaseUrl = builder.Configuration.GetValue<string>("UserService:BaseUrl") ?? "http://localhost:5020";
+if (!Uri.TryCreate(userServiceBaseUrl, UriKind.Absolute, out var userServiceUri))
+{
+    throw new InvalidOperationException("UserService:BaseUrl is not a valid absolute URI.");
+}
+
+builder.Services.AddHttpClient<IUserProfileClient, UserProfileClient>(client =>
+{
+    client.BaseAddress = new Uri(userServiceUri.ToString().TrimEnd('/') + "/");
+});
+
+builder.Services.AddDbContext<AuthDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -29,14 +56,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = issuer,
-            ValidAudience = audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+            ValidIssuer = jwtOptions.Issuer,
+            ValidAudience = jwtOptions.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
         };
     });
 
 builder.Services.AddAuthorization();
 builder.Services.AddOcelot(builder.Configuration);
+
 var configuredOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()?
     .Select(origin => origin?.Trim())
     .Where(origin => !string.IsNullOrWhiteSpace(origin))
@@ -93,10 +121,25 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+    dbContext.Database.Migrate();
+}
+
+app.UseRouting();
+
 app.UseCors("AllowFrontend");
 
+app.UseJwtCookieAuthentication();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+
 await app.UseOcelot();
+
 app.Run();

@@ -5,7 +5,8 @@
     return (value || '')
       .toString()
       .toLowerCase()
-      .split(/[;,\s]+/)
+      .split(/[;,\\s]+/)
+      .map(function (part) { return part.trim(); })
       .filter(Boolean);
   }
 
@@ -108,111 +109,112 @@
       tokens.push(window.__FEANE_USER_ROLE__);
     }
 
-    return normalizeRole(tokens.join(' '));
+    var normalized = normalizeRole(tokens.join(' '));
+
+    if (!normalized.length) {
+      return ['guest'];
+    }
+
+    var set = new Set(normalized);
+    set.add('authenticated');
+    set.add('auth');
+
+    return Array.from(set);
   }
 
-  function updateRoleButtons(root) {
+  function shouldShow(element, currentRoles) {
+    var raw = element.getAttribute('data-role');
+    if (!raw) {
+      return true;
+    }
+
+    var allowed = normalizeRole(raw);
+    if (!allowed.length) {
+      return true;
+    }
+
+    if (allowed.indexOf('*') !== -1) {
+      return true;
+    }
+
+    for (var i = 0; i < allowed.length; i += 1) {
+      var role = allowed[i];
+      if (currentRoles.indexOf(role) !== -1) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  function toggleForRole(element, isAllowed) {
+    if (!element) {
+      return;
+    }
+
+    if (isAllowed) {
+      element.classList.remove('d-none');
+      element.removeAttribute('aria-hidden');
+    } else {
+      element.classList.add('d-none');
+      element.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  function handleRoleAwareElements(root) {
     if (!root) {
       return;
     }
 
     var currentRoles = collectRoles();
-    var buttons = root.querySelectorAll('.admin_button[data-role], .feane-admin[data-role]');
+    var nodes = root.querySelectorAll('[data-role]');
 
-    if (!buttons.length) {
-      return;
-    }
-
-    Array.prototype.forEach.call(buttons, function (button) {
-      var allowedRoles = normalizeRole(button.getAttribute('data-role'));
-      var isAllowed = currentRoles.length > 0 && allowedRoles.some(function (role) {
-        return currentRoles.indexOf(role) !== -1;
-      });
-
-      if (isAllowed) {
-        button.classList.remove('d-none');
-        button.removeAttribute('aria-hidden');
-      } else {
-        button.classList.add('d-none');
-        button.setAttribute('aria-hidden', 'true');
-      }
-    });
-  }
-
-  function handleScope(scope) {
-    var containers = [];
-    var selectors = ['.user_option', '.feane-actions'];
-
-    if (scope) {
-      if (scope.matches) {
-        selectors.forEach(function (selector) {
-          if (scope.matches(selector)) {
-            containers.push(scope);
-          }
-        });
-      }
-
-      if (scope.querySelectorAll) {
-        selectors.forEach(function (selector) {
-          Array.prototype.forEach.call(scope.querySelectorAll(selector), function (element) {
-            containers.push(element);
-          });
-        });
-      }
-    }
-
-    if (!containers.length) {
-      containers.push(document);
-    }
-
-    containers.forEach(function (container) {
-      updateRoleButtons(container);
+    Array.prototype.forEach.call(nodes, function (node) {
+      toggleForRole(node, shouldShow(node, currentRoles));
     });
   }
 
   function setUserRole(role) {
     var normalized = role ? String(role).toLowerCase() : '';
 
+    var storeValue = normalized || 'guest';
+
     try {
-      if (normalized) {
-        localStorage.setItem('userRole', normalized);
-        sessionStorage.setItem('userRole', normalized);
-      } else {
-        localStorage.removeItem('userRole');
-        sessionStorage.removeItem('userRole');
-      }
+      localStorage.setItem('userRole', storeValue);
+      sessionStorage.setItem('userRole', storeValue);
     } catch (_) { }
 
-    window.__FEANE_USER_ROLE__ = normalized || null;
-    syncRoleArtifacts(normalized);
-    handleScope(document);
+    window.__FEANE_USER_ROLE__ = storeValue;
+    syncRoleArtifacts(storeValue === 'guest' ? '' : storeValue);
+    handleRoleAwareElements(document);
   }
 
   window.feaneSetUserRole = setUserRole;
 
   document.addEventListener('DOMContentLoaded', function () {
-    handleScope(document);
+    handleRoleAwareElements(document);
   });
 
   document.addEventListener('partials:loaded', function () {
-    handleScope(document);
+    handleRoleAwareElements(document);
   });
 
   document.addEventListener('feane:page-ready', function () {
-    handleScope(document);
+    handleRoleAwareElements(document);
   });
 
   document.addEventListener('feane:user-role-changed', function (event) {
     if (event && event.detail && event.detail.role) {
       setUserRole(event.detail.role);
     } else {
-      handleScope(document);
+      handleRoleAwareElements(document);
     }
   });
 
   window.addEventListener('storage', function (event) {
     if (event.key === 'userRole') {
-      handleScope(document);
+      handleRoleAwareElements(document);
     }
   });
 })();
+

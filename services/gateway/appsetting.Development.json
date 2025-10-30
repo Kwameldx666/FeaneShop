@@ -11,5 +11,11 @@
         "SecretKey": "A38665B7-1B5A-4F62-A392-E9274BBA4A96",
         "AccessTokenExpirationMinutes": 60,
         "CookieName": "AuthToken"
+    },
+    "ConnectionStrings": {
+        "DefaultConnection": "Server=localhost;Database=Feane.AuthServiceDb;User Id=sa;Password=YourStrong!Passw0rd;Encrypt=True;TrustServerCertificate=True;"
+    },
+    "UserService": {
+        "BaseUrl": "http://localhost:5020"
     }
 }

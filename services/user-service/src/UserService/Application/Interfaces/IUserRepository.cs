@@ -21,7 +21,5 @@ public interface IUserRepository
     OperationResult<UserProfile> GetUserData(UserData loginData);
     Task<UserData?> GetUserByCookie(string value);
     OperationResult UserLogout();
-    Task<OperationResult<UserProfile>> UpdateAddress(UserData addressOld, DeliveryAddress newAddress);
-    Task<OperationResult<DeliveryAddress>> GetOneAddressByUserIdAsync(Guid userId);
     Task<bool> UpdateUserLoginAuditAsync(Guid userId, string cookieValue, DateTime loginTime, CancellationToken cancellationToken = default);
 }
