@@ -126,7 +126,7 @@ services:
 
   order-service:
     build:
-      context: ./services/OrderService
+      context: ./services/OrderService/src
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -146,7 +146,7 @@ services:
 
   analytics-service:
     build:
-      context: ./services/AnalyticsService
+      context: ./services/AnalyticsService/src
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -166,7 +166,7 @@ services:
 
   feane-gateway:
     build:
-      context: ./services/gateway
+      context: ./services/gateway/src
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development
@@ -203,7 +203,7 @@ services:
 
   feane-frontend:
     build:
-      context: ./services/frontend
+      context: ./services/frontend/src
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: Development

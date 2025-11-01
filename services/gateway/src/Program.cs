@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿﻿using System.Text;
 using AuthService.Application.Clients;
 using AuthService.Application.Configuration;
 using AuthService.Application.Interfaces;
@@ -38,7 +38,11 @@ builder.Services.AddDbContext<AuthDbContext>(options =>
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

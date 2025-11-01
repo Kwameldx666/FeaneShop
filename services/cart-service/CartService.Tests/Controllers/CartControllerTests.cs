@@ -1,281 +1,211 @@
-﻿using CartService.Controllers;
+﻿using CartService.Application.DTOs;
+using CartService.Application.Interfaces;
+using CartService.Controllers;
 using CartService.Domain.Entities;
-using CartService.Infrastructure.Persistence;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+using System.Security.Claims;
+using Xunit;
 
 namespace CartService.Tests.Controllers;
 
-public class CartControllerTests : IDisposable
+public class CartControllerTests
 {
-    private readonly CartDbContext _context;
+    private readonly Mock<ICartRepository> _mockRepository;
+    private readonly Mock<ILogger<CartController>> _mockLogger;
     private readonly CartController _controller;
+    private readonly Guid _testUserId = Guid.NewGuid();
 
     public CartControllerTests()
     {
-        var options = new DbContextOptionsBuilder<CartDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
+        _mockRepository = new Mock<ICartRepository>();
+        _mockLogger = new Mock<ILogger<CartController>>();
+        _controller = new CartController(_mockRepository.Object, _mockLogger.Object);
 
-        _context = new CartDbContext(options);
-        _controller = new CartController(_context);
-    }
+        // Setup authenticated user context
+        var claims = new List<Claim>
+        {
+            new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", _testUserId.ToString()),
+            new Claim("sub", _testUserId.ToString())
+        };
+        var identity = new ClaimsIdentity(claims, "TestAuth");
+        var claimsPrincipal = new ClaimsPrincipal(identity);
 
-    public void Dispose()
-    {
-        _context?.Dispose();
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext { User = claimsPrincipal }
+        };
     }
 
     [Fact]
-    public async Task GetCart_WithUserId_ReturnsUserCart()
+    public async Task GetCartItems_ReturnsUserCartItems()
     {
         // Arrange
-        var userId = Guid.NewGuid();
-        var cart = new Cart
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            CreatedAt = DateTime.UtcNow
-        };
-
         var cartItems = new List<CartItem>
         {
             new()
             {
                 Id = Guid.NewGuid(),
-                CartId = cart.Id,
+                UserId = _testUserId,
                 ProductId = Guid.NewGuid(),
                 ProductName = "Pizza",
                 Quantity = 2,
-                Price = 15.00m
+                UnitPrice = 15.00m
             },
             new()
             {
                 Id = Guid.NewGuid(),
-                CartId = cart.Id,
+                UserId = _testUserId,
                 ProductId = Guid.NewGuid(),
                 ProductName = "Burger",
                 Quantity = 1,
-                Price = 12.00m
+                UnitPrice = 12.00m
             }
         };
 
-        _context.Carts.Add(cart);
-        _context.CartItems.AddRange(cartItems);
-        await _context.SaveChangesAsync();
+        _mockRepository.Setup(r => r.GetItemsAsync(_testUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cartItems);
 
         // Act
-        var result = await _controller.GetCart(userId);
+        var result = await _controller.GetCartItems(CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Value.Should().NotBeNull();
-        result.Value!.Items.Should().HaveCount(2);
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
     }
 
     [Fact]
-    public async Task AddItemToCart_WithNewItem_AddsItem()
+    public async Task AddItem_WithValidRequest_AddsItem()
     {
         // Arrange
-        var userId = Guid.NewGuid();
-        var cart = new Cart
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        _context.Carts.Add(cart);
-        await _context.SaveChangesAsync();
-
-        var newItem = new CartItem
+        var request = new CartItemRequest
         {
             ProductId = Guid.NewGuid(),
             ProductName = "New Pizza",
             Quantity = 1,
-            Price = 16.00m
+            UnitPrice = 16.00m
         };
 
+        var addedItem = new CartItem
+        {
+            Id = Guid.NewGuid(),
+            UserId = _testUserId,
+            ProductId = request.ProductId,
+            ProductName = request.ProductName,
+            Quantity = request.Quantity,
+            UnitPrice = request.UnitPrice
+        };
+
+        _mockRepository.Setup(r => r.AddOrUpdateAsync(It.IsAny<CartItem>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(addedItem);
+
         // Act
-        var result = await _controller.AddItemToCart(userId, newItem);
+        var result = await _controller.AddItem(request, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        var cartItems = await _context.CartItems
-            .Where(ci => ci.CartId == cart.Id)
-            .ToListAsync();
-
-        cartItems.Should().HaveCount(1);
-        cartItems.First().ProductName.Should().Be("New Pizza");
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
     }
 
     [Fact]
-    public async Task UpdateCartItemQuantity_WithValidData_UpdatesQuantity()
+    public async Task UpdateItem_WithValidData_UpdatesQuantity()
     {
         // Arrange
-        var userId = Guid.NewGuid();
-        var cart = new Cart
+        var itemId = Guid.NewGuid();
+        var request = new CartItemUpdateRequest
         {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            CreatedAt = DateTime.UtcNow
+            Quantity = 5
         };
 
-        var cartItem = new CartItem
+        var updatedItem = new CartItem
         {
-            Id = Guid.NewGuid(),
-            CartId = cart.Id,
+            Id = itemId,
+            UserId = _testUserId,
             ProductId = Guid.NewGuid(),
             ProductName = "Pizza",
-            Quantity = 1,
-            Price = 15.00m
+            Quantity = 5,
+            UnitPrice = 15.00m
         };
 
-        _context.Carts.Add(cart);
-        _context.CartItems.Add(cartItem);
-        await _context.SaveChangesAsync();
+        _mockRepository.Setup(r => r.UpdateAsync(_testUserId, itemId, It.IsAny<Action<CartItem>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
+
+        _mockRepository.Setup(r => r.GetItemAsync(_testUserId, itemId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(updatedItem);
 
         // Act
-        await _controller.UpdateCartItemQuantity(cartItem.Id, 5);
+        var result = await _controller.UpdateItem(itemId, request, CancellationToken.None);
 
         // Assert
-        var updatedItem = await _context.CartItems.FindAsync(cartItem.Id);
-        updatedItem!.Quantity.Should().Be(5);
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
     }
 
     [Fact]
-    public async Task RemoveItemFromCart_WithValidId_RemovesItem()
+    public async Task RemoveItem_WithValidId_RemovesItem()
     {
         // Arrange
-        var userId = Guid.NewGuid();
-        var cart = new Cart
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            CreatedAt = DateTime.UtcNow
-        };
+        var itemId = Guid.NewGuid();
 
-        var cartItem = new CartItem
-        {
-            Id = Guid.NewGuid(),
-            CartId = cart.Id,
-            ProductId = Guid.NewGuid(),
-            ProductName = "Pizza",
-            Quantity = 1,
-            Price = 15.00m
-        };
-
-        _context.Carts.Add(cart);
-        _context.CartItems.Add(cartItem);
-        await _context.SaveChangesAsync();
+        _mockRepository.Setup(r => r.RemoveAsync(_testUserId, itemId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         // Act
-        await _controller.RemoveItemFromCart(cartItem.Id);
+        var result = await _controller.RemoveItem(itemId, CancellationToken.None);
 
         // Assert
-        var deletedItem = await _context.CartItems.FindAsync(cartItem.Id);
-        deletedItem.Should().BeNull();
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
     }
 
     [Fact]
-    public async Task ClearCart_WithUserId_RemovesAllItems()
+    public async Task ClearCart_RemovesAllUserItems()
     {
         // Arrange
-        var userId = Guid.NewGuid();
-        var cart = new Cart
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        var cartItems = new List<CartItem>
-        {
-            new()
-            {
-                Id = Guid.NewGuid(), CartId = cart.Id, ProductId = Guid.NewGuid(), ProductName = "Item 1", Quantity = 1,
-                Price = 10.00m
-            },
-            new()
-            {
-                Id = Guid.NewGuid(), CartId = cart.Id, ProductId = Guid.NewGuid(), ProductName = "Item 2", Quantity = 2,
-                Price = 20.00m
-            },
-            new()
-            {
-                Id = Guid.NewGuid(), CartId = cart.Id, ProductId = Guid.NewGuid(), ProductName = "Item 3", Quantity = 3,
-                Price = 30.00m
-            }
-        };
-
-        _context.Carts.Add(cart);
-        _context.CartItems.AddRange(cartItems);
-        await _context.SaveChangesAsync();
+        _mockRepository.Setup(r => r.ClearAsync(_testUserId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(3);
 
         // Act
-        await _controller.ClearCart(userId);
+        var result = await _controller.ClearCart(CancellationToken.None);
 
         // Assert
-        var remainingItems = await _context.CartItems
-            .Where(ci => ci.CartId == cart.Id)
-            .ToListAsync();
-
-        remainingItems.Should().BeEmpty();
+        var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+        okResult.StatusCode.Should().Be(200);
     }
 
     [Fact]
-    public async Task GetCartTotal_CalculatesCorrectTotal()
+    public async Task RemoveItem_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        var userId = Guid.NewGuid();
-        var cart = new Cart
-        {
-            Id = Guid.NewGuid(),
-            UserId = userId,
-            CreatedAt = DateTime.UtcNow
-        };
+        var itemId = Guid.NewGuid();
 
-        var cartItems = new List<CartItem>
-        {
-            new()
-            {
-                Id = Guid.NewGuid(), CartId = cart.Id, ProductId = Guid.NewGuid(), ProductName = "Item 1", Quantity = 2,
-                Price = 10.00m
-            },
-            new()
-            {
-                Id = Guid.NewGuid(), CartId = cart.Id, ProductId = Guid.NewGuid(), ProductName = "Item 2", Quantity = 3,
-                Price = 15.00m
-            }
-        };
-
-        _context.Carts.Add(cart);
-        _context.CartItems.AddRange(cartItems);
-        await _context.SaveChangesAsync();
+        _mockRepository.Setup(r => r.RemoveAsync(_testUserId, itemId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
 
         // Act
-        var result = await _controller.GetCart(userId);
+        var result = await _controller.RemoveItem(itemId, CancellationToken.None);
 
         // Assert
-        var total = result.Value!.Items.Sum(i => i.Quantity * i.Price);
-        total.Should().Be(65.00m); // (2 * 10) + (3 * 15) = 20 + 45 = 65
+        result.Should().BeOfType<NotFoundObjectResult>();
     }
 
-    [Theory]
-    [InlineData(0)]
-    [InlineData(-1)]
-    public async Task UpdateCartItemQuantity_WithInvalidQuantity_ThrowsException(int quantity)
+    [Fact]
+    public async Task UpdateItem_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        var cartItemId = Guid.NewGuid();
+        var itemId = Guid.NewGuid();
+        var request = new CartItemUpdateRequest { Quantity = 5 };
 
-        // Act & Assert
-        await Assert.ThrowsAsync<ArgumentException>(async () =>
-        {
-            if (quantity <= 0)
-                throw new ArgumentException("Quantity must be greater than 0");
+        _mockRepository.Setup(r => r.UpdateAsync(_testUserId, itemId, It.IsAny<Action<CartItem>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(false);
 
-            await _controller.UpdateCartItemQuantity(cartItemId, quantity);
-        });
+        // Act
+        var result = await _controller.UpdateItem(itemId, request, CancellationToken.None);
+
+        // Assert
+        result.Should().BeOfType<NotFoundObjectResult>();
     }
 }

@@ -12,10 +12,12 @@ namespace AuthService.Infrastructure.Services;
 public class JwtTokenService : IJwtTokenService
 {
     private readonly JwtOptions _options;
+    private readonly ILogger<JwtTokenService> _logger;
 
-    public JwtTokenService(IOptions<JwtOptions> options)
+    public JwtTokenService(IOptions<JwtOptions> options, ILogger<JwtTokenService> logger)
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         if (!_options.IsValid()) throw new InvalidOperationException("JWT options are not configured correctly.");
     }
@@ -76,13 +78,19 @@ public class JwtTokenService : IJwtTokenService
 
     public ClaimsPrincipal? ValidateRefreshToken(string refreshToken)
     {
-        if (string.IsNullOrEmpty(refreshToken)) return null;
+        if (string.IsNullOrEmpty(refreshToken))
+        {
+            _logger.LogWarning("Refresh token is null or empty");
+            return null;
+        }
 
         var tokenHandler = new JwtSecurityTokenHandler();
         var key = Encoding.UTF8.GetBytes(_options.SecretKey);
 
         try
         {
+            _logger.LogDebug("Attempting to validate refresh token");
+            
             var principal = tokenHandler.ValidateToken(refreshToken, new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
@@ -92,19 +100,28 @@ public class JwtTokenService : IJwtTokenService
                 ValidateAudience = true,
                 ValidAudience = _options.Audience,
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero
-            }, out var validatedToken);
-
-            var jwtToken = validatedToken as JwtSecurityToken;
+                ClockSkew = TimeSpan.FromMinutes(5)
+            }, out _);
 
             // Verify it's a refresh token
             var tokenType = principal.FindFirst("token_type")?.Value;
-            if (tokenType != "refresh") return null;
+            if (tokenType != "refresh")
+            {
+                _logger.LogWarning("Token is not a refresh token. Token type: {TokenType}", tokenType);
+                return null;
+            }
 
+            _logger.LogInformation("Refresh token validated successfully");
             return principal;
         }
-        catch
+        catch (SecurityTokenExpiredException ex)
         {
+            _logger.LogWarning(ex, "Refresh token has expired");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error validating refresh token");
             return null;
         }
     }

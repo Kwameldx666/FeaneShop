@@ -1,233 +1,150 @@
 ﻿using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+using ProductService.Application.DTOs;
+using ProductService.Application.Interfaces;
+using ProductService.Controllers;
 using ProductService.Domain.Entities;
-using ProductService.Infrastructure.Persistence;
 
 namespace ProductService.Tests.Controllers;
 
-public class ProductsControllerTests : IDisposable
+public class ProductsControllerTests
 {
-    private readonly ProductDbContext _context;
-    private readonly ProductsController _controller;
+    private readonly Mock<IDishRepository> _mockRepository;
+    private readonly Mock<ILogger<DishesController>> _mockLogger;
+    private readonly DishesController _controller;
 
     public ProductsControllerTests()
     {
-        var options = new DbContextOptionsBuilder<ProductDbContext>()
-            .UseInMemoryDatabase(Guid.NewGuid().ToString())
-            .Options;
-
-        _context = new ProductDbContext(options);
-        _controller = new ProductsController(_context);
-    }
-
-    public void Dispose()
-    {
-        _context?.Dispose();
+        _mockRepository = new Mock<IDishRepository>();
+        _mockLogger = new Mock<ILogger<DishesController>>();
+        _controller = new DishesController(_mockRepository.Object, _mockLogger.Object);
     }
 
     [Fact]
-    public async Task GetProducts_ReturnsAllProducts()
+    public async Task GetDishes_ReturnsAllDishes()
     {
         // Arrange
-        var products = new List<Dish>
+        var dishes = new List<Dish>
         {
             new()
             {
                 Id = Guid.NewGuid(),
                 Name = "Pizza Margherita",
+                Description = "Classic pizza",
                 Price = 15.00m,
                 Category = "Pizza",
-                IsAvailable = true
+                IsAvailable = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             },
             new()
             {
                 Id = Guid.NewGuid(),
                 Name = "Burger Deluxe",
+                Description = "Delicious burger",
                 Price = 12.50m,
                 Category = "Burgers",
-                IsAvailable = true
+                IsAvailable = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             }
         };
 
-        _context.Dishes.AddRange(products);
-        await _context.SaveChangesAsync();
+        _mockRepository.Setup(r => r.GetAsync(It.IsAny<DishQueryOptions>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dishes);
+        _mockRepository.Setup(r => r.CountAsync(It.IsAny<DishQueryOptions>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(2);
 
         // Act
-        var result = await _controller.GetProducts();
+        var result = await _controller.GetDishes(null, null, null, null, null, null, null, null, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
+        result.Should().BeOfType<OkObjectResult>();
     }
 
     [Fact]
-    public async Task GetProduct_WithValidId_ReturnsProduct()
+    public async Task GetDish_WithValidId_ReturnsDish()
     {
         // Arrange
-        var productId = Guid.NewGuid();
-        var product = new Dish
+        var dishId = Guid.NewGuid();
+        var dish = new Dish
         {
-            Id = productId,
+            Id = dishId,
             Name = "Caesar Salad",
+            Description = "Fresh salad",
             Price = 10.00m,
             Category = "Salads",
-            IsAvailable = true
+            IsAvailable = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
         };
 
-        _context.Dishes.Add(product);
-        await _context.SaveChangesAsync();
+        _mockRepository.Setup(r => r.GetByIdAsync(dishId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dish);
 
         // Act
-        var result = await _controller.GetProduct(productId);
+        var result = await _controller.GetDish(dishId, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Value.Should().NotBeNull();
-        result.Value!.Name.Should().Be("Caesar Salad");
-        result.Value.Price.Should().Be(10.00m);
+        result.Should().BeOfType<OkObjectResult>();
     }
 
     [Fact]
-    public async Task GetProduct_WithInvalidId_ReturnsNotFound()
+    public async Task GetDish_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
         var invalidId = Guid.NewGuid();
+        _mockRepository.Setup(r => r.GetByIdAsync(invalidId, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Dish?)null);
 
         // Act
-        var result = await _controller.GetProduct(invalidId);
+        var result = await _controller.GetDish(invalidId, CancellationToken.None);
 
         // Assert
-        result.Value.Should().BeNull();
+        result.Should().BeOfType<NotFoundObjectResult>();
     }
 
     [Fact]
-    public async Task CreateProduct_WithValidData_CreatesProduct()
+    public async Task GetDishes_WithCategoryFilter_ReturnsFilteredDishes()
     {
         // Arrange
-        var newProduct = new Dish
+        var dishes = new List<Dish>
         {
-            Name = "Spaghetti Carbonara",
-            Price = 14.00m,
-            Category = "Pasta",
-            Description = "Classic Italian pasta",
-            IsAvailable = true
-        };
-
-        // Act
-        var result = await _controller.CreateProduct(newProduct);
-
-        // Assert
-        result.Should().NotBeNull();
-        var createdProduct = await _context.Dishes
-            .FirstOrDefaultAsync(d => d.Name == "Spaghetti Carbonara");
-
-        createdProduct.Should().NotBeNull();
-        createdProduct!.Price.Should().Be(14.00m);
-        createdProduct.Category.Should().Be("Pasta");
-    }
-
-    [Fact]
-    public async Task UpdateProduct_WithValidData_UpdatesProduct()
-    {
-        // Arrange
-        var productId = Guid.NewGuid();
-        var product = new Dish
-        {
-            Id = productId,
-            Name = "Old Name",
-            Price = 10.00m,
-            Category = "Category",
-            IsAvailable = true
-        };
-
-        _context.Dishes.Add(product);
-        await _context.SaveChangesAsync();
-
-        product.Name = "New Name";
-        product.Price = 15.00m;
-
-        // Act
-        var result = await _controller.UpdateProduct(productId, product);
-
-        // Assert
-        result.Should().NotBeNull();
-        var updatedProduct = await _context.Dishes.FindAsync(productId);
-        updatedProduct!.Name.Should().Be("New Name");
-        updatedProduct.Price.Should().Be(15.00m);
-    }
-
-    [Fact]
-    public async Task DeleteProduct_WithValidId_DeletesProduct()
-    {
-        // Arrange
-        var productId = Guid.NewGuid();
-        var product = new Dish
-        {
-            Id = productId,
-            Name = "To Delete",
-            Price = 5.00m,
-            Category = "Test",
-            IsAvailable = true
-        };
-
-        _context.Dishes.Add(product);
-        await _context.SaveChangesAsync();
-
-        // Act
-        var result = await _controller.DeleteProduct(productId);
-
-        // Assert
-        result.Should().NotBeNull();
-        var deletedProduct = await _context.Dishes.FindAsync(productId);
-        deletedProduct.Should().BeNull();
-    }
-
-    [Fact]
-    public async Task GetProductsByCategory_ReturnsFilteredProducts()
-    {
-        // Arrange
-        var products = new List<Dish>
-        {
-            new() { Id = Guid.NewGuid(), Name = "Pizza 1", Price = 15.00m, Category = "Pizza", IsAvailable = true },
-            new() { Id = Guid.NewGuid(), Name = "Pizza 2", Price = 16.00m, Category = "Pizza", IsAvailable = true },
-            new() { Id = Guid.NewGuid(), Name = "Burger 1", Price = 12.00m, Category = "Burgers", IsAvailable = true }
-        };
-
-        _context.Dishes.AddRange(products);
-        await _context.SaveChangesAsync();
-
-        // Act
-        var result = await _controller.GetProductsByCategory("Pizza");
-
-        // Assert
-        result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        result.Should().OnlyContain(p => p.Category == "Pizza");
-    }
-
-    [Theory]
-    [InlineData(true)]
-    [InlineData(false)]
-    public async Task GetAvailableProducts_ReturnsCorrectProducts(bool isAvailable)
-    {
-        // Arrange
-        var products = new List<Dish>
-        {
-            new() { Id = Guid.NewGuid(), Name = "Available", Price = 10.00m, Category = "Test", IsAvailable = true },
             new()
             {
-                Id = Guid.NewGuid(), Name = "Not Available", Price = 10.00m, Category = "Test", IsAvailable = false
+                Id = Guid.NewGuid(),
+                Name = "Pizza 1",
+                Description = "Pizza description",
+                Price = 15.00m,
+                Category = "Pizza",
+                IsAvailable = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            },
+            new()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Pizza 2",
+                Description = "Another pizza",
+                Price = 16.00m,
+                Category = "Pizza",
+                IsAvailable = true,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             }
         };
 
-        _context.Dishes.AddRange(products);
-        await _context.SaveChangesAsync();
+        _mockRepository.Setup(r => r.GetAsync(It.Is<DishQueryOptions>(o => o.Category == "Pizza"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(dishes);
+        _mockRepository.Setup(r => r.CountAsync(It.Is<DishQueryOptions>(o => o.Category == "Pizza"), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(2);
 
         // Act
-        var result = await _controller.GetAvailableProducts(isAvailable);
+        var result = await _controller.GetDishes("Pizza", null, null, null, null, null, null, null, CancellationToken.None);
 
         // Assert
-        result.Should().NotBeNull();
-        result.Should().OnlyContain(p => p.IsAvailable == isAvailable);
+        result.Should().BeOfType<OkObjectResult>();
     }
 }

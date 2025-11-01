@@ -76,11 +76,17 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request,
         CancellationToken cancellationToken)
     {
+        _logger.LogInformation("Refresh token request received");
+        
         if (string.IsNullOrEmpty(request.RefreshToken))
+        {
+            _logger.LogWarning("Refresh token is missing in request");
             return BadRequest(new { message = "Refresh token is required" });
+        }
 
         try
         {
+            _logger.LogDebug("Validating refresh token...");
             var principal = _jwt.ValidateRefreshToken(request.RefreshToken);
             if (principal == null)
             {
