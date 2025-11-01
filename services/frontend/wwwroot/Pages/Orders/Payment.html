@@ -1,0 +1,463 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="http://localhost:5000" name="gateway-origin">
+    <title>Payment - Feane Restaurant</title>
+    <link href="/images/favicon.png" rel="shortcut icon" type="image/png"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .page-content {
+            padding: 40px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: calc(100vh - 80px);
+        }
+
+        .payment-container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .payment-header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .payment-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        .order-summary-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #ddd;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-size: 22px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        .card-icons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 32px;
+            background: #f0f0f0;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 10px;
+            color: #666;
+        }
+
+        .btn-pay {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .btn-pay:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-pay:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-cancel {
+            width: 100%;
+            padding: 14px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+        }
+
+        .security-note {
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .security-icon {
+            color: #28a745;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-overlay.show {
+            display: flex;
+        }
+
+        .loading-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="navbar-placeholder"></div>
+
+<div class="page-content">
+    <div class="payment-container">
+        <div class="payment-header">
+            <div class="payment-icon">💳</div>
+            <h1>Payment Details</h1>
+            <p class="text-muted">Complete your order payment</p>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <div class="order-summary-box">
+            <h5 style="margin-bottom: 15px; color: #333;">Order Summary</h5>
+            <div class="summary-row">
+                <span>Order Total</span>
+                <span id="orderTotal">$0.00</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery Fee</span>
+                <span class="text-success">FREE</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total to Pay</span>
+                <span id="totalToPay">$0.00</span>
+            </div>
+        </div>
+
+        <form id="paymentForm">
+            <div class="form-group">
+                <label for="cardName">Cardholder Name</label>
+                <input class="form-control" id="cardName" placeholder="John Doe"
+                       required type="text">
+            </div>
+
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input class="form-control" id="cardNumber" maxlength="19"
+                       placeholder="1234 5678 9012 3456"
+                       required type="text">
+                <div class="card-icons">
+                    <div class="card-icon">VISA</div>
+                    <div class="card-icon">MC</div>
+                    <div class="card-icon">AMEX</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="expiry">Expiry Date</label>
+                    <input class="form-control" id="expiry" maxlength="5"
+                           placeholder="MM/YY" required type="text">
+                </div>
+                <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input class="form-control" id="cvv" maxlength="4"
+                           placeholder="123" required type="text">
+                </div>
+            </div>
+
+            <button class="btn-pay" id="payBtn" type="submit">
+                🔒 Pay Securely
+            </button>
+
+            <a class="btn-cancel" href="#" id="cancelBtn">Cancel Payment</a>
+
+            <div class="security-note">
+                <span class="security-icon">🔒</span>
+                Your payment information is secure and encrypted
+            </div>
+        </form>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h4 style="margin: 0; color: #333;">Processing Payment...</h4>
+            <p style="margin-top: 10px; color: #666;">Please wait</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Load navbar
+    fetch('/partials/navbar.html')
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('navbar-placeholder').innerHTML = html;
+        });
+</script>
+
+<script src="/js/gateway-client.js"></script>
+<script>
+    const gatewayClient = new GatewayClient();
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderData = urlParams.get('data');
+    let parsedOrderData = null;
+
+    // Load order data from URL parameter
+    if (orderData) {
+        try {
+            parsedOrderData = JSON.parse(decodeURIComponent(orderData));
+            displayOrderSummary(parsedOrderData);
+        } catch (e) {
+            showAlert('Invalid order data', 'danger');
+            setTimeout(() => window.location.href = '/orders/checkout', 2000);
+        }
+    } else {
+        showAlert('No order data found', 'danger');
+        setTimeout(() => window.location.href = '/orders/checkout', 2000);
+    }
+
+    function displayOrderSummary(data) {
+        const total = data.items.reduce((sum, item) => sum + item.totalPrice, 0);
+        document.getElementById('orderTotal').textContent = `$${total.toFixed(2)}`;
+        document.getElementById('totalToPay').textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Format card number with spaces
+    document.getElementById('cardNumber').addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+    });
+
+    // Format expiry date
+    document.getElementById('expiry').addEventListener('input', function (e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.slice(0, 2) + '/' + value.slice(2, 4);
+        }
+        e.target.value = value;
+    });
+
+    // Only allow numbers in CVV
+    document.getElementById('cvv').addEventListener('input', function (e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // Cancel button
+    document.getElementById('cancelBtn').addEventListener('click', function (e) {
+        e.preventDefault();
+        if (confirm('Are you sure you want to cancel the payment?')) {
+            window.location.href = '/orders/checkout';
+        }
+    });
+
+    // Payment form submission
+    document.getElementById('paymentForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        if (!parsedOrderData) {
+            showAlert('Order data not found', 'danger');
+            return;
+        }
+
+        // Show loading overlay
+        document.getElementById('loadingOverlay').classList.add('show');
+        document.getElementById('payBtn').disabled = true;
+
+        // Simulate payment processing (2 seconds)
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        try {
+            // Create order via API
+            const response = await gatewayClient.post('/api/orders', parsedOrderData);
+
+            if (response.success && response.order) {
+                // Clear cart items
+                await clearCart(parsedOrderData.items);
+
+                // Hide loading
+                document.getElementById('loadingOverlay').classList.remove('show');
+
+                // Show success and redirect
+                showAlert('Payment successful! Order placed.', 'success');
+                setTimeout(() => {
+                    window.location.href = `/orders/details?id=${response.order.id}`;
+                }, 1500);
+            } else {
+                throw new Error('Order creation failed');
+            }
+        } catch (error) {
+            console.error('Payment error:', error);
+            document.getElementById('loadingOverlay').classList.remove('show');
+            document.getElementById('payBtn').disabled = false;
+
+            if (error.message === 'Unauthorized') {
+                showAlert('Please login to continue.', 'danger');
+                setTimeout(() => {
+                    window.location.href = '/account/authentication?returnUrl=' +
+                        encodeURIComponent(window.location.pathname + window.location.search);
+                }, 1500);
+            } else {
+                showAlert('Payment failed. Please try again.', 'danger');
+            }
+        }
+    });
+
+    async function clearCart(items) {
+        try {
+            // Get cart to find item IDs
+            const cartResponse = await gatewayClient.get('/api/cart');
+            if (cartResponse.success && cartResponse.items) {
+                for (const cartItem of cartResponse.items) {
+                    await gatewayClient.delete(`/api/cart/items/${cartItem.id}`);
+                }
+            }
+        } catch (error) {
+            console.error('Error clearing cart:', error);
+        }
+    }
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alert-container');
+        alertContainer.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        setTimeout(() => alertContainer.innerHTML = '', 5000);
+    }
+</script>
+</body>
+</html>
+

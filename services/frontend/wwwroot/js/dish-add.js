@@ -39,7 +39,9 @@
             window.feaneGateway.post(endpoint, formData).then(function (response) {
                 if (response && (response.success || response.status === 'success')) {
                     showFeedback(feedback, response.message || 'Dish added successfully.', 'success');
-                    form.reset();
+                    setTimeout(function () {
+                        window.location.href = '/dish/index';
+                    }, 600);
                     return;
                 }
 

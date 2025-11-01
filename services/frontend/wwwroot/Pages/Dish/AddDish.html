@@ -1,9 +1,14 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <title>Add New Dish</title>
+
+    <link href="/css/bootstrap.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
+    <link href="/css/responsive.css" rel="stylesheet"/>
+    <link href="/css/navbar.css" rel="stylesheet"/>
 
     <style>
         :root {
@@ -15,9 +20,9 @@
             --primary-600: #5576ff;
             --danger: #ff6b6b;
             --success: #3bd88f;
-            --ring: 0 0 0 3px rgba(108,140,255,.25);
+            --ring: 0 0 0 3px rgba(108, 140, 255, .25);
             --radius: 14px;
-            --shadow: 0 10px 25px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.03);
+            --shadow: 0 10px 25px rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .03);
         }
 
         * {
@@ -32,25 +37,25 @@
             margin: 0;
             background: radial-gradient(1200px 600px at -10% -10%, #182033 0%, transparent 60%), radial-gradient(1200px 600px at 120% 110%, #1d2440 0%, transparent 60%), var(--bg);
             color: var(--text);
-            font: 500 16px/1.55 Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji",sans-serif;
+            font: 500 16px/1.55 Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
         }
 
         /* container */
         .form-container {
             width: min(880px, 92vw);
             margin: clamp(24px, 6vh, 72px) auto;
-            background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)), var(--card);
-            border: 1px solid rgba(255,255,255,.06);
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .01)), var(--card);
+            border: 1px solid rgba(255, 255, 255, .06);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             padding: clamp(18px, 4vw, 36px);
         }
 
-            .form-container h2 {
-                margin: 0 0 6px;
-                letter-spacing: .3px;
-                font-size: clamp(20px, 3.2vw, 28px);
-            }
+        .form-container h2 {
+            margin: 0 0 6px;
+            letter-spacing: .3px;
+            font-size: clamp(20px, 3.2vw, 28px);
+        }
 
         /* groups */
         .form-group {
@@ -78,24 +83,24 @@
             width: 100%;
             color: var(--text);
             background: #0f1320;
-            border: 1px solid rgba(255,255,255,.08);
+            border: 1px solid rgba(255, 255, 255, .08);
             border-radius: 12px;
             padding: 12px 14px;
             outline: none;
-            transition: .18s border-color,.18s box-shadow,.18s background;
+            transition: .18s border-color, .18s box-shadow, .18s background;
         }
 
-            .form-control::placeholder, textarea::placeholder {
-                color: #7f8aa3;
-            }
+        .form-control::placeholder, textarea::placeholder {
+            color: #7f8aa3;
+        }
 
-            .form-control:focus,
-            textarea:focus,
-            select:focus {
-                border-color: var(--primary);
-                box-shadow: var(--ring);
-                background: #0d1220;
-            }
+        .form-control:focus,
+        textarea:focus,
+        select:focus {
+            border-color: var(--primary);
+            box-shadow: var(--ring);
+            background: #0d1220;
+        }
 
         textarea {
             min-height: 120px;
@@ -124,25 +129,25 @@
             border-radius: 12px;
             margin-top: 8px;
             font-size: 14px;
-            border: 1px solid rgba(255,255,255,.08);
+            border: 1px solid rgba(255, 255, 255, .08);
         }
 
         .alert-success {
-            background: rgba(59,216,143,.08);
+            background: rgba(59, 216, 143, .08);
             color: #a8f1cf;
-            border-color: rgba(59,216,143,.25);
+            border-color: rgba(59, 216, 143, .25);
         }
 
         .alert-danger {
-            background: rgba(255,107,107,.08);
+            background: rgba(255, 107, 107, .08);
             color: #ffc2c2;
-            border-color: rgba(255,107,107,.25);
+            border-color: rgba(255, 107, 107, .25);
         }
 
         .alert-info {
-            background: rgba(108,140,255,.08);
+            background: rgba(108, 140, 255, .08);
             color: #c9d3ff;
-            border-color: rgba(108,140,255,.25);
+            border-color: rgba(108, 140, 255, .25);
         }
 
         .d-none {
@@ -164,112 +169,123 @@
             user-select: none;
         }
 
-            .btn:active {
-                transform: translateY(1px);
-            }
+        .btn:active {
+            transform: translateY(1px);
+        }
 
         .btn-primary {
             background: linear-gradient(180deg, var(--primary), var(--primary-600));
             color: white;
-            box-shadow: 0 10px 22px rgba(108,140,255,.25);
+            box-shadow: 0 10px 22px rgba(108, 140, 255, .25);
         }
 
-            .btn-primary:hover {
-                filter: brightness(1.02);
-            }
+        .btn-primary:hover {
+            filter: brightness(1.02);
+        }
 
-            .btn-primary:focus {
-                box-shadow: var(--ring);
-                outline: none;
-            }
+        .btn-primary:focus {
+            box-shadow: var(--ring);
+            outline: none;
+        }
     </style>
 </head>
-<body>
+<body class="sub_page">
+<div data-include="/partials/navbar.html"></div>
 
-    <main class="form-container">
-        <h2>Add New Dish</h2>
+<main class="form-container">
+    <h2>Add New Dish</h2>
 
-        <form id="add-dish-form"
-              action="/api/dishes"
-              method="post"
-              enctype="multipart/form-data"
-              autocomplete="on">
+    <form action="/api/dishes"
+          autocomplete="on"
+          data-gateway-endpoint="/api/dishes"
+          enctype="multipart/form-data"
+          id="add-dish-form"
+          method="post">
 
-            <!-- Dish Name -->
-            <div class="form-group">
-                <label for="dish-name">Dish Name</label>
-                <input id="dish-name"
-                       name="name"
-                       type="text"
-                       class="form-control"
-                       placeholder="e.g., Margherita"
-                       minlength="2"
-                       maxlength="100"
-                       required />
-                <small class="hint">2–100 characters.</small>
-            </div>
+        <!-- Dish Name -->
+        <div class="form-group">
+            <label for="dish-name">Dish Name</label>
+            <input class="form-control"
+                   id="dish-name"
+                   maxlength="100"
+                   minlength="2"
+                   name="name"
+                   placeholder="e.g., Margherita"
+                   required
+                   type="text"/>
+            <small class="hint">2–100 characters.</small>
+        </div>
 
-            <!-- Description -->
-            <div class="form-group">
-                <label for="dish-description">Description</label>
-                <textarea id="dish-description"
-                          name="description"
-                          class="form-control"
-                          rows="4"
-                          placeholder="Short description of the dish"
-                          minlength="4"
-                          maxlength="1000"
-                          required></textarea>
-                <small class="hint">Tell customers what makes it great.</small>
-            </div>
+        <!-- Description -->
+        <div class="form-group">
+            <label for="dish-description">Description</label>
+            <textarea class="form-control"
+                      id="dish-description"
+                      maxlength="1000"
+                      minlength="4"
+                      name="description"
+                      placeholder="Short description of the dish"
+                      required
+                      rows="4"></textarea>
+            <small class="hint">Tell customers what makes it great.</small>
+        </div>
 
-            <!-- Price -->
-            <div class="form-group">
-                <label for="dish-price">Price</label>
-                <input id="dish-price"
-                       name="price"
-                       type="number"
-                       class="form-control"
-                       placeholder="0.00"
-                       step="0.01"
-                       min="0"
-                       inputmode="decimal"
-                       required />
-                <small class="hint">Use a dot as decimal separator, e.g., 9.99.</small>
-            </div>
+        <!-- Price -->
+        <div class="form-group">
+            <label for="dish-price">Price</label>
+            <input class="form-control"
+                   id="dish-price"
+                   inputmode="decimal"
+                   min="0"
+                   name="price"
+                   placeholder="0.00"
+                   required
+                   step="0.01"
+                   type="number"/>
+            <small class="hint">Use a dot as decimal separator, e.g., 9.99.</small>
+        </div>
 
-            <!-- Category -->
-            <div class="form-group">
-                <label for="dish-category">Category</label>
-                <select id="dish-category"
-                        name="category"
-                        class="form-control"
-                        required>
-                    <option value="" selected disabled>Select a category</option>
-                    <option value="burger">Burger</option>
-                    <option value="pizza">Pizza</option>
-                    <option value="pasta">Pasta</option>
-                    <option value="fries">Fries</option>
-                </select>
-            </div>
+        <!-- Category -->
+        <div class="form-group">
+            <label for="dish-category">Category</label>
+            <select class="form-control"
+                    id="dish-category"
+                    name="category"
+                    required>
+                <option disabled selected value="">Select a category</option>
+                <option value="burger">Burger</option>
+                <option value="pizza">Pizza</option>
+                <option value="pasta">Pasta</option>
+                <option value="fries">Fries</option>
+            </select>
+        </div>
 
-            <!-- Image -->
-            <div class="form-group">
-                <label for="dish-image">Image</label>
-                <input id="dish-image"
-                       name="imageFile"
-                       type="file"
-                       class="form-control"
-                       accept="image/*" />
-                <small class="hint">Optional. JPG/PNG/WebP recommended.</small>
-            </div>
+        <!-- Image -->
+        <div class="form-group">
+            <label for="dish-image">Image</label>
+            <input accept="image/*"
+                   class="form-control"
+                   id="dish-image"
+                   name="imageFile"
+                   type="file"/>
+            <small class="hint">Optional. JPG/PNG/WebP recommended.</small>
+        </div>
 
-            <!-- Feedback (optional) -->
-            <div id="form-feedback" class="alert d-none" role="alert" aria-live="polite"></div>
+        <!-- Feedback (optional) -->
+        <div aria-live="polite" class="alert d-none" id="add-dish-feedback" role="alert"></div>
 
-            <button type="submit" class="btn btn-primary">Add Dish</button>
-        </form>
-    </main>
+        <button class="btn btn-primary" type="submit">Add Dish</button>
+    </form>
+</main>
 
+<div data-include="/partials/footer.html"></div>
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="/js/bootstrap.js"></script>
+<script src="/js/partials-loader.js"></script>
+<script src="/js/custom.js"></script>
+<script src="/js/gateway-client.js"></script>
+<script src="/js/dish-add.js"></script>
 </body>
 </html>

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
@@ -25,8 +24,10 @@ public class DishesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetDishes([FromQuery] string? category, [FromQuery] string? search, [FromQuery] bool? availableOnly,
-        [FromQuery] string? sort, [FromQuery] bool? desc, [FromQuery] int? page, [FromQuery] int? pageSize, [FromQuery] int? limit,
+    public async Task<IActionResult> GetDishes([FromQuery] string? category, [FromQuery] string? search,
+        [FromQuery] bool? availableOnly,
+        [FromQuery] string? sort, [FromQuery] bool? desc, [FromQuery] int? page, [FromQuery] int? pageSize,
+        [FromQuery] int? limit,
         CancellationToken cancellationToken)
     {
         var options = new DishQueryOptions
@@ -58,10 +59,7 @@ public class DishesController : ControllerBase
     public async Task<IActionResult> GetDish(Guid id, CancellationToken cancellationToken)
     {
         var dish = await _dishRepository.GetByIdAsync(id, cancellationToken);
-        if (dish == null)
-        {
-            return NotFound(new { success = false, message = "Dish not found." });
-        }
+        if (dish == null) return NotFound(new { success = false, message = "Dish not found." });
 
         return Ok(dish.ToResponse());
     }
@@ -75,12 +73,10 @@ public class DishesController : ControllerBase
 
     [HttpPost]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> CreateDish([FromForm] DishUpsertRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateDish([FromForm] DishUpsertRequest request,
+        CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid)
-        {
-            return ValidationProblem(ModelState);
-        }
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
         string? imageBase64 = null;
         string? imageMimeType = null;
@@ -122,18 +118,13 @@ public class DishesController : ControllerBase
     [HttpPost("{id:guid}")]
     [HttpPut("{id:guid}")]
     [Consumes("multipart/form-data")]
-    public async Task<IActionResult> UpdateDish(Guid id, [FromForm] DishUpsertRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateDish(Guid id, [FromForm] DishUpsertRequest request,
+        CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid)
-        {
-            return ValidationProblem(ModelState);
-        }
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
         var existing = await _dishRepository.GetByIdAsync(id, cancellationToken);
-        if (existing == null)
-        {
-            return NotFound(new { success = false, message = "Dish not found." });
-        }
+        if (existing == null) return NotFound(new { success = false, message = "Dish not found." });
 
         existing.Name = request.Name.Trim();
         existing.Description = request.Description.Trim();
@@ -144,7 +135,6 @@ public class DishesController : ControllerBase
         existing.PopularityScore = request.PopularityScore;
 
         if (request.ImageFile != null)
-        {
             try
             {
                 var (imageBase64, imageMimeType) = await ReadImageAsync(request.ImageFile, cancellationToken);
@@ -159,13 +149,11 @@ public class DishesController : ControllerBase
                 _logger.LogWarning(exception, "Image validation failed while updating dish {DishId}", id);
                 return BadRequest(new { success = false, message = exception.Message });
             }
-        }
 
         var updated = await _dishRepository.UpdateAsync(existing, cancellationToken);
         if (updated == null)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError, new { success = false, message = "Unable to update dish." });
-        }
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new { success = false, message = "Unable to update dish." });
 
         var response = updated.ToResponse();
         return Ok(new { success = true, message = "Dish updated successfully.", item = response });
@@ -175,25 +163,19 @@ public class DishesController : ControllerBase
     public async Task<IActionResult> DeleteDish(Guid id, CancellationToken cancellationToken)
     {
         var deleted = await _dishRepository.DeleteAsync(id, cancellationToken);
-        if (!deleted)
-        {
-            return NotFound(new { success = false, message = "Dish not found." });
-        }
+        if (!deleted) return NotFound(new { success = false, message = "Dish not found." });
 
         return Ok(new { success = true, message = "Dish deleted successfully." });
     }
 
-    private async Task<(string? Base64, string? MimeType)> ReadImageAsync(IFormFile? file, CancellationToken cancellationToken)
+    private async Task<(string? Base64, string? MimeType)> ReadImageAsync(IFormFile? file,
+        CancellationToken cancellationToken)
     {
-        if (file == null || file.Length == 0)
-        {
-            return (null, null);
-        }
+        if (file == null || file.Length == 0) return (null, null);
 
         if (file.Length > MaxImageSizeBytes)
-        {
-            throw new InvalidOperationException($"Image size exceeds the maximum allowed size of {MaxImageSizeBytes / 1024 / 1024} MB.");
-        }
+            throw new InvalidOperationException(
+                $"Image size exceeds the maximum allowed size of {MaxImageSizeBytes / 1024 / 1024} MB.");
 
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream, cancellationToken);
@@ -204,10 +186,7 @@ public class DishesController : ControllerBase
 
     private static DishSortField ParseSortField(string? sort)
     {
-        if (string.IsNullOrWhiteSpace(sort))
-        {
-            return DishSortField.CreatedAt;
-        }
+        if (string.IsNullOrWhiteSpace(sort)) return DishSortField.CreatedAt;
 
         return sort.Trim().ToLowerInvariant() switch
         {
@@ -221,10 +200,7 @@ public class DishesController : ControllerBase
 
     private static bool ShouldSortDescending(string? sort)
     {
-        if (string.IsNullOrWhiteSpace(sort))
-        {
-            return true;
-        }
+        if (string.IsNullOrWhiteSpace(sort)) return true;
 
         return sort.Trim().ToLowerInvariant() switch
         {

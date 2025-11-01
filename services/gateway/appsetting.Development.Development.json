@@ -10,5 +10,8 @@
   },
   "UserService": {
     "BaseUrl": "http://user-service:8080"
+  },
+  "CartService": {
+    "BaseUrl": "http://cart-service:8080"
   }
 }

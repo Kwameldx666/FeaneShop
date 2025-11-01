@@ -1,102 +1,308 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <meta content="http://localhost:5000" name="gateway-origin"/>
     <title>Feane — История резерваций</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"/>
 
-    <!-- Общие стили темы -->
-    <link rel="stylesheet" href="/css/bootstrap.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/responsive.css" />
-    <link rel="stylesheet" href="/css/navbar.css" />
-    <link rel="stylesheet" href="/css/account-profile.css" />
+    <style>
+        body.reservations-page {
+            --bg: #0d0f14;
+            --bg2: #111522;
+            --panel: #161c2a;
+            --panel2: #1b2233;
+            --accent: #ffbe33;
+            --accent2: #ff8c33;
+            --ink: #eef2fb;
+            --muted: #9aa4b2;
+            --line: rgba(255, 255, 255, .1);
+            --radius: 16px;
+            --shadow: 0 24px 48px rgba(0, 0, 0, .45);
+            margin: 0;
+            color: var(--ink);
+            font-family: "Poppins", sans-serif;
+            background: radial-gradient(circle at -10% -20%, #1a2035 0%, transparent 60%),
+            radial-gradient(circle at 110% 120%, #1a2135 0%, transparent 60%),
+            linear-gradient(180deg, var(--bg2), var(--bg));
+            min-height: 100vh;
+        }
+
+        h1 {
+            width: min(1100px, 94vw);
+            margin: 40px auto 0;
+            font-size: clamp(22px, 3.5vw, 30px);
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: .4px;
+            text-align: left;
+        }
+
+        main.shell {
+            width: min(1100px, 94vw);
+            margin: 40px auto 80px;
+            display: grid;
+            gap: 20px;
+            grid-template-columns:260px 1fr;
+        }
+
+        @media (max-width: 960px) {
+            main.shell {
+                grid-template-columns:1fr;
+            }
+        }
+
+        /* Sidebar */
+        aside.sidebar {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 16px;
+            height: max-content;
+        }
+
+        nav.co-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        nav.co-menu a {
+            text-decoration: none;
+            background: #10182a;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 10px 14px;
+            color: #e7edff;
+            font-weight: 600;
+            transition: .2s;
+        }
+
+        nav.co-menu a:hover {
+            filter: brightness(1.08);
+            border-color: rgba(255, 255, 255, .2);
+            transform: translateY(-1px);
+        }
+
+        nav.co-menu a.active {
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+            color: #1b1103;
+            border: 0;
+            box-shadow: 0 10px 20px rgba(255, 190, 51, .3);
+        }
+
+        /* Panel */
+        section.panel {
+            background: var(--panel2);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: clamp(18px, 3vw, 28px);
+        }
+
+        .lead {
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .alert {
+            display: none;
+            border-radius: 12px;
+            background: #122034;
+            border: 1px solid var(--line);
+            padding: 12px 14px;
+            margin-bottom: 16px;
+        }
+
+        .alert.alert-success {
+            background: rgba(39, 209, 124, .12);
+            border-color: rgba(39, 209, 124, .35);
+        }
+
+        .alert.alert-info {
+            background: rgba(255, 176, 32, .12);
+            border-color: rgba(255, 176, 32, .35);
+        }
+
+        .alert.alert-danger {
+            background: rgba(255, 77, 77, .12);
+            border-color: rgba(255, 77, 77, .32);
+        }
+
+        .alert:not(.d-none) {
+            display: block;
+        }
+
+        /* Table */
+        .table-wrap {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, .02);
+            overflow: auto;
+            animation: fadein .4s ease;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 820px;
+            color: var(--ink);
+        }
+
+        thead th {
+            text-align: left;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 12px 14px;
+            color: #cfd6e4;
+            background: #10182a;
+            border-bottom: 1px solid var(--line);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        tbody td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--line);
+            transition: background .2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, .05);
+        }
+
+        tbody td.money {
+            text-align: right;
+        }
+
+        /* Status pills */
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 999px;
+        }
+
+        .status.done {
+            background: rgba(39, 209, 124, .12);
+            color: #8ef0c8;
+        }
+
+        .status.upcoming {
+            background: rgba(255, 176, 32, .15);
+            color: #ffe2a8;
+        }
+
+        .status.cancelled {
+            background: rgba(255, 77, 77, .1);
+            color: #ffcccc;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 1px solid var(--line);
+            background: #10182a;
+            color: var(--ink);
+            transition: .2s;
+        }
+
+        .btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-primary {
+            background: linear-gradient(180deg, var(--accent), var(--accent2));
+            color: #1b1103;
+            border: 0;
+            box-shadow: 0 6px 18px rgba(255, 190, 51, .25);
+        }
+
+        .btn-danger {
+            background: #1c0e10;
+            border-color: rgba(255, 77, 77, .3);
+            color: #ffdede;
+        }
+
+        .empty {
+            text-align: center;
+            color: var(--muted);
+            padding: 24px;
+        }
+
+        @keyframes fadein {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+    </style>
 </head>
-<body class="sub_page">
-    <!-- Навбар (partial без скриптов внутри) -->
-    <div data-include="/partials/navbar.html"></div>
 
-    <!-- Контент страницы -->
-    <main class="container py-4" data-reservations-endpoint="/api/reservations">
-        <div class="page_layout page_layout-clear">
-            <div class="layout">
-                <div class="layout__content">
-                    <div class="checkout-v2-wrapper co-section--content_wrapper">
+<body class="reservations-page">
+<div data-include="/partials/navbar.html"></div>
 
-                        <!-- Боковое меню -->
-                        <aside class="co-sidebar--menu">
-                            <label class="co-menu-toggle" data-title="Личный кабинет" for="co-menu-toggle"></label>
-                            <nav class="co-menu co-menu--personal co-checkout-block--padded">
-                                <div class="co-menu-item co-menu-item--personal">
-                                    <a class="co-menu-link co-menu-link--personal co-link co-menu-link--active" href="/account/reservationhistory">История резерваций</a>
-                                </div>
-                                <div class="co-menu-item co-menu-item--personal">
-                                    <a class="co-menu-link co-menu-link--personal co-link" href="/account/addresses">Адрес доставки</a>
-                                </div>
-                                <div class="co-menu-item co-menu-item--personal">
-                                    <a class="co-menu-link co-menu-link--personal co-link" href="/account/contacts">Контактные данные</a>
-                                </div>
-                                <div class="co-menu-item co-menu-item--personal">
-                                    <a class="co-menu-link co-menu-link--personal co-link" href="/account/logout">Выход</a>
-                                </div>
-                            </nav>
-                        </aside>
+<h1>История резерваций</h1>
 
-                        <!-- Основной контент -->
-                        <section class="co-section--content">
-                            <div class="co-section--checkout_header co-checkout-block--padded">
-                                <h1 class="co-checkout-title co-title co-title--h1">История резерваций</h1>
-                            </div>
+<main class="shell" data-reservations-endpoint="/api/reservations">
+    <aside class="sidebar">
+        <nav class="co-menu">
+            <a class="active" href="/account/reservationhistory">История резерваций</a>
+            <a href="/account/addresses">Адрес доставки</a>
+            <a href="/account/contacts">Контактные данные</a>
+            <a href="/account/logout">Выход</a>
+        </nav>
+    </aside>
 
-                            <div id="reservations-feedback" class="alert d-none" role="alert"></div>
+    <section class="panel">
+        <h2>Ваши резервации</h2>
+        <p class="lead">Отслеживайте статусы бронирований и суммы по заказам.</p>
 
-                            <div class="table-responsive">
-                                <table class="table table-striped align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Дата резервации</th>
-                                            <th>Повод</th>
-                                            <th>Гостей</th>
-                                            <th>Статус</th>
-                                            <th>Сумма</th>
-                                            <th class="text-center">Действия</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="reservation-table-body"><!-- наполняется JS --></tbody>
-                                </table>
-                            </div>
-                        </section>
+        <div class="alert d-none" id="reservations-feedback"></div>
 
-                    </div>
-                </div>
-            </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Дата</th>
+                    <th>Повод</th>
+                    <th>Гостей</th>
+                    <th>Статус</th>
+                    <th class="money">Сумма</th>
+                    <th style="text-align:center;width:160px;">Действия</th>
+                </tr>
+                </thead>
+                <tbody id="reservation-table-body">
+                <tr>
+                    <td class="empty" colspan="6">Загружаем резервации…</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-    </main>
+    </section>
+</main>
 
-    <!-- Футер (partial без скриптов внутри) -->
-    <div data-include="/partials/footer.html"></div>
+<div data-include="/partials/footer.html"></div>
 
-    <!-- jQuery -->
-    <script src="/js/jquery-3.4.1.min.js"></script>
-
-    <!-- jQuery-плагины -->
-    <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/js/jquery.nice-select.min.js"></script>
-
-    <!-- Bootstrap -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="/js/bootstrap.js"></script>
-
-    <!-- Твои -->
-    <script src="/js/partials-loader.js"></script>
-    <script src="/js/reservations-history.js"></script>
-    <script src="/js/custom.js?v=2"></script> <!-- добавил версионирование, чтобы обойти кэш -->
-
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script src="/js/gateway-client.js"></script>
+<script src="/js/auth-guard.js"></script>
+<script src="/js/partials-loader.js"></script>
+<script src="/js/reservations-history.js"></script>
 </body>
 </html>

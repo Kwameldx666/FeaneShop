@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-
-var builder = WebApplication.CreateBuilder(args);
+﻿var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
@@ -49,8 +46,28 @@ var routeMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
     ["/analytics"] = "/Pages/Analytics/Index.html",
     ["/analytics/index"] = "/Pages/Analytics/Index.html",
 
+    ["/jwt-test"] = "/Pages/jwt-test.html",
+    ["/test"] = "/Pages/jwt-test.html",
+    ["/auth-test"] = "/Pages/auth-test.html",
+    ["/diagnostic"] = "/Pages/diagnostic.html",
+    ["/diag"] = "/Pages/diagnostic.html",
+    ["/instructions"] = "/Pages/instructions.html",
+    ["/help"] = "/Pages/instructions.html",
+
     ["/cart"] = "/Pages/Cart/Cart.html",
     ["/cart/cart"] = "/Pages/Cart/Cart.html",
+
+    ["/order"] = "/Pages/Orders/Index.html",
+    ["/order/index"] = "/Pages/Orders/Index.html",
+    ["/order/checkout"] = "/Pages/Orders/Checkout.html",
+    ["/order/payment"] = "/Pages/Orders/Payment.html",
+    ["/order/details"] = "/Pages/Orders/Details.html",
+
+    ["/orders"] = "/Pages/Orders/Index.html",
+    ["/orders/index"] = "/Pages/Orders/Index.html",
+    ["/orders/checkout"] = "/Pages/Orders/Checkout.html",
+    ["/orders/payment"] = "/Pages/Orders/Payment.html",
+    ["/orders/details"] = "/Pages/Orders/Details.html",
 
     ["/dish"] = "/Pages/Dish/Index.html",
     ["/dish/index"] = "/Pages/Dish/Index.html",
@@ -90,16 +107,11 @@ app.Use(async (context, next) =>
     else
     {
         requestPath = requestPath.TrimEnd('/');
-        if (requestPath.Length == 0)
-        {
-            requestPath = "/";
-        }
+        if (requestPath.Length == 0) requestPath = "/";
     }
 
     if (!requestPath.Contains('.') && routeMap.TryGetValue(requestPath, out var mappedPath))
-    {
         context.Request.Path = mappedPath;
-    }
 
     await next();
 });
@@ -114,7 +126,7 @@ app.Use(async (context, next) =>
         !context.Response.HasStarted)
     {
         context.Response.ContentType = "text/html; charset=utf-8";
-        await context.Response.SendFileAsync("Pages/Error/Error404.html");
+        await context.Response.SendFileAsync("wwwroot/Pages/Error/Error404.html");
     }
 });
 

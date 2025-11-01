@@ -10,15 +10,10 @@ public static class PasswordGenerator
     public static string GeneratePassword(int length = 12)
     {
         if (length <= 0)
-        {
             throw new ArgumentOutOfRangeException(nameof(length), "Password length must be greater than zero.");
-        }
 
         var result = new StringBuilder(length);
-        for (var i = 0; i < length; i++)
-        {
-            result.Append(Characters[Random.Next(Characters.Length)]);
-        }
+        for (var i = 0; i < length; i++) result.Append(Characters[Random.Next(Characters.Length)]);
 
         return result.ToString();
     }

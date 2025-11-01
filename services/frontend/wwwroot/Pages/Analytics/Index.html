@@ -1,213 +1,720 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Basic -->
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <!-- Mobile Metas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <!-- Site Metas -->
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <link rel="shortcut icon" href="/images/favicon.png" type="">
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <meta content="http://localhost:5000" name="gateway-origin"/>
+    <link href="/images/favicon.png" rel="shortcut icon" type="image/png"/>
+    <title>Feane — Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 
-  <title>Feane</title>
+    <style>
+        /* ===== Стили только для этой страницы ===== */
+        :root {
+            --bg: #0f1117;
+            --bg2: #0b0e14;
+            --panel: #141922;
+            --panel-2: #0e1320;
+            --ink: #eef2fb;
+            --muted: #9aa4b2;
+            --muted2: #cbd3e1;
+            --line: rgba(255, 255, 255, .10);
+            --accent: #ffbe33;
+            --accent-2: #ff7a1a;
+            --primary: #6ea8fe;
+            --green: #2ecc71;
+            --red: #ff5a5a;
+            --blue: #4aa3ff;
+            --violet: #9b7bff;
+            --radius: 16px;
+            --rsm: 12px;
+            --shadow: 0 24px 48px rgba(0, 0, 0, .45);
+            --ring: 0 0 0 3px rgba(255, 190, 51, .25);
+        }
 
-  <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+        * {
+            box-sizing: border-box
+        }
 
-  <!--owl slider stylesheet -->
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-  <!-- nice select  -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css"
-        integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ=="
-        crossorigin="anonymous" />
-  <!-- font awesome style -->
-  <link href="/css/font-awesome.min.css" rel="stylesheet" />
+        html, body {
+            height: 100%
+        }
 
-  <!-- Custom styles for this template -->
-  <link href="/css/style.css" rel="stylesheet" />
-  <!-- responsive style -->
-  <link href="/css/responsive.css" rel="stylesheet" />
-  <link href="/css/navbar.css" rel="stylesheet" />
-  <link href="/css/analytics-index.css" rel="stylesheet" />
+        body {
+            margin: 0;
+            color: var(--ink);
+            font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background: radial-gradient(1200px 700px at -12% -18%, #1b2236 0%, transparent 60%),
+            radial-gradient(1200px 800px at 112% 118%, #181f33 0%, transparent 60%),
+            linear-gradient(180deg, var(--bg2), var(--bg));
+        }
+
+        /* Оболочка */
+        .dash-shell {
+            width: min(1200px, 94vw);
+            margin: clamp(26px, 6vh, 64px) auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Заголовок + фильтры */
+        .dash-head {
+            display: grid;
+            grid-template-columns: 1.3fr .9fr;
+            gap: 18px;
+        }
+
+        @media (max-width: 920px) {
+            .dash-head {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .hero-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .01)),
+            var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: clamp(16px, 3.6vw, 24px);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+            isolation: isolate;
+        }
+
+        .hero-card::before {
+            content: "";
+            position: absolute;
+            inset: -160px auto auto -160px;
+            width: 380px;
+            height: 380px;
+            border-radius: 50%;
+            background: radial-gradient(closest-side, rgba(255, 190, 51, .22), transparent 70%);
+            filter: blur(28px);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .hero-title {
+            margin: 0 0 8px;
+            font-size: clamp(22px, 3.2vw, 30px);
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: .3px;
+        }
+
+        .hero-sub {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .filters {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: clamp(14px, 3.2vw, 18px);
+            box-shadow: var(--shadow);
+        }
+
+        .filters h3 {
+            margin: 0 0 10px;
+            font-size: 14px;
+            color: var(--muted2);
+            letter-spacing: .2px;
+        }
+
+        .f-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 520px) {
+            .f-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .f-field label {
+            display: block;
+            margin: 0 0 6px;
+            font-size: 12px;
+            color: #d7def0;
+            font-weight: 700;
+        }
+
+        .input {
+            width: 100%;
+            min-height: 42px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #0c111e;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            outline: none;
+            transition: border-color .18s, box-shadow .18s, background .18s;
+        }
+
+        .input:focus {
+            border-color: var(--accent);
+            box-shadow: var(--ring);
+            background: #0b1324;
+        }
+
+        .f-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            --bg: #10182a;
+            --fg: var(--ink);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 14px;
+            min-height: 42px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: var(--fg);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: border-color .18s, filter .18s, transform .06s;
+        }
+
+        .btn:hover {
+            border-color: rgba(255, 255, 255, .18);
+            filter: brightness(1.05);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn[disabled] {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            --bg: linear-gradient(180deg, var(--accent), var(--accent-2));
+            --fg: #1b1103;
+            border: 0;
+            box-shadow: 0 10px 22px rgba(255, 190, 51, .28);
+        }
+
+        .btn-ghost {
+            --bg: #0f1628;
+        }
+
+        /* KPI карточки */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        @media (max-width: 980px) {
+            .kpi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 720px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 460px) {
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .kpi {
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px 16px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, .02);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-height: 92px;
+        }
+
+        .kpi .label {
+            color: var(--muted);
+            font-size: 12px;
+            letter-spacing: .2px;
+        }
+
+        .kpi .value {
+            font-size: clamp(18px, 3vw, 24px);
+            font-weight: 800;
+            letter-spacing: .3px;
+        }
+
+        .kpi .hint {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* Две панели */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        @media (max-width: 980px) {
+            .two-col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            padding: clamp(14px, 3vw, 18px);
+        }
+
+        .panel h4 {
+            margin: 0 0 6px;
+            font-size: 16px;
+        }
+
+        .panel p.lead {
+            margin: 0 0 12px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        /* Список статусов */
+        .status-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: #0f1628;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot.completed {
+            background: var(--green);
+        }
+
+        .dot.upcoming {
+            background: var(--blue);
+        }
+
+        .dot.cancelled {
+            background: var(--red);
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 52px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 12px;
+            border: 1px solid var(--line);
+            background: #0b1324;
+        }
+
+        /* Таблица тренда */
+        .table-wrap {
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: auto;
+            background: #0e1320;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 520px;
+            color: var(--ink);
+            font-feature-settings: "tnum" 1, "lnum" 1;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: #10182a;
+            color: #d7def0;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .2px;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        tbody td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: rgba(255, 255, 255, .018);
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, .04);
+        }
+
+        .t-end {
+            text-align: right
+        }
+
+        /* Спарклайн */
+        .spark {
+            width: 100%;
+            height: 84px;
+            background: #0e1320;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            display: block;
+        }
+    </style>
 </head>
-<body class="sub_page">
-  <div data-include="/partials/navbar.html"></div>
 
-  <main class="container analytics-dashboard py-5">
-    <div class="row mb-4 align-items-end">
-      <div class="col-12 col-lg-8">
-        <h2 class="fw-bold mb-3">Analytics overview</h2>
-        <p class="text-muted mb-0">Monitor reservations, revenue and user activity to keep the restaurant on track.</p>
-      </div>
-      <div class="col-12 col-lg-4">
-        <form class="card card-body shadow-sm filter-form">
-          <div class="row g-2">
-            <div class="col-12">
-              <label class="form-label" for="startDate">Start date</label>
-              <input type="date" id="startDate" class="form-control" value="2025-10-01" />
-            </div>
-            <div class="col-12">
-              <label class="form-label" for="endDate">End date</label>
-              <input type="date" id="endDate" class="form-control" value="2025-10-31" />
-            </div>
-            <div class="col-12 d-grid gap-2 mt-2">
-              <button type="submit" class="btn btn-primary" disabled>Apply filters</button>
-              <button type="button" class="btn btn-outline-secondary" disabled>Reset</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
+<body>
+<!-- Navbar (partials-loader подставит содержимое, стиль — как в прошлых примерах) -->
+<div data-include="/partials/navbar.html"></div>
 
-    <div class="row g-4">
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Total users</span>
-          <span class="value">1 248</span>
+<main class="dash-shell" id="analytics-root">
+    <section class="dash-head">
+        <div class="hero-card">
+            <h1 class="hero-title">Analytics overview</h1>
+            <p class="hero-sub">Monitor reservations, revenue and user activity to keep the restaurant on track.</p>
         </div>
-      </div>
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Active users</span>
-          <span class="value">892</span>
-        </div>
-      </div>
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Reservations today</span>
-          <span class="value">34</span>
-        </div>
-      </div>
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Reservations this week</span>
-          <span class="value">187</span>
-        </div>
-      </div>
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Upcoming reservations</span>
-          <span class="value">62</span>
-        </div>
-      </div>
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Cancelled reservations</span>
-          <span class="value">11</span>
-        </div>
-      </div>
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Completed reservations</span>
-          <span class="value">1 129</span>
-        </div>
-      </div>
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Average order value</span>
-          <span class="value">$36.50</span>
-        </div>
-      </div>
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Total revenue</span>
-          <span class="value">$41 280</span>
-        </div>
-      </div>
-      <div class="col-sm-6 col-xl-3">
-        <div class="analytics-card shadow-sm">
-          <span class="label text-muted">Revenue (7 days)</span>
-          <span class="value">$9 870</span>
-        </div>
-      </div>
-    </div>
 
-    <div class="row mt-5 g-4">
-      <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h5 class="card-title">Reservation status</h5>
-            <p class="text-muted">Distribution of reservation statuses for the selected period.</p>
-            <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>Completed</span>
-                <span class="badge bg-primary rounded-pill">1 129</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>Upcoming</span>
-                <span class="badge bg-primary rounded-pill">62</span>
-              </li>
-              <li class="list-group-item d-flex justify-content-between align-items-center">
-                <span>Cancelled</span>
-                <span class="badge bg-primary rounded-pill">11</span>
-              </li>
+        <aside aria-labelledby="filters-title" class="filters">
+            <h3 id="filters-title">Filters</h3>
+            <div class="f-grid">
+                <div class="f-field">
+                    <label for="startDate">Start date</label>
+                    <input class="input" id="startDate" type="date" value="2025-10-01"/>
+                </div>
+                <div class="f-field">
+                    <label for="endDate">End date</label>
+                    <input class="input" id="endDate" type="date" value="2025-10-31"/>
+                </div>
+            </div>
+            <div class="f-actions">
+                <button class="btn btn-primary" id="applyFiltersBtn" type="button">Apply filters</button>
+                <button class="btn btn-ghost" id="resetFiltersBtn" type="button">Reset</button>
+            </div>
+        </aside>
+    </section>
+
+    <!-- KPI -->
+    <section aria-label="Key metrics" class="kpi-grid" id="kpiGrid">
+        <article class="kpi"><span class="label">Total Revenue</span><span class="value"
+                                                                           id="totalRevenue">Loading...</span></article>
+        <article class="kpi"><span class="label">Total Orders</span><span class="value"
+                                                                          id="totalOrders">Loading...</span></article>
+        <article class="kpi"><span class="label">Completed Orders</span><span class="value" id="completedOrders">Loading...</span>
+        </article>
+        <article class="kpi"><span class="label">Cancelled Orders</span><span class="value" id="cancelledOrders">Loading...</span>
+        </article>
+        <article class="kpi"><span class="label">Average Order Value</span><span class="value" id="averageOrderValue">Loading...</span>
+        </article>
+        <article class="kpi"><span class="label">Top Product</span><span class="value" id="topProduct">Loading...</span>
+        </article>
+    </section>
+
+    <!-- Две панели -->
+    <section class="two-col">
+        <section aria-labelledby="status-title" class="panel">
+            <h4 id="status-title">Order Status</h4>
+            <p class="lead">Distribution of order statuses for the selected period.</p>
+            <ul class="status-list" id="statusList">
+                <li class="status-item">
+                    <span class="badge"><span class="dot completed"></span> Completed</span>
+                    <span class="pill" id="statusCompleted">Loading...</span>
+                </li>
+                <li class="status-item">
+                    <span class="badge"><span class="dot cancelled"></span> Cancelled</span>
+                    <span class="pill" id="statusCancelled">Loading...</span>
+                </li>
             </ul>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="card shadow-sm h-100">
-          <div class="card-body">
-            <h5 class="card-title">Revenue trend</h5>
-            <p class="text-muted">Daily revenue between 01 Oct and 31 Oct.</p>
-            <div class="table-responsive">
-              <table class="table table-sm align-middle mb-0">
-                <thead>
-                  <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Transactions</th>
-                    <th scope="col" class="text-end">Revenue</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>24 Oct</td>
-                    <td>38</td>
-                    <td class="text-end">$1 240.00</td>
-                  </tr>
-                  <tr>
-                    <td>25 Oct</td>
-                    <td>42</td>
-                    <td class="text-end">$1 360.00</td>
-                  </tr>
-                  <tr>
-                    <td>26 Oct</td>
-                    <td>33</td>
-                    <td class="text-end">$1 080.00</td>
-                  </tr>
-                  <tr>
-                    <td>27 Oct</td>
-                    <td>29</td>
-                    <td class="text-end">$915.00</td>
-                  </tr>
-                  <tr>
-                    <td>28 Oct</td>
-                    <td>44</td>
-                    <td class="text-end">$1 520.00</td>
-                  </tr>
-                  <tr>
-                    <td>29 Oct</td>
-                    <td>31</td>
-                    <td class="text-end">$1 020.00</td>
-                  </tr>
-                  <tr>
-                    <td>30 Oct</td>
-                    <td>38</td>
-                    <td class="text-end">$1 215.00</td>
-                  </tr>
-                </tbody>
-              </table>
+        </section>
+
+        <section aria-labelledby="trend-title" class="panel">
+            <h4 id="trend-title">Revenue trend</h4>
+            <p class="lead">Daily revenue between 01 Oct and 31 Oct.</p>
+
+            <!-- Небольшой спарклайн (декор) -->
+            <svg aria-hidden="true" class="spark" viewBox="0 0 340 84" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="grad" x1="0" x2="0" y1="0" y2="1">
+                        <stop offset="0%" stop-color="#ffbe33" stop-opacity="0.9"/>
+                        <stop offset="100%" stop-color="#ff7a1a" stop-opacity="0.2"/>
+                    </linearGradient>
+                </defs>
+                <!-- линия -->
+                <path d="M10,62 L58,54 L106,60 L154,46 L202,38 L250,50 L298,44"
+                      fill="none" stroke="url(#grad)" stroke-linecap="round" stroke-width="3"/>
+                <!-- точки -->
+                <g fill="#ffd27a">
+                    <circle cx="10" cy="62" r="3"/>
+                    <circle cx="58" cy="54" r="3"/>
+                    <circle cx="106" cy="60" r="3"/>
+                    <circle cx="154" cy="46" r="3"/>
+                    <circle cx="202" cy="38" r="3"/>
+                    <circle cx="250" cy="50" r="3"/>
+                    <circle cx="298" cy="44" r="3"/>
+                </g>
+            </svg>
+
+            <div class="table-wrap" style="margin-top:12px;">
+                <table aria-label="Revenue by day">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Orders</th>
+                        <th class="t-end">Revenue</th>
+                    </tr>
+                    </thead>
+                    <tbody id="revenueTableBody">
+                    <tr>
+                        <td colspan="3" style="text-align:center; padding:20px;">Loading...</td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-          </div>
+        </section>
+    </section>
+
+    <!-- Top Products Panel -->
+    <section aria-labelledby="products-title" class="panel">
+        <h4 id="products-title">Top Selling Products</h4>
+        <p class="lead">Most popular products by revenue for the selected period.</p>
+        <div class="table-wrap">
+            <table aria-label="Top products">
+                <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Product Name</th>
+                    <th>Units Sold</th>
+                    <th class="t-end">Revenue</th>
+                </tr>
+                </thead>
+                <tbody id="topProductsBody">
+                <tr>
+                    <td colspan="4" style="text-align:center; padding:20px;">Loading...</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
-      </div>
-    </div>
-  </main>
+    </section>
+</main>
 
-  <div data-include="/partials/footer.html"></div>
+<!-- Footer (partials-loader подставит содержимое, стиль — как в прошлых примерах) -->
+<div data-include="/partials/footer.html"></div>
 
+<!-- Scripts -->
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script src="/js/partials-loader.js"></script>
+<script src="/js/gateway-client.js"></script>
+<script>
+    const gatewayClient = new GatewayClient();
+
+    // Initialize dates (last 30 days by default)
+    function initializeDates() {
+        const today = new Date();
+        const thirtyDaysAgo = new Date(today);
+        thirtyDaysAgo.setDate(today.getDate() - 30);
+
+        document.getElementById('endDate').valueAsDate = today;
+        document.getElementById('startDate').valueAsDate = thirtyDaysAgo;
+    }
+
+    // Format currency
+    function formatCurrency(value) {
+        return parseFloat(value).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + ' LEI';
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+    }
+
+    // Load analytics dashboard data
+    async function loadDashboard() {
+        try {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            console.log('Loading analytics dashboard...', {startDate, endDate});
+
+            const response = await gatewayClient.get(`/api/analytics/dashboard?startDate=${startDate}&endDate=${endDate}`);
+
+            console.log('Analytics response:', response);
+
+            if (response.success && response.data) {
+                updateDashboard(response.data);
+            } else {
+                showError('Failed to load analytics data');
+            }
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+
+            if (error.message === 'Unauthorized') {
+                showError('Please login to view analytics');
+                setTimeout(() => {
+                    window.location.href = '/account/authentication?returnUrl=' + encodeURIComponent(window.location.pathname);
+                }, 2000);
+            } else {
+                showError('Failed to load analytics data: ' + error.message);
+            }
+        }
+    }
+
+    // Update dashboard with data
+    function updateDashboard(data) {
+        // Update KPIs
+        document.getElementById('totalRevenue').textContent = formatCurrency(data.totalRevenue || 0);
+        document.getElementById('totalOrders').textContent = (data.totalOrders || 0).toLocaleString();
+        document.getElementById('completedOrders').textContent = (data.completedOrders || 0).toLocaleString();
+        document.getElementById('cancelledOrders').textContent = (data.cancelledOrders || 0).toLocaleString();
+        document.getElementById('averageOrderValue').textContent = formatCurrency(data.averageOrderValue || 0);
+
+        // Top product
+        if (data.topProducts && data.topProducts.length > 0) {
+            const topProduct = data.topProducts[0];
+            document.getElementById('topProduct').textContent = topProduct.productName;
+        } else {
+            document.getElementById('topProduct').textContent = 'N/A';
+        }
+
+        // Update status pills
+        document.getElementById('statusCompleted').textContent = (data.completedOrders || 0).toLocaleString();
+        document.getElementById('statusCancelled').textContent = (data.cancelledOrders || 0).toLocaleString();
+
+        // Update revenue chart table
+        updateRevenueTable(data.revenueChart || []);
+
+        // Update top products
+        updateTopProducts(data.topProducts || []);
+
+        console.log('Dashboard updated successfully');
+    }
+
+    // Update top products table
+    function updateTopProducts(products) {
+        const tbody = document.getElementById('topProductsBody');
+
+        if (!products || products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#9aa4b2;">No products data available</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = products.map((product, index) => `
+            <tr>
+                <td><strong style="color: var(--accent);">#${index + 1}</strong></td>
+                <td>${product.productName}</td>
+                <td>${product.totalSold.toLocaleString()}</td>
+                <td class="t-end"><strong>${formatCurrency(product.revenue)}</strong></td>
+            </tr>
+        `).join('');
+    }
+
+    // Update revenue table
+    function updateRevenueTable(revenueData) {
+        const tbody = document.getElementById('revenueTableBody');
+
+        if (!revenueData || revenueData.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#9aa4b2;">No data available for selected period</td></tr>';
+            return;
+        }
+
+        // Take last 7 days
+        const last7Days = revenueData.slice(-7);
+
+        tbody.innerHTML = last7Days.map(day => `
+            <tr>
+                <td>${formatDate(day.date)}</td>
+                <td>${day.orders}</td>
+                <td class="t-end">${formatCurrency(day.revenue)}</td>
+            </tr>
+        `).join('');
+    }
+
+    // Show error message
+    function showError(message) {
+        // Update all loading texts with error
+        document.querySelectorAll('.value').forEach(el => {
+            if (el.textContent === 'Loading...') {
+                el.textContent = 'Error';
+                el.style.color = '#ff5a5a';
+            }
+        });
+
+        // Show alert
+        alert(message);
+    }
+
+    // Event handlers
+    document.getElementById('applyFiltersBtn').addEventListener('click', () => {
+        loadDashboard();
+    });
+
+    document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+        initializeDates();
+        loadDashboard();
+    });
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeDates();
+        loadDashboard();
+    });
+</script>
 </body>
 </html>

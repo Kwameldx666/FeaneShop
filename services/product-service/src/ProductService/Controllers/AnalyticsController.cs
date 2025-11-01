@@ -29,12 +29,10 @@ public class AnalyticsController : ControllerBase
         }, cancellationToken);
 
         if (dishes.Count == 0)
-        {
             return Ok(new
             {
                 metrics = Array.Empty<object>()
             });
-        }
 
         var available = dishes.Where(d => d.IsAvailable).ToList();
         var featured = available.Where(d => d.IsFeatured).ToList();

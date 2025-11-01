@@ -23,7 +23,7 @@
             number = 0;
         }
 
-        return '$' + number.toFixed(2);
+        return number.toFixed(2) + ' LEI';
     }
 
     function showFeedback(message, type, feedback) {
@@ -63,7 +63,7 @@
 
             if (!Array.isArray(dishes) || dishes.length === 0) {
                 var emptyRow = document.createElement('tr');
-                emptyRow.innerHTML = '<td colspan="5" class="text-center text-muted">No dishes found.</td>';
+                emptyRow.innerHTML = '<td colspan="6" class="text-center text-muted">No dishes found.</td>';
                 tableBody.appendChild(emptyRow);
                 return;
             }
@@ -71,20 +71,35 @@
             dishes.forEach(function (dish) {
                 var id = dish.id || dish.Id || dish.dishId;
                 var name = dish.name || dish.Name || 'Dish';
-                var category = dish.category || dish.Category || '—';
                 var price = dish.price || dish.Price || 0;
+                var category = dish.category || dish.Category || '—';
                 var description = dish.description || dish.Description || '';
+                var imageUrl = dish.imageUrl || dish.ImageUrl || '';
+                if (!imageUrl) {
+                    var base64 = dish.imageBase64 || dish.ImageBase64 || dish.imageData;
+                    if (base64) {
+                        var mime = dish.imageMimeType || dish.ImageMimeType || 'image/png';
+                        imageUrl = 'data:' + mime + ';base64,' + base64;
+                    }
+                }
+                if (!imageUrl) {
+                    imageUrl = '/images/Default.png';
+                }
+                var editUrl = '/dish/editdish' + (id ? ('?id=' + encodeURIComponent(id)) : '');
+                var deleteId = id ? escapeHtml(id) : '';
+                var imageCell = '<img class="thumb" src="' + escapeHtml(imageUrl) + '" alt="' + escapeHtml(name) + ' thumbnail" />';
 
                 var row = document.createElement('tr');
                 row.setAttribute('data-id', id);
                 row.innerHTML = '' +
                     '<td>' + escapeHtml(name) + '</td>' +
-                    '<td>' + escapeHtml(category) + '</td>' +
-                    '<td>' + formatCurrency(price) + '</td>' +
                     '<td>' + escapeHtml(description) + '</td>' +
-                    '<td class="text-end">' +
-                    '  <a class="btn btn-outline-secondary btn-sm me-2" href="/dish/editdish' + (id ? ('?id=' + encodeURIComponent(id)) : '') + '">Edit</a>' +
-                    '  <button type="button" class="btn btn-outline-danger btn-sm" data-role="delete-dish" data-id="' + escapeHtml(id || '') + '">Delete</button>' +
+                    '<td>' + formatCurrency(price) + '</td>' +
+                    '<td>' + escapeHtml(category) + '</td>' +
+                    '<td class="image-cell">' + imageCell + '</td>' +
+                    '<td class="actions-cell">' +
+                    '    <a class="edit-btn" href="' + editUrl + '">Edit</a>' +
+                    '    <button type="button" class="delete-btn" data-role="delete-dish" data-id="' + deleteId + '">Delete</button>' +
                     '</td>';
                 tableBody.appendChild(row);
             });

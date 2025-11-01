@@ -1,79 +1,741 @@
 ﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
-    <title>Feane â€” Shopping Cart</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <meta content="http://localhost:5000" name="gateway-origin"/>
+    <link href="/images/favicon.png" rel="shortcut icon" type="image/png"/>
+    <title>Feane — Корзина</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"/>
 
-    <!-- Ð‘Ð°Ð·Ð¾Ð²Ñ‹Ðµ ÑÑ‚Ð¸Ð»Ð¸ Ñ‚ÐµÐ¼Ñ‹ -->
-    <link rel="stylesheet" href="/css/bootstrap.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/responsive.css" />
-    <link rel="stylesheet" href="/css/navbar.css" />
+    <style>
+        /* ===== Тема страницы (изоляция) ===== */
+        .cart-page {
+            --bg: #0a0e1a;
+            --bg2: #060912;
+            --panel: #141922;
+            --panel-2: #0e1320;
+            --ink: #eef2fb;
+            --muted: #9aa4b2;
+            --line: rgba(255, 255, 255, .10);
+            --accent: #ffbe33;
+            --accent-2: #ff7a1a;
+            --danger: #ff4d4d;
+            --success: #27d17c;
+            --radius: 16px;
+            --shadow: 0 24px 48px rgba(0, 0, 0, .45);
+            --ring: 0 0 0 3px rgba(255, 190, 51, .25);
+            margin: 0;
+            min-height: 100dvh;
+            color: var(--ink);
+            font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            background: radial-gradient(1200px 700px at -12% -18%, #1b2236 0%, transparent 60%),
+            radial-gradient(1200px 800px at 112% 118%, #181f33 0%, transparent 60%),
+            linear-gradient(180deg, var(--bg2), var(--bg));
+        }
 
-    <!-- Ð¡Ñ‚Ð¸Ð»Ð¸ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†Ñ‹ (Ð¾Ð¿Ñ†Ð¸Ð¾Ð½Ð°Ð»ÑŒÐ½Ð¾ ÑÐ²Ð¾Ð¹ Ñ„Ð°Ð¹Ð») -->
-    <link rel="stylesheet" href="/css/cart.css" />
+        /* Заголовок и контейнер */
+        .cart-page .page-title {
+            width: min(1200px, 94vw);
+            margin: clamp(20px, 4vh, 40px) auto 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .cart-page h1 {
+            margin: 0;
+            font-size: clamp(26px, 3.8vw, 38px);
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: .3px;
+            font-weight: 800;
+        }
+
+        .cart-page .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--line);
+            color: var(--muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all .2s ease;
+        }
+
+        .cart-page .back-btn:hover {
+            background: rgba(255, 255, 255, .08);
+            color: var(--ink);
+            border-color: rgba(255, 255, 255, .2);
+        }
+
+        .cart-page main.shell {
+            width: min(1200px, 94vw);
+            margin: clamp(26px, 5vh, 50px) auto clamp(40px, 8vh, 80px);
+        }
+
+        /* Layout con 2 columnas */
+        .cart-page .cart-layout {
+            display: grid;
+            grid-template-columns:1fr;
+            gap: 24px;
+        }
+
+        @media (min-width: 900px) {
+            .cart-page .cart-layout {
+                grid-template-columns:1.5fr 1fr;
+            }
+        }
+
+        /* Панель */
+        .cart-page .panel {
+            position: relative;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, .01)), var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: clamp(20px, 4vw, 32px);
+        }
+
+        .cart-page .panel-title {
+            font-size: clamp(18px, 2.2vw, 22px);
+            font-weight: 700;
+            margin: 0 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-page .lead {
+            color: var(--muted);
+            margin: 0 0 18px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Alerts */
+        .cart-page .alert {
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin: 0 0 20px;
+            border: 1px solid var(--line);
+            background: #122034;
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+        }
+
+        .cart-page .alert-warning {
+            background: rgba(255, 176, 32, .12);
+            border-color: rgba(255, 176, 32, .35);
+        }
+
+        .cart-page .alert-info {
+            background: rgba(120, 160, 255, .10);
+            border-color: rgba(120, 160, 255, .35);
+        }
+
+        .cart-page .alert-success {
+            background: rgba(39, 209, 124, .12);
+            border-color: rgba(39, 209, 124, .35);
+        }
+
+        .cart-page .alert-danger {
+            background: rgba(255, 77, 77, .12);
+            border-color: rgba(255, 77, 77, .35);
+        }
+
+        .cart-page .d-none {
+            display: none !important;
+        }
+
+        /* Items Grid - Modern Card Layout */
+        .cart-page .cart-items {
+            display: grid;
+            gap: 16px;
+            min-height: 100px;
+        }
+
+        .cart-page .cart-item {
+            display: grid;
+            grid-template-columns:100px 1fr auto;
+            grid-template-rows:auto auto;
+            gap: 16px;
+            background: var(--panel-2);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 16px;
+            transition: all .2s ease;
+            align-items: start;
+        }
+
+        .cart-page .cart-item:hover {
+            background: rgba(255, 255, 255, .02);
+            border-color: rgba(255, 255, 255, .15);
+        }
+
+        .cart-page .item-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 12px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #1a2332, #0f1628);
+            border: 1px solid var(--line);
+            grid-row: 1 / span 2;
+        }
+
+        .cart-page .item-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        .cart-page .item-name {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.3;
+            color: var(--ink);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .cart-page .item-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .cart-page .item-meta {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .cart-page .item-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: flex-end;
+            justify-content: space-between;
+            grid-row: 1 / span 2;
+        }
+
+        /* Количество */
+        .cart-page .qty {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--line);
+            background: #0f1628;
+            border-radius: 12px;
+            padding: 6px;
+        }
+
+        .cart-page .qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background: #1a2332;
+            color: #fff;
+            font-weight: 800;
+            font-size: 16px;
+            line-height: 1;
+            transition: all .15s ease;
+            user-select: none;
+        }
+
+        .cart-page .qty-btn:hover {
+            border-color: rgba(255, 255, 255, .2);
+            background: #202a3c;
+            transform: scale(1.05);
+        }
+
+        .cart-page .qty-btn:active {
+            transform: scale(0.95);
+        }
+
+        .cart-page .qty-input {
+            width: 48px;
+            text-align: center;
+            background: transparent;
+            border: 0;
+            color: var(--ink);
+            font-weight: 700;
+            font-size: 15px;
+            font-variant-numeric: tabular-nums;
+            outline: none;
+            pointer-events: none;
+        }
+
+        .cart-page .item-total {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--ink);
+            text-align: right;
+        }
+
+        /* Кнопки */
+        .cart-page .btn {
+            --bg: #10182a;
+            --fg: var(--ink);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            min-height: 44px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: var(--fg);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all .2s ease;
+            white-space: nowrap;
+        }
+
+        .cart-page .btn:hover:not(:disabled) {
+            border-color: rgba(255, 255, 255, .2);
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+
+        .cart-page .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .cart-page .btn:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+        }
+
+        .cart-page .btn-primary {
+            --bg: linear-gradient(135deg, var(--accent), var(--accent-2));
+            --fg: #1b1103;
+            border: 0;
+            box-shadow: 0 10px 30px rgba(255, 190, 51, .35);
+            font-size: 16px;
+            padding: 14px 32px;
+            min-height: 52px;
+        }
+
+        .cart-page .btn-danger {
+            --bg: #2a1319;
+            --fg: #ffb3b3;
+            border-color: rgba(255, 77, 77, .3);
+            padding: 8px 14px;
+            min-height: 36px;
+            font-size: 13px;
+        }
+
+        .cart-page .btn-danger:hover:not(:disabled) {
+            --bg: #3a1b23;
+            border-color: rgba(255, 77, 77, .5);
+        }
+
+        .cart-page .btn-ghost {
+            --bg: #0f1628;
+        }
+
+        .cart-page .btn-sm {
+            padding: 8px 14px;
+            min-height: 36px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        /* Summary Panel */
+        .cart-page .summary-panel {
+            position: sticky;
+            top: 20px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .01)), var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: clamp(20px, 4vw, 32px);
+            height: fit-content;
+        }
+
+        .cart-page .summary-lines {
+            display: grid;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .cart-page .summary-lines .line {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            font-size: 15px;
+            color: var(--muted);
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .cart-page .summary-lines .line:last-child {
+            border: 0;
+            padding-bottom: 0;
+        }
+
+        .cart-page .summary-lines .line.total {
+            font-size: clamp(22px, 3vw, 28px);
+            font-weight: 800;
+            color: var(--ink);
+            padding-top: 12px;
+            margin-top: 4px;
+            border-top: 2px solid var(--line);
+        }
+
+        .cart-page .summary-lines .line .label {
+            font-weight: 600;
+        }
+
+        .cart-page .summary-lines .line .value {
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .cart-page .checkout-actions {
+            display: grid;
+            gap: 12px;
+        }
+
+        /* Promo code */
+        .cart-page .promo-section {
+            padding: 20px;
+            background: rgba(255, 255, 255, .02);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .cart-page .promo-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0 0 12px;
+            color: var(--ink);
+        }
+
+        .cart-page .promo {
+            display: flex;
+            gap: 8px;
+        }
+
+        .cart-page .input {
+            flex: 1;
+            height: 44px;
+            border-radius: 10px;
+            border: 1px solid var(--line);
+            background: #0f1628;
+            color: var(--ink);
+            padding: 0 14px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all .2s ease;
+        }
+
+        .cart-page .input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: var(--ring);
+        }
+
+        /* Empty State */
+        .cart-page .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            display: grid;
+            gap: 20px;
+            place-items: center;
+        }
+
+        .cart-page .empty-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, rgba(255, 190, 51, .15), rgba(255, 122, 26, .15));
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 48px;
+        }
+
+        .cart-page .empty-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--ink);
+            margin: 0;
+        }
+
+        .cart-page .empty-text {
+            font-size: 16px;
+            color: var(--muted);
+            margin: 0;
+        }
+
+        /* Loading skeleton */
+        .cart-page .skeleton {
+            position: relative;
+            overflow: hidden;
+            background: rgba(255, 255, 255, .06);
+            border-radius: 14px;
+            height: 116px;
+            margin-bottom: 16px;
+            border: 1px solid var(--line);
+        }
+
+        .cart-page .skeleton::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .15), transparent);
+            animation: shimmer 1.8s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        /* Fade in animation for items */
+        .cart-page .cart-item {
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hover effects */
+        .cart-page .btn-primary:hover {
+            box-shadow: 0 15px 40px rgba(255, 190, 51, .45);
+        }
+
+        .cart-page .btn-danger:hover span {
+            display: inline-block;
+            animation: shake 0.3s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-3px);
+            }
+            75% {
+                transform: translateX(3px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 899px) {
+            .cart-page .cart-item {
+                grid-template-columns:80px 1fr;
+                grid-template-rows:auto auto auto;
+            }
+
+            .cart-page .item-image {
+                width: 80px;
+                height: 80px;
+                grid-row: 1 / span 2;
+            }
+
+            .cart-page .item-actions {
+                grid-column: 1/-1;
+                grid-row: 3;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .cart-page .item-total {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .cart-page .cart-item {
+                grid-template-columns:1fr;
+                grid-template-rows:auto auto auto;
+            }
+
+            .cart-page .item-image {
+                width: 100%;
+                height: 180px;
+                grid-row: 1;
+            }
+
+            .cart-page .item-details {
+                grid-column: 1;
+                grid-row: 2;
+            }
+
+            .cart-page .item-actions {
+                grid-column: 1;
+                grid-row: 3;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
 </head>
-<body class="sub_page">
-    <!-- Navbar (partial) -->
-    <div data-include="/partials/navbar.html"></div>
 
-    <!-- ÐšÐ¾Ð½Ñ‚ÐµÐ½Ñ‚ -->
-    <main class="container cart-container py-4"
-          data-cart-endpoint="/api/cart"          
-        data-checkout-url="/payment/checkout"> 
-    <h1 class="mb-4">Shopping Cart</h1>
+<body class="cart-page">
+<!-- Navbar (partial) -->
+<div data-include="/partials/navbar.html"></div>
 
-    <div id="cart-error" class="alert alert-warning d-none" role="alert"></div>
+<div class="page-title">
+    <h1>🛒 Корзина</h1>
+    <a class="back-btn" href="/">
+        <span>←</span>
+        <span>Продолжить покупки</span>
+    </a>
+</div>
 
-    <div id="cart-table-wrap" class="table-responsive d-none">
-      <table class="table table-striped align-middle mb-0">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col" class="text-center">Price</th>
-            <th scope="col" class="text-center">Quantity</th>
-            <th scope="col" class="text-center">Total</th>
-            <th scope="col" class="text-end">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="cart-table-body"><!-- rows via JS --></tbody>
-      </table>
+<!-- Контент -->
+<main class="shell cart-container"
+      data-cart-endpoint="/api/cart"
+      data-checkout-url="/orders/checkout"
+      data-currency="LEI">
+
+    <!-- Глобальные уведомления -->
+    <div aria-live="polite" class="alert alert-warning d-none" id="cart-error" role="alert"></div>
+
+    <!-- Loading skeleton -->
+    <div aria-hidden="true" class="d-none" id="cart-skeletons">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
     </div>
 
-    <div id="cart-empty" class="alert alert-info d-none" role="alert">
-      Your cart is empty.
+    <!-- Empty State -->
+    <div class="panel d-none" id="cart-empty">
+        <div class="empty-state">
+            <div aria-hidden="true" class="empty-icon">🛒</div>
+            <h2 class="empty-title">Ваша корзина пуста</h2>
+            <p class="empty-text">Добавьте товары из нашего меню, чтобы начать покупку. Мы предлагаем широкий выбор
+                вкусных блюд!</p>
+            <a class="btn btn-primary" href="/dish">
+                <span>🍽️</span>
+                <span>Перейти к меню</span>
+            </a>
+        </div>
     </div>
 
-    <div id="cart-cta" class="d-flex justify-content-between align-items-center mt-4 d-none">
-      <h3 class="mb-0">Total: <span id="cart-total-amount">$0.00</span></h3>
-      <a id="pay-now-btn" class="btn btn-primary" href="#">Pay Now</a>
+    <!-- Cart Content -->
+    <div class="cart-layout d-none" id="cart-content">
+        <!-- Left: Items List -->
+        <div class="panel">
+            <h2 class="panel-title">
+                <span>Ваш заказ</span>
+                <span id="items-count" style="font-size:16px; color:var(--muted); font-weight:600;"></span>
+            </h2>
+            <div class="cart-items" id="cart-items">
+                <!-- Items rendered by JS -->
+            </div>
+            <div style="margin-top:24px; padding-top:24px; border-top:1px solid var(--line); display:flex; gap:12px; flex-wrap:wrap;">
+                <a class="btn btn-ghost" href="/dish" style="flex:1; min-width:180px;">
+                    <span>←</span>
+                    <span>Продолжить покупки</span>
+                </a>
+                <button class="btn btn-danger btn-sm" id="clear-cart-btn-bottom" style="flex:0 0 auto;">
+                    <span>🗑️</span>
+                    <span>Очистить</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: Summary & Checkout -->
+        <div class="summary-panel">
+            <h2 class="panel-title">Итоги заказа</h2>
+
+            <!-- Promo Code Section -->
+            <div class="promo-section">
+                <div class="promo-title">Промокод</div>
+                <div class="promo">
+                    <input autocomplete="off" class="input" id="promo-code" placeholder="Введите промокод"/>
+                    <button class="btn btn-sm" id="apply-promo">Применить</button>
+                </div>
+            </div>
+
+            <!-- Summary Lines -->
+            <div class="summary-lines">
+                <div class="line">
+                    <span class="label">Товары (<span id="total-items">0</span>):</span>
+                    <span class="value" id="subtotal-amount">$0.00</span>
+                </div>
+                <div class="line d-none" id="discount-line">
+                    <span class="label">Скидка:</span>
+                    <span class="value" id="discount-amount" style="color:var(--success);">−$0.00</span>
+                </div>
+                <div class="line">
+                    <span class="label">Доставка:</span>
+                    <span class="value" id="shipping-amount">Бесплатно</span>
+                </div>
+                <div class="line total">
+                    <span class="label">Итого:</span>
+                    <span aria-live="polite" class="value" id="cart-total-amount">$0.00</span>
+                </div>
+            </div>
+
+            <!-- Checkout Button -->
+            <div class="checkout-actions">
+                <button class="btn btn-primary" id="checkout-btn">
+                    <span>💳</span>
+                    <span>Оформить заказ</span>
+                </button>
+                <button class="btn btn-danger btn-sm" id="clear-cart-btn">
+                    <span>🗑️</span>
+                    <span>Очистить корзину</span>
+                </button>
+            </div>
+        </div>
     </div>
+</main>
 
-    <div id="cart-browse" class="mt-3 d-none">
-      <a href="/dish" class="btn btn-primary">Browse menu</a>
-    </div>
-  </main>
+<!-- Footer (partial) -->
+<div data-include="/partials/footer.html"></div>
 
-    <!-- Footer (partial) -->
-    <div data-include="/partials/footer.html"></div>
-
-    <!-- Ð¡ÐºÑ€Ð¸Ð¿Ñ‚Ñ‹ -->
-    <script src="/js/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="/js/bootstrap.js"></script>
-
-    <!-- Ð›Ð¾Ð°Ð´ÐµÑ€ partialâ€™Ð¾Ð² -->
-    <script src="/js/partials-loader.js"></script>
-
-    <!-- Ð›Ð¾Ð³Ð¸ÐºÐ° ÐºÐ¾Ñ€Ð·Ð¸Ð½Ñ‹ -->
-    <script src="/js/cart.js"></script>
-
-    <!-- ÐžÐ±Ñ‰Ð¸Ðµ ÑÑ„Ñ„ÐµÐºÑ‚Ñ‹ Ñ‚ÐµÐ¼Ñ‹ -->
-    <script src="/js/custom.js"></script>
+<!-- Скрипты -->
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script src="/js/partials-loader.js"></script>
+<script src="/js/gateway-client.js"></script>
+<script src="/js/cart.js"></script>
 </body>
 </html>
-

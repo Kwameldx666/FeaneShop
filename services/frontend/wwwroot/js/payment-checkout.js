@@ -69,7 +69,7 @@
                         if (response.orderId || response.paymentId) {
                             var identifier = response.orderId || response.paymentId;
                             window.location.href = '/payment/confirmation?orderId=' + encodeURIComponent(identifier);
-                            return;
+
                         }
                     }
                 }

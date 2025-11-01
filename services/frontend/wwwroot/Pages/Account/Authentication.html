@@ -1,93 +1,93 @@
 <!doctype html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8" />
-    <meta name="gateway-origin" content="http://localhost:5000">
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta content="http://localhost:5000" name="gateway-origin">
+    <meta content="width=device-width,initial-scale=1" name="viewport"/>
     <title>Auth</title>
 
-    <link rel="stylesheet"
+    <link crossorigin="anonymous"
           href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
           integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
-          crossorigin="anonymous" />
-    <link rel="stylesheet" href="/css/Auth.css" />
+          rel="stylesheet"/>
+    <link href="/css/Auth.css" rel="stylesheet"/>
 </head>
 <body>
 
-    <div class="container" id="container">
-        <!-- REGISTRATION -->
-        <div class="form-container sign-up-container">
-            <form action="/Account/Register" method="post" class="register_form" id="registerForm">
-                <input type="hidden" name="ReturnUrl" id="returnUrlRegister" value="" />
-                <h1>Регистрация</h1>
+<div class="container" id="container">
+    <!-- REGISTRATION -->
+    <div class="form-container sign-up-container">
+        <form action="/Account/Register" class="register_form" id="registerForm" method="post">
+            <input id="returnUrlRegister" name="ReturnUrl" type="hidden" value=""/>
+            <h1>Регистрация</h1>
 
-                <div class="social-container">
-                    <a href="#" class="social" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social" aria-label="Google"><i class="fab fa-google-plus-g"></i></a>
-                    <a href="#" class="social" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                </div>
+            <div class="social-container">
+                <a aria-label="Facebook" class="social" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a aria-label="Google" class="social" href="#"><i class="fab fa-google-plus-g"></i></a>
+                <a aria-label="LinkedIn" class="social" href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
 
-                <div class="alert alert-danger d-none" id="registerError"></div>
+            <div class="alert alert-danger d-none" id="registerError"></div>
 
-                <input type="text" placeholder="Username" name="Username" id="username" />
-                <div class="col-md-12 form-group text-center"><span id="errorName" class="text-danger"></span></div>
+            <input id="username" name="Username" placeholder="Username" type="text"/>
+            <div class="col-md-12 form-group text-center"><span class="text-danger" id="errorName"></span></div>
 
-                <input type="email" placeholder="Email" name="Email" id="email" />
-                <div class="col-md-12 form-group text-center"><span id="errorEmail" class="text-danger"></span></div>
+            <input id="email" name="Email" placeholder="Email" type="email"/>
+            <div class="col-md-12 form-group text-center"><span class="text-danger" id="errorEmail"></span></div>
 
-                <input type="password" placeholder="Password" name="Password" id="password" />
-                <div class="col-md-12 form-group text-center"><span id="errorPassword" class="text-danger"></span></div>
+            <input id="password" name="Password" placeholder="Password" type="password"/>
+            <div class="col-md-12 form-group text-center"><span class="text-danger" id="errorPassword"></span></div>
 
-                <button type="submit">Зарегистрироваться</button>
-            </form>
-        </div>
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+    </div>
 
-        <!-- LOGIN -->
-        <div class="form-container sign-in-container">
-            <form action="/Account/Login" method="post" class="login_form" id="loginForm">
-                <input type="hidden" name="ReturnUrl" id="returnUrlLogin" value="" />
-                <div class="alert alert-danger d-none" id="loginError"></div>
+    <!-- LOGIN -->
+    <div class="form-container sign-in-container">
+        <form action="/Account/Login" class="login_form" id="loginForm" method="post">
+            <input id="returnUrlLogin" name="ReturnUrl" type="hidden" value=""/>
+            <div class="alert alert-danger d-none" id="loginError"></div>
 
-                <h1>Авторизация</h1>
-                <div class="social-container">
-                    <a href="#" class="social" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#" class="social" aria-label="Google"><i class="fab fa-google-plus-g"></i></a>
-                    <a href="#" class="social" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                </div>
+            <h1>Авторизация</h1>
+            <div class="social-container">
+                <a aria-label="Facebook" class="social" href="#"><i class="fab fa-facebook-f"></i></a>
+                <a aria-label="Google" class="social" href="#"><i class="fab fa-google-plus-g"></i></a>
+                <a aria-label="LinkedIn" class="social" href="#"><i class="fab fa-linkedin-in"></i></a>
+            </div>
 
-                <input type="text" placeholder="Name or Email" name="Credential" id="credential" />
-                <div class="col-md-12 form-group text-center"><span id="errorCredential" class="text-danger"></span></div>
+            <input id="credential" name="Credential" placeholder="Name or Email" type="text"/>
+            <div class="col-md-12 form-group text-center"><span class="text-danger" id="errorCredential"></span></div>
 
-                <input type="password" placeholder="Password" name="Password" id="login_password" />
+            <input id="login_password" name="Password" placeholder="Password" type="password"/>
 
-                <div class="remember-me">
-                    <label><input type="checkbox" name="RememberMe" value="true" /> Запомнить меня</label>
-                </div>
+            <div class="remember-me">
+                <label><input name="RememberMe" type="checkbox" value="true"/> Запомнить меня</label>
+            </div>
 
-                <a href="/account/resetpassword">Забыли пароль?</a>
-                <button type="submit">Вход</button>
-            </form>
-        </div>
+            <a href="/account/resetpassword">Забыли пароль?</a>
+            <button type="submit">Вход</button>
+        </form>
+    </div>
 
-        <!-- OVERLAY -->
-        <div class="overlay-container">
-            <div class="overlay">
-                <div class="overlay-panel overlay-left">
-                    <h1>Добро пожаловать!</h1>
-                    <p>Чтобы оставаться на связи с нами, пожалуйста, войдите в систему с вашей личной информацией</p>
-                    <button class="ghost" id="signIn" type="button">Авторизация</button>
-                </div>
-                <div class="overlay-panel overlay-right">
-                    <h1>Привет, Друг!</h1>
-                    <p>Введите свои личные данные и начните путешествие вместе с нами</p>
-                    <button class="ghost" id="signUp" type="button">Регистрация</button>
-                </div>
+    <!-- OVERLAY -->
+    <div class="overlay-container">
+        <div class="overlay">
+            <div class="overlay-panel overlay-left">
+                <h1>Добро пожаловать!</h1>
+                <p>Чтобы оставаться на связи с нами, пожалуйста, войдите в систему с вашей личной информацией</p>
+                <button class="ghost" id="signIn" type="button">Авторизация</button>
+            </div>
+            <div class="overlay-panel overlay-right">
+                <h1>Привет, Друг!</h1>
+                <p>Введите свои личные данные и начните путешествие вместе с нами</p>
+                <button class="ghost" id="signUp" type="button">Регистрация</button>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Сначала переключение UI, потом сетевые запросы -->
-    <script src="/js/auth-ui-toggle.js" defer></script>
-    <script src="/js/auth-ocelot.js" defer></script>
+<!-- Сначала переключение UI, потом сетевые запросы -->
+<script defer src="/js/auth-ui-toggle.js"></script>
+<script defer src="/js/auth-ocelot.js"></script>
 </body>
 </html>

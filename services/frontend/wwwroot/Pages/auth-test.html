@@ -1,0 +1,189 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="http://localhost:5000" name="gateway-origin">
+    <title>Auth Guard Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .status {
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .error {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+        }
+
+        .success {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+        }
+
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #2196F3;
+            color: white;
+        }
+
+        button:hover {
+            background: #1976D2;
+        }
+    </style>
+</head>
+<body data-login-url="/account/authentication" data-require-auth="true">
+
+<h1>🔐 Auth Guard Диагностика</h1>
+
+<div class="status" id="token-status"></div>
+
+<div class="status">
+    <h3>Действия:</h3>
+    <button onclick="checkToken()">Проверить токен</button>
+    <button onclick="simulateAuth()">Симулировать вход</button>
+    <button onclick="clearToken()">Удалить токен</button>
+    <button onclick="reloadPage()">Перезагрузить страницу</button>
+</div>
+
+<div class="status">
+    <h3>Логи консоли:</h3>
+    <div id="console-logs"></div>
+</div>
+
+<script>
+    // Перехватываем console.log для отображения
+    var originalLog = console.log;
+    var originalWarn = console.warn;
+    var logsDiv = document.getElementById('console-logs');
+
+    function addLog(type, message) {
+        var log = document.createElement('pre');
+        log.style.color = type === 'warn' ? '#ff9800' : '#333';
+        log.textContent = '[' + new Date().toLocaleTimeString() + '] ' + message;
+        logsDiv.appendChild(log);
+        logsDiv.scrollTop = logsDiv.scrollHeight;
+    }
+
+    console.log = function () {
+        originalLog.apply(console, arguments);
+        addLog('log', Array.from(arguments).join(' '));
+    };
+
+    console.warn = function () {
+        originalWarn.apply(console, arguments);
+        addLog('warn', Array.from(arguments).join(' '));
+    };
+
+    function checkToken() {
+        var statusDiv = document.getElementById('token-status');
+        var token = localStorage.getItem('jwt');
+
+        if (!token) {
+            statusDiv.className = 'status error';
+            statusDiv.innerHTML = '<h3>❌ Токен отсутствует</h3><p>localStorage.getItem("jwt") вернул null</p>';
+            console.log('[TEST] No JWT token in localStorage');
+            return;
+        }
+
+        try {
+            var parts = token.split('.');
+            if (parts.length !== 3) {
+                throw new Error('Invalid token format');
+            }
+
+            var payload = JSON.parse(atob(parts[1]));
+            var exp = payload.exp;
+            var now = Math.floor(Date.now() / 1000);
+
+            if (exp && exp < now) {
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = '<h3>❌ Токен истек</h3><p>exp: ' + new Date(exp * 1000).toLocaleString() + '</p>';
+                console.log('[TEST] Token expired at', new Date(exp * 1000).toLocaleString());
+            } else {
+                statusDiv.className = 'status success';
+                var userId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || payload.sub;
+                statusDiv.innerHTML = '<h3>✅ Токен валиден</h3>' +
+                    '<p>UserId: ' + userId + '</p>' +
+                    '<p>Expires: ' + new Date(exp * 1000).toLocaleString() + '</p>' +
+                    '<pre>' + JSON.stringify(payload, null, 2) + '</pre>';
+                console.log('[TEST] Token is valid, userId:', userId);
+            }
+        } catch (e) {
+            statusDiv.className = 'status error';
+            statusDiv.innerHTML = '<h3>❌ Неверный формат токена</h3><p>' + e.message + '</p>';
+            console.log('[TEST] Invalid token format:', e.message);
+        }
+    }
+
+    function simulateAuth() {
+        // Создаем тестовый токен (истечет через 24 часа)
+        var exp = Math.floor(Date.now() / 1000) + 86400;
+        var header = btoa(JSON.stringify({alg: "HS256", typ: "JWT"}));
+        var payload = btoa(JSON.stringify({
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier": "test-user-id",
+            "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name": "TestUser",
+            role: "User",
+            exp: exp,
+            iat: Math.floor(Date.now() / 1000)
+        }));
+        var testToken = header + '.' + payload + '.fake-signature';
+
+        localStorage.setItem('jwt', testToken);
+        console.log('[TEST] Simulated JWT token saved to localStorage');
+        checkToken();
+    }
+
+    function clearToken() {
+        localStorage.removeItem('jwt');
+        console.log('[TEST] JWT token removed from localStorage');
+        checkToken();
+    }
+
+    function reloadPage() {
+        window.location.reload();
+    }
+
+    // Проверяем токен при загрузке
+    window.addEventListener('load', function () {
+        console.log('[TEST] Page loaded, checking token...');
+        checkToken();
+    });
+</script>
+
+<script src="/js/gateway-client.js"></script>
+<script src="/js/auth-guard.js"></script>
+
+<script>
+    // Логируем что auth-guard загружен
+    setTimeout(function () {
+        console.log('[TEST] Scripts loaded. Waiting for auth-guard to run...');
+    }, 100);
+</script>
+
+</body>
+</html>
+

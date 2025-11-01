@@ -67,9 +67,9 @@
             }
 
             var mapping = [
-                { key: 'totalRevenue', label: 'Total revenue' },
-                { key: 'ordersThisMonth', label: 'Orders this month' },
-                { key: 'averageRating', label: 'Average rating' }
+                {key: 'totalRevenue', label: 'Total revenue'},
+                {key: 'ordersThisMonth', label: 'Orders this month'},
+                {key: 'averageRating', label: 'Average rating'}
             ];
 
             mapping.forEach(function (item) {
@@ -79,7 +79,9 @@
             });
 
             Object.keys(metrics).forEach(function (key) {
-                if (mapping.some(function (item) { return item.key === key; })) {
+                if (mapping.some(function (item) {
+                    return item.key === key;
+                })) {
                     return;
                 }
                 statsContainer.innerHTML += createCard(formatValue(metrics[key]), key.replace(/([A-Z])/g, ' $1'));

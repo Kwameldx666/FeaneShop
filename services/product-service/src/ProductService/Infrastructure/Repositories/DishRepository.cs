@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
 using ProductService.Domain.Entities;
@@ -18,7 +17,8 @@ public class DishRepository : IDishRepository
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<IReadOnlyList<Dish>> GetAsync(DishQueryOptions options, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Dish>> GetAsync(DishQueryOptions options,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -28,7 +28,8 @@ public class DishRepository : IDishRepository
             {
                 query = query.Take(options.Limit.Value);
             }
-            else if (options.Page.HasValue && options.PageSize.HasValue && options.Page.Value >= 1 && options.PageSize.Value > 0)
+            else if (options.Page.HasValue && options.PageSize.HasValue && options.Page.Value >= 1 &&
+                     options.PageSize.Value > 0)
             {
                 var skip = (options.Page.Value - 1) * options.PageSize.Value;
                 query = query.Skip(skip).Take(options.PageSize.Value);
@@ -47,7 +48,7 @@ public class DishRepository : IDishRepository
     {
         try
         {
-            var query = BuildQuery(options, applyOrdering: false);
+            var query = BuildQuery(options, false);
             return await query.CountAsync(cancellationToken);
         }
         catch (Exception exception)
@@ -76,10 +77,7 @@ public class DishRepository : IDishRepository
     public async Task<Dish?> UpdateAsync(Dish dish, CancellationToken cancellationToken = default)
     {
         var existing = await _context.Dishes.FirstOrDefaultAsync(d => d.Id == dish.Id, cancellationToken);
-        if (existing == null)
-        {
-            return null;
-        }
+        if (existing == null) return null;
 
         existing.Name = dish.Name;
         existing.Description = dish.Description;
@@ -99,10 +97,7 @@ public class DishRepository : IDishRepository
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var dish = await _context.Dishes.FirstOrDefaultAsync(d => d.Id == id, cancellationToken);
-        if (dish == null)
-        {
-            return false;
-        }
+        if (dish == null) return false;
 
         _context.Dishes.Remove(dish);
         await _context.SaveChangesAsync(cancellationToken);
@@ -139,23 +134,27 @@ public class DishRepository : IDishRepository
                                      d.Category.ToLower().Contains(term));
         }
 
-        if (options.AvailableOnly)
-        {
-            query = query.Where(d => d.IsAvailable);
-        }
+        if (options.AvailableOnly) query = query.Where(d => d.IsAvailable);
 
-        if (!applyOrdering)
-        {
-            return query;
-        }
+        if (!applyOrdering) return query;
 
         query = options.SortBy switch
         {
-            DishSortField.Name => options.Descending ? query.OrderByDescending(d => d.Name) : query.OrderBy(d => d.Name),
-            DishSortField.Price => options.Descending ? query.OrderByDescending(d => d.Price) : query.OrderBy(d => d.Price),
-            DishSortField.UpdatedAt => options.Descending ? query.OrderByDescending(d => d.UpdatedAt) : query.OrderBy(d => d.UpdatedAt),
-            DishSortField.Popularity => options.Descending ? query.OrderByDescending(d => d.PopularityScore) : query.OrderByDescending(d => d.PopularityScore),
-            DishSortField.CreatedAt => options.Descending ? query.OrderByDescending(d => d.CreatedAt) : query.OrderBy(d => d.CreatedAt),
+            DishSortField.Name => options.Descending
+                ? query.OrderByDescending(d => d.Name)
+                : query.OrderBy(d => d.Name),
+            DishSortField.Price => options.Descending
+                ? query.OrderByDescending(d => d.Price)
+                : query.OrderBy(d => d.Price),
+            DishSortField.UpdatedAt => options.Descending
+                ? query.OrderByDescending(d => d.UpdatedAt)
+                : query.OrderBy(d => d.UpdatedAt),
+            DishSortField.Popularity => options.Descending
+                ? query.OrderByDescending(d => d.PopularityScore)
+                : query.OrderByDescending(d => d.PopularityScore),
+            DishSortField.CreatedAt => options.Descending
+                ? query.OrderByDescending(d => d.CreatedAt)
+                : query.OrderBy(d => d.CreatedAt),
             _ => query.OrderByDescending(d => d.CreatedAt)
         };
 

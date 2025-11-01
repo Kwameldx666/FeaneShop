@@ -1,9 +1,8 @@
-using System.Net.Http.Json;
 using System.Text.Json;
 using AuthService.Application.Clients;
 using AuthService.Domain.Entities;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using AuthService.Domain.Enums;
+using AuthService.Domain.ValueObjects;
 
 namespace AuthService.Infrastructure.Services;
 
@@ -19,7 +18,10 @@ public sealed class UserProfileClient : IUserProfileClient
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<bool> CreateUserProfileAsync(User user, string plainPassword, CancellationToken cancellationToken = default)
+    public async Task<OperationResult> CreateUserProfileAsync(
+        User user,
+        string plainPassword,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(user);
 
@@ -36,21 +38,44 @@ public sealed class UserProfileClient : IUserProfileClient
 
         try
         {
-            using var response = await _httpClient.PostAsJsonAsync("/api/users", payload, _serializerOptions, cancellationToken);
-            if (response.IsSuccessStatusCode)
-            {
-                return true;
-            }
+            using var response =
+                await _httpClient.PostAsJsonAsync("/api/users", payload, _serializerOptions, cancellationToken);
+            var body = await response.Content.ReadAsStringAsync(cancellationToken);
+            var provisionResult = TryParseProvisioningResponse(body);
 
-            var error = await response.Content.ReadAsStringAsync(cancellationToken);
-            _logger.LogWarning("Failed to provision user {UserId} in user-service. Status: {StatusCode}. Response: {Response}",
-                user.Id, response.StatusCode, error);
-            return false;
+            if (response.IsSuccessStatusCode) return OperationResult.Success(provisionResult?.Message);
+
+            var message = !string.IsNullOrWhiteSpace(provisionResult?.Message)
+                ? provisionResult!.Message!
+                : $"User-service responded with {(int)response.StatusCode} {response.ReasonPhrase}.";
+
+            _logger.LogWarning(
+                "Failed to provision user {UserId} in user-service. Status: {StatusCode}. Response: {Response}",
+                user.Id,
+                response.StatusCode,
+                string.IsNullOrWhiteSpace(body) ? "<empty>" : body);
+
+            return OperationResult.Failure(message);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to provision user {UserId} in user-service.", user.Id);
-            return false;
+            return OperationResult.Failure("User provisioning request failed.");
+        }
+    }
+
+    private ProvisionResponse? TryParseProvisioningResponse(string? payload)
+    {
+        if (string.IsNullOrWhiteSpace(payload)) return null;
+
+        try
+        {
+            return JsonSerializer.Deserialize<ProvisionResponse>(payload, _serializerOptions);
+        }
+        catch (JsonException jsonException)
+        {
+            _logger.LogDebug(jsonException, "Unable to deserialize user-service response: {Payload}", payload);
+            return null;
         }
     }
 
@@ -60,8 +85,14 @@ public sealed class UserProfileClient : IUserProfileClient
         public string Username { get; init; } = string.Empty;
         public string Email { get; init; } = string.Empty;
         public string Password { get; init; } = string.Empty;
-        public AuthService.Domain.Enums.Role Roles { get; init; }
+        public Role Roles { get; init; }
         public bool IsActive { get; init; }
         public DateTime FirstRegisterTime { get; init; }
+    }
+
+    private sealed record ProvisionResponse
+    {
+        public bool Status { get; init; }
+        public string? Message { get; init; }
     }
 }

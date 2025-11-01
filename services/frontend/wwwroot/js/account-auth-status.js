@@ -48,14 +48,16 @@
                 localStorage.removeItem('userRole');
                 sessionStorage.removeItem('userRole');
             }
-        } catch (_) { }
+        } catch (_) {
+        }
 
         try {
             var meta = document.querySelector('meta[name="feane-user-role"]');
             if (meta) {
                 meta.setAttribute('content', normalized);
             }
-        } catch (_) { }
+        } catch (_) {
+        }
 
         if (document && document.body) {
             if (normalized) {
@@ -66,8 +68,9 @@
         }
 
         try {
-            document.dispatchEvent(new CustomEvent('feane:user-role-changed', { detail: { role: normalized } }));
-        } catch (_) { }
+            document.dispatchEvent(new CustomEvent('feane:user-role-changed', {detail: {role: normalized}}));
+        } catch (_) {
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -85,7 +88,7 @@
             return;
         }
 
-        setMessage(message, 'Contacting the authentication gateway…');
+        setMessage(message, 'Contacting the authentication gatewayï¿½');
 
         window.feaneGateway.get(endpoint).then(function (response) {
             if (response && (response.isAuthenticated || response.authenticated)) {
@@ -94,12 +97,12 @@
                     applyRole(role);
                 }
 
-                setMessage(message, 'You are already signed in. Redirecting to your dashboard…');
+                setMessage(message, 'You are already signed in. Redirecting to your dashboardï¿½');
                 setTimeout(function () {
                     window.location.href = dashboardUrl;
                 }, 1200);
             } else {
-                setMessage(message, 'You are not signed in. Redirecting to the login page…');
+                setMessage(message, 'You are not signed in. Redirecting to the login pageï¿½');
                 setTimeout(function () {
                     window.location.href = loginUrl;
                 }, 1200);

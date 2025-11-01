@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using AuthService.Application.Clients;
 using AuthService.Application.Configuration;
 using AuthService.Application.Interfaces;
@@ -8,6 +6,7 @@ using AuthService.Infrastructure.Persistence;
 using AuthService.Infrastructure.Repositories;
 using AuthService.Infrastructure.Services;
 using AuthService.Middleware;
+using FeaneGateway.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -16,22 +15,17 @@ using Ocelot.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+builder.Configuration.AddJsonFile("ocelot.json", false, true);
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 var jwtOptions = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
-    ?? throw new InvalidOperationException("JWT settings are not configured.");
+                 ?? throw new InvalidOperationException("JWT settings are not configured.");
 
-if (!jwtOptions.IsValid())
-{
-    throw new InvalidOperationException("JWT settings are not configured correctly.");
-}
+if (!jwtOptions.IsValid()) throw new InvalidOperationException("JWT settings are not configured correctly.");
 
 var userServiceBaseUrl = builder.Configuration.GetValue<string>("UserService:BaseUrl") ?? "http://localhost:5020";
 if (!Uri.TryCreate(userServiceBaseUrl, UriKind.Absolute, out var userServiceUri))
-{
     throw new InvalidOperationException("UserService:BaseUrl is not a valid absolute URI.");
-}
 
 builder.Services.AddHttpClient<IUserProfileClient, UserProfileClient>(client =>
 {
@@ -48,7 +42,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer("Bearer", options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -59,6 +53,22 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtOptions.Issuer,
             ValidAudience = jwtOptions.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+        };
+
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"JWT Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                var userId = context.Principal
+                    ?.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+                Console.WriteLine($"JWT Token validated for user: {userId}");
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -73,11 +83,8 @@ var configuredOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").
 var originSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
 if (configuredOrigins != null && configuredOrigins.Length > 0)
-{
     originSet.UnionWith(configuredOrigins);
-}
 else
-{
     originSet.UnionWith(new[]
     {
         "http://localhost:5003",
@@ -85,7 +92,6 @@ else
         "https://localhost:61369",
         "http://localhost:5000"
     });
-}
 
 var allowLocalhostWildcard = builder.Configuration.GetValue("Cors:AllowLocalhostWildcard", true);
 
@@ -94,28 +100,20 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontend", policy =>
     {
         policy.SetIsOriginAllowed(origin =>
-        {
-            if (string.IsNullOrWhiteSpace(origin))
             {
+                if (string.IsNullOrWhiteSpace(origin)) return false;
+
+                if (originSet.Contains(origin)) return true;
+
+                if (allowLocalhostWildcard && Uri.TryCreate(origin, UriKind.Absolute, out var uri))
+                    return string.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase)
+                           || string.Equals(uri.Host, "127.0.0.1", StringComparison.OrdinalIgnoreCase);
+
                 return false;
-            }
-
-            if (originSet.Contains(origin))
-            {
-                return true;
-            }
-
-            if (allowLocalhostWildcard && Uri.TryCreate(origin, UriKind.Absolute, out var uri))
-            {
-                return string.Equals(uri.Host, "localhost", StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(uri.Host, "127.0.0.1", StringComparison.OrdinalIgnoreCase);
-            }
-
-            return false;
-        })
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
+            })
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -135,10 +133,7 @@ app.UseJwtCookieAuthentication();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
 
 await app.UseOcelot();
 

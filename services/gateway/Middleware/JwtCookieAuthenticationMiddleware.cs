@@ -13,10 +13,7 @@ public sealed class JwtCookieAuthenticationMiddleware
         _next = next ?? throw new ArgumentNullException(nameof(next));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
 
-        if (!_options.IsValid())
-        {
-            throw new InvalidOperationException("JWT settings are not configured correctly.");
-        }
+        if (!_options.IsValid()) throw new InvalidOperationException("JWT settings are not configured correctly.");
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -26,9 +23,7 @@ public sealed class JwtCookieAuthenticationMiddleware
         if (!context.Request.Headers.ContainsKey("Authorization")
             && context.Request.Cookies.TryGetValue(_options.CookieName, out var token)
             && !string.IsNullOrWhiteSpace(token))
-        {
             context.Request.Headers.Authorization = $"Bearer {token}";
-        }
 
         await _next(context);
     }

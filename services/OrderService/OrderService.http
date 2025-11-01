@@ -1,0 +1,63 @@
+@Gateway_HostAddress = http://localhost:5000
+@token = your_jwt_token_here
+
+### Get User Orders
+GET {{Gateway_HostAddress}}/api/orders
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### Get Order by ID
+GET {{Gateway_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+Accept: application/json
+
+###
+
+### Create Order
+POST {{Gateway_HostAddress}}/api/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "deliveryAddress": "123 Main St, City, Country",
+  "notes": "Please ring the doorbell",
+  "items": [
+    {
+      "productId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+      "productName": "Delicious Pizza",
+      "productImageUrl": "/images/pizza.jpg",
+      "unitPrice": 12.99,
+      "quantity": 2,
+      "notes": "Extra cheese"
+    },
+    {
+      "productId": "3fa85f64-5717-4562-b3fc-2c963f66afa7",
+      "productName": "Caesar Salad",
+      "productImageUrl": "/images/salad.jpg",
+      "unitPrice": 8.50,
+      "quantity": 1
+    }
+  ]
+}
+
+###
+
+### Update Order Status (Admin)
+PATCH {{Gateway_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000000/status
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "status": "Confirmed"
+}
+
+###
+
+### Cancel Order
+DELETE {{Gateway_HostAddress}}/api/orders/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+###
+

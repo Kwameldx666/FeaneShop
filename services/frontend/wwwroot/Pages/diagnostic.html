@@ -1,0 +1,418 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="http://localhost:5000" name="gateway-origin">
+    <title>🔍 Автодиагностика</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0 0 20px 0;
+            color: #333;
+            font-size: 28px;
+        }
+
+        .status-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            border-left: 4px solid #ddd;
+        }
+
+        .status-card.success {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .status-card.error {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .status-card.warning {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .status-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .button.danger {
+            background: #dc3545;
+        }
+
+        .button.danger:hover {
+            background: #c82333;
+        }
+
+        .button.success {
+            background: #28a745;
+        }
+
+        .button.success:hover {
+            background: #218838;
+        }
+
+        .icon {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        #auto-result {
+            margin-top: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-left: 10px;
+        }
+
+        .badge.ok {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge.fail {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge.warn {
+            background: #ffc107;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1><span class="icon">🔍</span>Автоматическая диагностика</h1>
+
+    <div style="margin: 20px 0;">
+        <button class="button success" onclick="runFullDiagnostic()">
+            <span class="icon">▶️</span> Запустить полную диагностику
+        </button>
+        <button class="button" onclick="checkToken()">
+            <span class="icon">🔑</span> Проверить токен
+        </button>
+        <button class="button" onclick="testLogin()">
+            <span class="icon">🚪</span> Тест входа
+        </button>
+        <button class="button danger" onclick="clearAll()">
+            <span class="icon">🗑️</span> Очистить всё
+        </button>
+    </div>
+
+    <div id="auto-result"></div>
+</div>
+
+<script src="/js/gateway-client.js"></script>
+
+<script>
+    function showResult(title, content, type = 'info') {
+        const resultDiv = document.getElementById('auto-result');
+        const card = document.createElement('div');
+        card.className = 'status-card ' + type;
+        card.innerHTML = '<h3>' + title + '</h3>' + content;
+        resultDiv.appendChild(card);
+        resultDiv.scrollTop = resultDiv.scrollHeight;
+    }
+
+    function clearResults() {
+        document.getElementById('auto-result').innerHTML = '';
+    }
+
+    async function runFullDiagnostic() {
+        clearResults();
+        showResult('🔄 Начало диагностики', 'Запуск всех проверок...', 'warning');
+
+        // 1. Проверка localStorage
+        console.log('=== FULL DIAGNOSTIC START ===');
+        let report = '=== ДИАГНОСТИЧЕСКИЙ ОТЧЕТ ===\n\n';
+
+        try {
+            const hasStorage = typeof localStorage !== 'undefined';
+            report += '1. localStorage доступен: ' + (hasStorage ? '✅ ДА' : '❌ НЕТ') + '\n';
+            console.log('localStorage available:', hasStorage);
+
+            if (!hasStorage) {
+                showResult('❌ Критическая ошибка',
+                    'localStorage недоступен. Проверьте настройки браузера.', 'error');
+                return;
+            }
+        } catch (e) {
+            report += '1. localStorage: ❌ ОШИБКА - ' + e.message + '\n';
+            showResult('❌ Ошибка доступа', 'Невозможно получить доступ к localStorage: ' + e.message, 'error');
+            return;
+        }
+
+        // 2. Проверка JWT токена
+        const token = localStorage.getItem('jwt');
+        report += '\n2. JWT токен в localStorage: ' + (token ? '✅ ЕСТЬ (' + token.length + ' символов)' : '❌ НЕТ') + '\n';
+        console.log('JWT token:', token ? 'EXISTS (' + token.length + ' chars)' : 'NULL');
+
+        if (!token) {
+            showResult('❌ Токен отсутствует',
+                '<p>JWT токен не найден в localStorage</p>' +
+                '<p><strong>Решение:</strong> Нажмите кнопку "Тест входа" выше</p>', 'error');
+
+            report += '\n⚠️ ПРОБЛЕМА: Токен отсутствует\n';
+            report += 'РЕШЕНИЕ: Необходимо войти в систему\n';
+            console.log(report);
+            return;
+        }
+
+        // 3. Парсинг токена
+        let payload;
+        try {
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+                throw new Error('Неверный формат JWT (должно быть 3 части)');
+            }
+            payload = JSON.parse(atob(parts[1]));
+            report += '3. Формат токена: ✅ ВАЛИДНЫЙ\n';
+            console.log('Token payload:', payload);
+
+            const userId = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"] || payload.sub || payload.userId;
+            const username = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || payload.unique_name || payload.name;
+            const role = payload.role || payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+            report += '   - UserId: ' + (userId || 'не указан') + '\n';
+            report += '   - Username: ' + (username || 'не указан') + '\n';
+            report += '   - Role: ' + (role || 'не указан') + '\n';
+
+            showResult('✅ Токен распознан',
+                '<p><strong>UserId:</strong> ' + (userId || 'N/A') + '</p>' +
+                '<p><strong>Username:</strong> ' + (username || 'N/A') + '</p>' +
+                '<p><strong>Role:</strong> ' + (role || 'N/A') + '</p>', 'success');
+
+        } catch (e) {
+            report += '3. Формат токена: ❌ НЕВАЛИДНЫЙ - ' + e.message + '\n';
+            console.error('Token parse error:', e);
+            showResult('❌ Токен поврежден',
+                '<p>Невозможно распарсить токен: ' + e.message + '</p>' +
+                '<p><strong>Решение:</strong> Нажмите "Очистить всё" и войдите заново</p>', 'error');
+            report += '\n⚠️ ПРОБЛЕМА: Токен поврежден\n';
+            report += 'РЕШЕНИЕ: Удалить токен и войти заново\n';
+            console.log(report);
+            return;
+        }
+
+        // 4. Проверка срока действия
+        const exp = payload.exp;
+        const now = Math.floor(Date.now() / 1000);
+        const isExpired = exp && exp < now;
+
+        report += '\n4. Срок действия токена:\n';
+        report += '   - Истекает: ' + (exp ? new Date(exp * 1000).toLocaleString('ru-RU') : 'не указано') + '\n';
+        report += '   - Сейчас: ' + new Date(now * 1000).toLocaleString('ru-RU') + '\n';
+        report += '   - Истек: ' + (isExpired ? '❌ ДА' : '✅ НЕТ') + '\n';
+
+        console.log('Token expires:', exp ? new Date(exp * 1000) : 'N/A');
+        console.log('Is expired:', isExpired);
+
+        if (isExpired) {
+            showResult('⏰ Токен истек',
+                '<p>Токен истек: ' + new Date(exp * 1000).toLocaleString('ru-RU') + '</p>' +
+                '<p><strong>Решение:</strong> Нажмите "Очистить всё" и войдите заново</p>', 'warning');
+            report += '\n⚠️ ПРОБЛЕМА: Токен истек\n';
+            report += 'РЕШЕНИЕ: Удалить токен и войти заново\n';
+            console.log(report);
+            return;
+        } else {
+            const timeLeft = Math.floor((exp - now) / 3600);
+            showResult('✅ Токен действителен',
+                '<p>Токен истекает: ' + new Date(exp * 1000).toLocaleString('ru-RU') + '</p>' +
+                '<p>Осталось примерно: <strong>' + timeLeft + ' часов</strong></p>', 'success');
+        }
+
+        // 5. Проверка Gateway Client
+        report += '\n5. Gateway Client:\n';
+        if (window.feaneGateway) {
+            report += '   - Загружен: ✅ ДА\n';
+            report += '   - Base URL: ' + (window.FEANE_GATEWAY_BASE_URL || 'не определен') + '\n';
+            console.log('Gateway client available:', true);
+            console.log('Gateway base URL:', window.FEANE_GATEWAY_BASE_URL);
+
+            showResult('✅ Gateway Client работает',
+                '<p>Base URL: <strong>' + window.FEANE_GATEWAY_BASE_URL + '</strong></p>', 'success');
+        } else {
+            report += '   - Загружен: ❌ НЕТ\n';
+            console.error('Gateway client not available!');
+            showResult('❌ Gateway Client не загружен',
+                'window.feaneGateway не найден. Проверьте что gateway-client.js подключен.', 'error');
+        }
+
+        // 6. Проверка текущей страницы
+        report += '\n6. Текущая страница:\n';
+        report += '   - URL: ' + window.location.href + '\n';
+        report += '   - Требует auth: ' + (document.body.getAttribute('data-require-auth') || 'не указано') + '\n';
+        console.log('Current page:', window.location.href);
+        console.log('Requires auth:', document.body.getAttribute('data-require-auth'));
+
+        // 7. Тест API запроса
+        if (window.feaneGateway) {
+            try {
+                showResult('🔄 Тестирование API...', 'Отправка запроса к /api/reservations', 'warning');
+                report += '\n7. Тест API запроса:\n';
+
+                const response = await window.feaneGateway.get('/api/reservations');
+                console.log('API test response:', response);
+
+                if (response && response.success) {
+                    report += '   - Статус: ✅ УСПЕХ\n';
+                    report += '   - Резерваций: ' + (response.totalCount || response.items?.length || 0) + '\n';
+                    showResult('✅ API работает!',
+                        '<p>Успешно получен ответ от API</p>' +
+                        '<p>Найдено резерваций: <strong>' + (response.totalCount || response.items?.length || 0) + '</strong></p>', 'success');
+                } else {
+                    report += '   - Статус: ⚠️ ПРЕДУПРЕЖДЕНИЕ\n';
+                    report += '   - Сообщение: ' + (response.message || 'Нет данных') + '\n';
+                    showResult('⚠️ API ответил',
+                        '<p>' + (response.message || 'Нет данных') + '</p>', 'warning');
+                }
+            } catch (error) {
+                report += '   - Статус: ❌ ОШИБКА\n';
+                report += '   - Текст: ' + error.message + '\n';
+                console.error('API test error:', error);
+                showResult('❌ Ошибка API',
+                    '<p>Ошибка при обращении к API: ' + error.message + '</p>' +
+                    '<p>Проверьте что gateway запущен на порту 5000</p>', 'error');
+            }
+        }
+
+        // Итог
+        report += '\n=== КОНЕЦ ОТЧЕТА ===\n';
+        console.log(report);
+
+        showResult('✅ Диагностика завершена',
+            '<p>Полный отчет выведен в консоль</p>' +
+            '<p>Откройте Console (F12) для деталей</p>', 'success');
+    }
+
+    function checkToken() {
+        clearResults();
+        const token = localStorage.getItem('jwt');
+
+        if (!token) {
+            showResult('❌ Токен отсутствует',
+                '<p>JWT токен не найден в localStorage</p>' +
+                '<p><button class="button success" onclick="testLogin()">Войти в систему</button></p>', 'error');
+            return;
+        }
+
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const exp = payload.exp;
+            const now = Math.floor(Date.now() / 1000);
+            const isExpired = exp && exp < now;
+
+            if (isExpired) {
+                showResult('⏰ Токен истек',
+                    '<p>Токен истек: ' + new Date(exp * 1000).toLocaleString('ru-RU') + '</p>' +
+                    '<p><button class="button danger" onclick="clearAll()">Очистить и войти заново</button></p>', 'warning');
+            } else {
+                showResult('✅ Токен валиден',
+                    '<p>Токен действителен до: <strong>' + new Date(exp * 1000).toLocaleString('ru-RU') + '</strong></p>', 'success');
+            }
+        } catch (e) {
+            showResult('❌ Токен поврежден',
+                '<p>Ошибка: ' + e.message + '</p>' +
+                '<p><button class="button danger" onclick="clearAll()">Очистить всё</button></p>', 'error');
+        }
+    }
+
+    async function testLogin() {
+        clearResults();
+        showResult('🔄 Вход в систему...', 'Отправка запроса...', 'warning');
+
+        try {
+            const response = await window.feaneGateway.post('/api/auth/login', {
+                credential: 'admin',
+                password: 'admin123'
+            });
+
+            if (response && response.token) {
+                localStorage.setItem('jwt', response.token);
+                showResult('✅ Успешный вход!',
+                    '<p>JWT токен сохранен в localStorage</p>' +
+                    '<p>Роль: <strong>' + (response.role || 'User') + '</strong></p>' +
+                    '<p><button class="button" onclick="location.reload()">Перезагрузить страницу</button></p>', 'success');
+            } else {
+                showResult('❌ Ошибка входа',
+                    '<p>' + (response.message || 'Неверные учетные данные') + '</p>', 'error');
+            }
+        } catch (error) {
+            showResult('❌ Ошибка',
+                '<p>' + error.message + '</p>', 'error');
+        }
+    }
+
+    function clearAll() {
+        localStorage.clear();
+        sessionStorage.clear();
+        clearResults();
+        showResult('🗑️ Всё очищено',
+            '<p>localStorage и sessionStorage очищены</p>' +
+            '<p><button class="button success" onclick="testLogin()">Войти заново</button></p>', 'success');
+    }
+
+    // Автозапуск при загрузке
+    window.addEventListener('load', function () {
+        setTimeout(runFullDiagnostic, 500);
+    });
+</script>
+</body>
+</html>
+

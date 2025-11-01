@@ -2,6 +2,7 @@ using AuthService.Application.DTOs;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Entities;
 using AuthService.Domain.ValueObjects;
+using FeaneGateway.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +12,9 @@ namespace AuthService.Controllers;
 [Route("api/auth")]
 public class AuthController : ControllerBase
 {
-    private readonly IUserRepository _users;
     private readonly IJwtTokenService _jwt;
     private readonly ILogger<AuthController> _logger;
+    private readonly IUserRepository _users;
 
     public AuthController(IUserRepository users, IJwtTokenService jwt, ILogger<AuthController> logger)
     {
@@ -27,10 +28,7 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(OperationResult), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterRequest request, CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid)
-        {
-            return ValidationProblem(ModelState);
-        }
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
         var result = await _users.RegisterAsync(request, cancellationToken);
         if (!result.Status || result.Data is null)
@@ -51,24 +49,73 @@ public class AuthController : ControllerBase
     [ProducesResponseType(typeof(OperationResult), StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid)
-        {
-            return ValidationProblem(ModelState);
-        }
+        if (!ModelState.IsValid) return ValidationProblem(ModelState);
 
         var result = await _users.AuthenticateAsync(request, cancellationToken);
         if (!result.Status || result.Data is null)
         {
-            _logger.LogWarning("Authentication failed for credential {Credential}: {Message}", request.Credential, result.Message);
+            _logger.LogWarning("Authentication failed for credential {Credential}: {Message}", request.Credential,
+                result.Message);
             return Unauthorized(result);
         }
 
         var token = _jwt.GenerateToken(result.Data);
+        var refreshToken = _jwt.GenerateRefreshToken(result.Data);
+
         return Ok(new
         {
             Token = token,
+            RefreshToken = refreshToken,
             User = MapUser(result.Data)
         });
+    }
+
+    [HttpPost("refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrEmpty(request.RefreshToken))
+            return BadRequest(new { message = "Refresh token is required" });
+
+        try
+        {
+            var principal = _jwt.ValidateRefreshToken(request.RefreshToken);
+            if (principal == null)
+            {
+                _logger.LogWarning("Invalid refresh token provided");
+                return Unauthorized(new { message = "Invalid refresh token" });
+            }
+
+            var userIdClaim = principal.FindFirst("nameid")?.Value ?? principal.FindFirst("sub")?.Value;
+            if (!Guid.TryParse(userIdClaim, out var userId))
+                return Unauthorized(new { message = "Invalid token claims" });
+
+            var user = await _users.FindByIdAsync(userId, cancellationToken);
+            if (user == null)
+            {
+                _logger.LogWarning("User not found for refresh token: {UserId}", userId);
+                return Unauthorized(new { message = "User not found" });
+            }
+
+            var newToken = _jwt.GenerateToken(user);
+            var newRefreshToken = _jwt.GenerateRefreshToken(user);
+
+            _logger.LogInformation("Token refreshed successfully for user {UserId}", userId);
+
+            return Ok(new
+            {
+                Token = newToken,
+                RefreshToken = newRefreshToken,
+                User = MapUser(user)
+            });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error refreshing token");
+            return Unauthorized(new { message = "Failed to refresh token" });
+        }
     }
 
     [HttpGet("profile")]
@@ -78,27 +125,24 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Profile(CancellationToken cancellationToken)
     {
         var idClaim = User.FindFirst("nameid")?.Value ?? User.FindFirst("sub")?.Value;
-        if (!Guid.TryParse(idClaim, out var userId))
-        {
-            return NotFound();
-        }
+        if (!Guid.TryParse(idClaim, out var userId)) return NotFound();
 
         var user = await _users.FindByIdAsync(userId, cancellationToken);
-        if (user is null)
-        {
-            return NotFound();
-        }
+        if (user is null) return NotFound();
 
         return Ok(MapUser(user));
     }
 
-    private static object MapUser(User user) => new
+    private static object MapUser(User user)
     {
-        user.Id,
-        user.Username,
-        user.Email,
-        Role = user.Role.ToString(),
-        user.FirstRegisterTime,
-        user.FirstLoginTime
-    };
+        return new
+        {
+            user.Id,
+            user.Username,
+            user.Email,
+            Role = user.Role.ToString(),
+            user.FirstRegisterTime,
+            user.FirstLoginTime
+        };
+    }
 }

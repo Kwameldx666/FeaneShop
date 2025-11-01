@@ -5,7 +5,11 @@
     const loadedStyles = new Set();
 
     function normUrl(u) {
-        try { return new URL(u, location.origin).href; } catch { return u; }
+        try {
+            return new URL(u, location.origin).href;
+        } catch {
+            return u;
+        }
     }
 
     function copyAttrs(from, to, skip = []) {
@@ -21,13 +25,19 @@
             // если в <head> уже есть такой href — считаем загруженным
             const exists = Array.from(document.head.querySelectorAll('link[rel="stylesheet"]'))
                 .some(l => normUrl(l.getAttribute('href') || '') === href);
-            if (exists) { loadedStyles.add(href); return resolve(); }
+            if (exists) {
+                loadedStyles.add(href);
+                return resolve();
+            }
 
             const l = document.createElement('link');
             copyAttrs(linkEl, l, []);                  // переносим атрибуты
             l.rel = 'stylesheet';
             l.href = href;
-            l.onload = () => { loadedStyles.add(href); resolve(); };
+            l.onload = () => {
+                loadedStyles.add(href);
+                resolve();
+            };
             l.onerror = () => reject(new Error('CSS load failed: ' + href));
             document.head.appendChild(l);
         });
@@ -50,7 +60,10 @@
                 const s = document.createElement('script');
                 copyAttrs(node, s, ['src']);
                 s.src = href;
-                s.onload = () => { loadedScripts.add(href); resolve(); };
+                s.onload = () => {
+                    loadedScripts.add(href);
+                    resolve();
+                };
                 s.onerror = () => reject(new Error('Script load failed: ' + href));
                 document.body.appendChild(s);
                 return;
@@ -71,7 +84,7 @@
         const url = holder.getAttribute('data-include');
         if (!url) return;
 
-        const res = await fetch(url, { cache: 'no-cache', credentials: 'same-origin' });
+        const res = await fetch(url, {cache: 'no-cache', credentials: 'same-origin'});
         if (!res.ok) throw new Error('Include failed ' + res.status + ' ' + url);
 
         const html = await res.text();

@@ -1,0 +1,192 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="http://localhost:5000" name="gateway-origin">
+    <title>Auth Guard Test - Simple</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #d4d4d4;
+        }
+
+        h1 {
+            color: #4ec9b0;
+        }
+
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4ec9b0;
+            background: #2d2d2d;
+        }
+
+        .error {
+            border-left-color: #f48771;
+        }
+
+        .success {
+            border-left-color: #4ec9b0;
+        }
+
+        .warning {
+            border-left-color: #dcdcaa;
+        }
+
+        pre {
+            background: #0d1117;
+            padding: 15px;
+            overflow-x: auto;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+        }
+
+        button {
+            background: #238636;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 6px;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #2ea043;
+        }
+    </style>
+</head>
+<body data-login-url="/account/authentication" data-require-auth="true">
+
+<h1>🧪 Auth Guard Test - Упрощенная версия</h1>
+
+<div class="status">
+    <strong>Эта страница защищена:</strong> data-require-auth="true"<br>
+    <strong>Токен в localStorage:</strong> <span id="token-status">...</span><br>
+    <strong>Auth Guard статус:</strong> <span id="authguard-status">Ожидание...</span>
+</div>
+
+<div class="status">
+    <h3>Ожидаемое поведение:</h3>
+    <ul>
+        <li>✅ Если токен валиден → страница НЕ редиректит</li>
+        <li>❌ Если токена нет → редирект через 2 секунды</li>
+    </ul>
+</div>
+
+<button onclick="checkStatus()">Проверить статус</button>
+<button onclick="viewLogs()">Показать все логи</button>
+<button onclick="location.reload()">Перезагрузить</button>
+
+<div class="status">
+    <h3>Логи в реальном времени:</h3>
+    <pre id="logs"></pre>
+</div>
+
+<script>
+    // Перехватываем console.log
+    var logs = [];
+    var originalLog = console.log;
+    var originalWarn = console.warn;
+    var originalError = console.error;
+
+    function addLog(type, args) {
+        var msg = Array.from(args).map(a =>
+            typeof a === 'object' ? JSON.stringify(a) : String(a)
+        ).join(' ');
+        logs.push('[' + type.toUpperCase() + '] ' + msg);
+        updateLogsDisplay();
+    }
+
+    console.log = function () {
+        originalLog.apply(console, arguments);
+        addLog('log', arguments);
+    };
+
+    console.warn = function () {
+        originalWarn.apply(console, arguments);
+        addLog('warn', arguments);
+    };
+
+    console.error = function () {
+        originalError.apply(console, arguments);
+        addLog('error', arguments);
+    };
+
+    function updateLogsDisplay() {
+        var logsDiv = document.getElementById('logs');
+        logsDiv.textContent = logs.slice(-30).join('\n'); // Последние 30 строк
+        logsDiv.scrollTop = logsDiv.scrollHeight;
+    }
+
+    function checkStatus() {
+        var token = localStorage.getItem('jwt');
+        var statusSpan = document.getElementById('token-status');
+
+        if (!token) {
+            statusSpan.textContent = '❌ НЕТ';
+            statusSpan.style.color = '#f48771';
+        } else {
+            try {
+                var payload = JSON.parse(atob(token.split('.')[1]));
+                var exp = payload.exp;
+                var isExpired = exp < Math.floor(Date.now() / 1000);
+
+                statusSpan.textContent = isExpired ? '⏰ ИСТЕК' : '✅ ВАЛИДЕН';
+                statusSpan.style.color = isExpired ? '#dcdcaa' : '#4ec9b0';
+            } catch (e) {
+                statusSpan.textContent = '❌ ПОВРЕЖДЕН';
+                statusSpan.style.color = '#f48771';
+            }
+        }
+    }
+
+    function viewLogs() {
+        alert(logs.join('\n'));
+    }
+
+    // Проверяем статус при загрузке
+    window.addEventListener('load', function () {
+        console.log('=== PAGE LOADED ===');
+        console.log('URL:', window.location.href);
+        console.log('Requires auth:', document.body.getAttribute('data-require-auth'));
+        checkStatus();
+
+        // Проверяем через 1 секунду - редиректнуло или нет
+        setTimeout(function () {
+            var authguardStatus = document.getElementById('authguard-status');
+            if (window.location.href.includes('/account/reserv')) {
+                authguardStatus.textContent = '✅ НЕ РЕДИРЕКТИЛО - Страница загрузилась!';
+                authguardStatus.style.color = '#4ec9b0';
+            } else {
+                authguardStatus.textContent = '⏳ Ожидание auth-guard...';
+            }
+        }, 1000);
+
+        // Проверяем через 3 секунды - если всё еще здесь, значит auth-guard пропустил
+        setTimeout(function () {
+            var authguardStatus = document.getElementById('authguard-status');
+            if (window.location.href.includes('auth-guard-test')) {
+                authguardStatus.textContent = '✅ УСПЕХ! Auth-guard пропустил - вы видите эту страницу!';
+                authguardStatus.style.color = '#4ec9b0';
+                console.log('=== AUTH-GUARD SUCCESS: Page was NOT redirected ===');
+            }
+        }, 3000);
+    });
+</script>
+
+<script src="/js/gateway-client.js"></script>
+<script src="/js/auth-guard.js"></script>
+
+<script>
+    console.log('=== SCRIPTS LOADED ===');
+    console.log('Gateway client available:', typeof window.feaneGateway);
+    console.log('Gateway base URL:', window.FEANE_GATEWAY_BASE_URL);
+</script>
+
+</body>
+</html>
+

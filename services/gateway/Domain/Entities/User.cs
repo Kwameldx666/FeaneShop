@@ -5,38 +5,28 @@ namespace AuthService.Domain.Entities;
 
 public class User
 {
-    [Key]
-    public Guid Id { get; set; }
+    [Key] public Guid Id { get; set; }
 
-    [Required]
-    [MaxLength(256)]
-    public string Username { get; set; } = string.Empty;
+    [Required] [MaxLength(256)] public string Username { get; set; } = string.Empty;
 
-    [MaxLength(256)]
-    public string? NormalizedUserName { get; set; }
+    [MaxLength(256)] public string? NormalizedUserName { get; set; }
 
     [Required]
     [EmailAddress]
     [MaxLength(256)]
     public string Email { get; set; } = string.Empty;
 
-    [MaxLength(256)]
-    public string? NormalizedEmail { get; set; }
+    [MaxLength(256)] public string? NormalizedEmail { get; set; }
 
-    [Required]
-    [MinLength(6)]
-    public string Password { get; set; } = string.Empty;
+    [Required] [MinLength(6)] public string Password { get; set; } = string.Empty;
 
-    [Required]
-    public Role Role { get; set; } = Role.User;
+    [Required] public Role Role { get; set; } = Role.User;
 
     public bool EmailConfirmed { get; set; }
 
-    [MaxLength(256)]
-    public string? SecurityStamp { get; set; }
+    [MaxLength(256)] public string? SecurityStamp { get; set; }
 
-    [MaxLength(256)]
-    public string? ConcurrencyStamp { get; set; }
+    [MaxLength(256)] public string? ConcurrencyStamp { get; set; }
 
     public bool TwoFactorEnabled { get; set; }
 
@@ -52,6 +42,5 @@ public class User
 
     public DateTime? FirstLoginTime { get; set; }
 
-    [MaxLength(64)]
-    public string? CookieValue { get; set; }
+    [MaxLength(64)] public string? CookieValue { get; set; }
 }

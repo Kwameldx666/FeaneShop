@@ -1,279 +1,938 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Feane � ������������ �������</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <link href="/images/favicon.png" rel="shortcut icon" type="image/png"/>
+    <title>Feane — Бронирование столика</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet"/>
     <style>
+        :root {
+            --ink: #f3f5fa;
+            --muted: #c9cfdb;
+            --panel: rgba(16, 20, 32, 0.62);
+            --line: rgba(255, 255, 255, 0.08);
+            --accent1: #ffbe33;
+            --accent2: #ff7a1a;
+            --shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+            --radius: 18px;
+            --ring: 0 0 0 3px rgba(255, 190, 51, 0.28);
+        }
+
+        /* ===== БАЗА / ФОН ===== */
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
         body {
-            background: linear-gradient(180deg, #fff8f0, #ffe8d6);
-            font-family: "Poppins", sans-serif;
-            color: #333;
+            margin: 0;
+            font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            color: var(--ink);
+            background: radial-gradient(1200px 700px at -10% -10%, rgba(255, 190, 51, .08), transparent 60%),
+            radial-gradient(1200px 800px at 110% 120%, rgba(255, 122, 26, .07), transparent 60%),
+            linear-gradient(180deg, #0b0e16 0%, #0e1322 38%, #121826 100%);
+            background-attachment: fixed;
         }
 
-        .book_section {
-            padding: 60px 0;
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(160px 160px at 8% 12%, rgba(255, 190, 51, .14), transparent 70%),
+            radial-gradient(200px 200px at 92% 88%, rgba(255, 122, 26, .12), transparent 70%);
+            filter: blur(10px);
+            opacity: .75;
+            pointer-events: none;
         }
 
-        .heading_container h2 {
-            font-weight: 700;
-            color: #222;
-            text-align: center;
-            margin-bottom: 10px;
+        .container {
+            width: min(1160px, 92vw);
+            margin-inline: auto;
         }
 
-        .heading_container p {
-            text-align: center;
-            color: #666;
-            margin-bottom: 40px;
+        .section {
+            padding: clamp(18px, 3vw, 28px);
         }
 
-        .form_container {
-            background: #fff;
-            border-radius: 16px;
-            padding: 30px;
-            border: 1px solid #f1d6b8;
-            transition: 0.3s ease;
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
-            .form_container:hover {
-                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        .card-body {
+            padding: clamp(18px, 2.6vw, 26px);
+        }
+
+        /* ===== СЕТКА КОНТЕНТА ===== */
+        .grid {
+            display: grid;
+            gap: 22px;
+            grid-template-columns: 1.45fr .95fr;
+            align-items: start;
+        }
+
+        @media (max-width: 980px) {
+            .grid {
+                grid-template-columns: 1fr;
             }
+        }
+
+        .lead {
+            color: var(--muted);
+        }
+
+        /* ===== NAVBAR ===== */
+        .d-none {
+            display: none !important;
+        }
+
+        .no-scroll {
+            overflow: hidden;
+        }
+
+        .header_section {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(14, 16, 24, .72);
+            border-bottom: 1px solid var(--line);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: box-shadow .2s ease, background .2s ease;
+        }
+
+        .header_section.scrolled {
+            background: rgba(14, 16, 24, .86);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+        }
+
+        .navbar-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .navbar-brand {
+            display: inline-block;
+            text-decoration: none;
+            font-weight: 900;
+            letter-spacing: .5px;
+            font-size: 26px;
+            line-height: 1;
+            background: linear-gradient(180deg, var(--accent1), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transition: transform .08s ease;
+        }
+
+        .navbar-brand:active {
+            transform: translateY(1px);
+        }
+
+        .navbar-toggle {
+            display: none;
+            width: 36px;
+            height: 26px;
+            background: none;
+            border: 0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .navbar-toggle span {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            border-radius: 2px;
+            background: #fff;
+            transition: transform .25s, opacity .2s, top .25s, bottom .25s;
+        }
+
+        .navbar-toggle span:nth-child(1) {
+            top: 2px;
+        }
+
+        .navbar-toggle span:nth-child(2) {
+            top: calc(50% - 1.5px);
+        }
+
+        .navbar-toggle span:nth-child(3) {
+            bottom: 2px;
+        }
+
+        .navbar-toggle[aria-expanded="true"] span:nth-child(1) {
+            top: calc(50% - 1.5px);
+            transform: rotate(45deg);
+        }
+
+        .navbar-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .navbar-toggle[aria-expanded="true"] span:nth-child(3) {
+            bottom: auto;
+            top: calc(50% - 1.5px);
+            transform: rotate(-45deg);
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-links a {
+            color: #f3f5fa;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            position: relative;
+            padding: 6px 2px;
+            transition: color .2s ease;
+        }
+
+        .navbar-links a:hover {
+            color: var(--accent1);
+        }
+
+        .navbar-links a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -3px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent1), var(--accent2));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .2s ease;
+        }
+
+        .navbar-links a:hover::after, .navbar-links a.active::after {
+            transform: scaleX(1);
+        }
+
+        .user_option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .admin_links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin_button {
+            background: var(--accent1);
+            color: #1b1103;
+            border-radius: 10px;
+            padding: 7px 12px;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 13px;
+            border: 1px solid rgba(0, 0, 0, .1);
+            transition: filter .15s ease, transform .06s ease;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        .admin_button:hover {
+            filter: brightness(1.06);
+        }
+
+        .admin_button:active {
+            transform: translateY(1px);
+        }
+
+        .feane-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: inline-grid;
+            place-items: center;
+            color: #121620;
+            background: var(--accent1);
+            text-decoration: none;
+            transition: transform .1s ease, filter .2s ease;
+            border: 1px solid rgba(0, 0, 0, .12);
+            flex: 0 0 auto;
+        }
+
+        .feane-icon:hover {
+            filter: brightness(1.05);
+        }
+
+        .feane-icon:active {
+            transform: translateY(1px);
+        }
+
+        .feane-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .nav-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .42);
+            opacity: 0;
+            visibility: hidden;
+            transition: .2s ease;
+            z-index: 999;
+        }
+
+        .nav-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 900px) {
+            .navbar-toggle {
+                display: block;
+            }
+
+            .navbar-links {
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100vh;
+                width: min(86vw, 340px);
+                background: #101525;
+                border-left: 1px solid var(--line);
+                padding: 86px 24px 24px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 18px;
+                transform: translateX(100%);
+                transition: transform .25s ease;
+                z-index: 1000;
+            }
+
+            .navbar-links.show {
+                transform: translateX(0);
+            }
+
+            .user_option {
+                gap: 10px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        .header_section a:focus-visible, .navbar-toggle:focus-visible {
+            outline: 3px solid rgba(255, 190, 51, .5);
+            outline-offset: 2px;
+            border-radius: 10px;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: clamp(28px, 8vh, 64px) 0 24px;
+            text-align: center;
+        }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid var(--line);
+            color: #e9eefb;
+        }
+
+        .hero h1 {
+            margin: 10px 0 8px;
+            font-size: clamp(28px, 5vw, 46px);
+            line-height: 1.05;
+            font-weight: 900;
+            background: linear-gradient(180deg, #fff, #d9e2ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 22px rgba(0, 0, 0, .35);
+        }
+
+        .hero p {
+            margin: 0 auto;
+            max-width: 760px;
+            color: #cfd6e4;
+        }
+
+        /* ===== ФОРМА ===== */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 14px;
+        }
+
+        .col-6 {
+            grid-column: span 6;
+        }
+
+        .col-12 {
+            grid-column: span 12;
+        }
+
+        @media (max-width: 720px) {
+            .col-6 {
+                grid-column: span 12;
+            }
+        }
 
         .form-label {
-            font-weight: 600;
-            color: #444;
+            display: block;
+            margin: 0 0 6px;
+            font-weight: 700;
+            color: #dde6fb;
+            font-size: 14px;
         }
 
-        .form-control,
-        .form-select {
-            border-radius: 10px;
-            border: 1px solid #ddd;
-            transition: border-color 0.2s, box-shadow 0.2s;
+        .input, .select, .textarea {
+            width: 100%;
+            min-height: 46px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: linear-gradient(180deg, #0d1322, #0a101c);
+            color: #eaf0ff;
+            font-size: 15px;
+            outline: none;
+            transition: border-color .18s, box-shadow .18s, background .18s;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
         }
 
-            .form-control:focus,
-            .form-select:focus {
-                border-color: #ff914d;
-                box-shadow: 0 0 5px rgba(255, 145, 77, 0.3);
-            }
+        .textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .input::placeholder, .textarea::placeholder {
+            color: #92a0b6;
+        }
+
+        .input:hover, .select:hover, .textarea:hover {
+            border-color: rgba(255, 255, 255, .18);
+        }
+
+        .input:focus, .select:focus, .textarea:focus {
+            border-color: var(--accent1);
+            box-shadow: var(--ring), 0 6px 18px rgba(255, 190, 51, .10);
+            background: #0a101c;
+        }
+
+        /* Подсветка колонки во фокусе */
+        .form-grid > .col-6:has(:focus), .form-grid > .col-12:has(:focus) {
+            outline: 2px solid rgba(255, 190, 51, .15);
+            outline-offset: 2px;
+            border-radius: 14px;
+        }
+
+        .form-grid > .col-6:has(:focus) .form-label, .form-grid > .col-12:has(:focus) .form-label {
+            color: var(--accent1);
+        }
+
+        .affix {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: stretch;
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #0c1220;
+        }
+
+        .affix input {
+            border: none;
+            min-height: 46px;
+            padding: 10px 12px;
+            background: transparent;
+            color: #eaf0ff;
+        }
+
+        .affix .suffix {
+            display: inline-grid;
+            place-items: center;
+            padding: 0 12px;
+            background: #0b1020;
+            border-left: 1px solid var(--line);
+            color: #dfe6f8;
+            font-weight: 800;
+            font-size: 13px;
+        }
+
+        .affix:focus-within {
+            box-shadow: var(--ring);
+            border-color: var(--accent1);
+        }
+
+        /* ===== КНОПКИ ===== */
+        .btn {
+            --bg: #20283a;
+            --fg: #f3f5fa;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 48px;
+            padding: 0 16px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: var(--fg);
+            font-weight: 900;
+            letter-spacing: .2px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform .06s, filter .2s, border-color .2s;
+            flex: 0 0 auto;
+            white-space: nowrap;
+            max-width: 100%;
+        }
+
+        .btn:hover {
+            filter: brightness(1.06);
+            border-color: rgba(255, 255, 255, .18);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
 
         .btn-primary {
-            background: linear-gradient(90deg, #ff914d, #ffb84d);
-            border: none;
-            font-weight: 600;
-            border-radius: 10px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            --bg: linear-gradient(180deg, var(--accent1), var(--accent2));
+            --fg: #1b1103;
+            border: 0;
+            box-shadow: 0 12px 26px rgba(255, 190, 51, .28);
         }
 
-            .btn-primary:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 12px rgba(255, 145, 77, 0.3);
-            }
-
-        .booking-summary {
-            background: #fff;
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid #f1d6b8;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        .btn-block {
+            width: 100%;
         }
 
-        .summary-title {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 15px;
+        /* Универсальный контейнер для кнопок — НЕ ДАЁТ ИМ НАЛЕЗАТЬ */
+        .btn-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .alert {
+            margin: 12px 0 0;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: #102032;
+            color: #e3edff;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        /* ===== СВОДКА ===== */
+        .summary h2 {
+            margin: 0 0 12px;
+            font-size: 20px;
         }
 
         .summary-list {
             list-style: none;
+            margin: 0 0 12px;
             padding: 0;
-            margin-bottom: 20px;
+            border-top: 1px solid var(--line);
+            border-bottom: 1px solid var(--line);
         }
 
-            .summary-list li {
-                display: flex;
-                justify-content: space-between;
-                padding: 6px 0;
-                border-bottom: 1px solid #eee;
-                font-size: 15px;
-            }
+        .summary-list li {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, .07);
+        }
 
-        .summary-note {
+        .summary-list li:last-child {
+            border-bottom: none;
+        }
+
+        .note {
+            color: #cfd6e4;
             font-size: 14px;
-            color: #777;
         }
 
-        .map_container {
-            height: 250px;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-top: 10px;
-        }
-
-        #googleMap {
-            width: 100%;
-            height: 100%;
-        }
-
-        footer {
-            background: #222;
-            color: #ddd;
-            text-align: center;
-            padding: 20px;
+        /* ===== ФУТЕР ===== */
+        .feane-footer {
             margin-top: 40px;
-            border-top: 3px solid #ff914d;
         }
 
-            footer a {
-                color: #ffb84d;
-                text-decoration: none;
-            }
+        .feane-footer .footer-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 30px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 24px 0 6px;
+        }
 
-                footer a:hover {
-                    text-decoration: underline;
-                }
+        .feane-footer .footer-col {
+            flex: 1 1 280px;
+            min-width: 240px;
+        }
+
+        .feane-footer h4 {
+            color: var(--accent1);
+            margin: 0 0 12px;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .feane-footer .footer-links a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #eaeef7;
+            text-decoration: none;
+            margin: 6px 0;
+            font-size: 15px;
+            transition: color .2s;
+        }
+
+        .feane-footer .footer-links a:hover {
+            color: var(--accent1);
+        }
+
+        .feane-footer .footer-logo {
+            color: var(--accent1);
+            font-weight: 900;
+            font-size: 22px;
+            text-decoration: none;
+        }
+
+        .feane-footer .footer-text {
+            font-size: 14px;
+            color: #cdd1db;
+            margin: 10px 0 14px;
+            line-height: 1.6;
+        }
+
+        .feane-footer .footer-social a {
+            color: var(--accent1);
+            text-decoration: none;
+            font-size: 20px;
+            margin-right: 12px;
+            transition: opacity .2s;
+        }
+
+        .feane-footer .footer-social a:hover {
+            opacity: .85;
+        }
+
+        .feane-footer .footer-bottom {
+            text-align: center;
+            padding: 14px 8px 26px;
+            font-size: 14px;
+            color: var(--muted);
+            border-top: 1px solid var(--line);
+        }
+
+        /* Доп. мобильные правки */
+        @media (max-width: 560px) {
+            .btn.btn-block {
+                width: 100%;
+            }
+        }
     </style>
 </head>
-<body data-require-auth="true" data-auth-check-endpoint="/api/auth/profile" data-login-url="/account/authentication" class="sub_page book_page">
+<body>
+<!-- ===== NAVBAR ===== -->
+<header class="header_section" id="siteHeader">
+    <div class="navbar-wrapper">
+        <a class="navbar-brand" href="/">Feane</a>
 
-    <section class="book_section">
-        <div class="container">
-            <div class="heading_container">
-                <h2>������������� ������</h2>
-                <p class="lead">
-                    ������� ������� ���� � �����, ���������� ������ � ��������� � �� ���������� ����� ��� ����� ������.
-                </p>
+        <button aria-expanded="false" aria-label="Открыть меню" class="navbar-toggle" id="navbarToggle">
+            <span></span><span></span><span></span>
+        </button>
+
+        <ul class="navbar-links" id="navbarLinks">
+            <li><a href="/">Home</a></li>
+            <li><a href="/home/about">About</a></li>
+            <li><a class="active" href="/reservation">Book Table</a></li>
+            <li><a href="/weather/index">Weather</a></li>
+        </ul>
+
+        <div class="user_option">
+            <div class="admin_links">
+                <a class="feane-admin d-none admin_button" data-role="admin,moderator" href="/dish/index">Manage
+                    Dishes</a>
+                <a class="feane-admin d-none admin_button" data-role="admin" href="/user/index">Manage Users</a>
+                <a class="feane-admin d-none admin_button" data-role="admin,moderator"
+                   href="/analytics/index">Analytics</a>
             </div>
 
-            <div id="reservation-feedback" class="alert d-none" role="alert"></div>
+            <!-- Профиль -->
+            <a aria-label="Profile" class="feane-icon" href="/account/reservationhistory" title="Профиль">
+                <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/>
+                </svg>
+            </a>
 
-            <div class="row g-4 align-items-stretch">
-                <div class="col-lg-7">
-                    <form class="form_container shadow-sm booking-form">
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="customerName" class="form-label">���</label>
-                                <input id="customerName" name="customerName" type="text"
-                                       class="form-control" placeholder="��� �����" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label for="phoneNumber" class="form-label">�������</label>
-                                <input id="phoneNumber" name="phoneNumber" type="tel"
-                                       class="form-control" placeholder="+375 (29) 000-00-00" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label for="userEmail" class="form-label">E-mail</label>
-                                <input id="userEmail" name="userEmail" type="email"
-                                       class="form-control" placeholder="guest@example.com" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label for="numberOfPeople" class="form-label">���������� ������</label>
-                                <select id="numberOfPeople" name="numberOfPeople" class="form-select" required>
-                                    <option value="">�������� ������</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="reservationDateTime" class="form-label">���� � �����</label>
-                                <input id="reservationDateTime" name="reservationDateTime" type="datetime-local"
-                                       class="form-control" required />
-                            </div>
-                            <div class="col-md-6">
-                                <label for="budgetPerGuest" class="form-label">������ �� �����</label>
-                                <div class="input-group">
-                                    <input id="budgetPerGuest" name="budgetPerGuest" type="number"
-                                           class="form-control" min="0" step="0.5" placeholder="0.00" />
-                                    <span class="input-group-text">BYN</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="occasion" class="form-label">�����</label>
-                                <select id="occasion" name="occasion" class="form-select">
-                                    <option value="">�� �������</option>
-                                    <option value="birthday">���� ��������</option>
-                                    <option value="anniversary">���������</option>
-                                    <option value="business">������� �������</option>
-                                    <option value="romantic">������������� ����</option>
-                                    <option value="other">������</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="seatingPreference" class="form-label">������������ �� ������</label>
-                                <select id="seatingPreference" name="seatingPreference" class="form-select">
-                                    <option value="">��� ������������</option>
-                                    <option value="indoor">� ����</option>
-                                    <option value="outdoor">�� �������</option>
-                                    <option value="quiet">����� ������</option>
-                                    <option value="window">� ����</option>
-                                </select>
-                            </div>
-                            <div class="col-12">
-                                <label for="specialRequests" class="form-label">������ ���������</label>
-                                <textarea id="specialRequests" name="specialRequests" rows="3"
-                                          class="form-control"
-                                          placeholder="��������, �����, �������������� �����������"></textarea>
-                            </div>
-                        </div>
+            <!-- Корзина -->
+            <a aria-label="Cart" class="feane-icon" href="/cart/cart" title="Корзина">
+                <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7 4h-2l-1 2v2h2l3.6 7.59L8.25 18A2 2 0 1 0 10 19h6a2 2 0 1 0 1.75-1H9.42l.9-2H17a2 2 0 0 0 1.8-1.1l3.1-6.2A1 1 0 0 0 21 7H7V4Z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop"></div>
 
-                        <div class="btn_box">
-                            <button id="reserveSubmit" type="submit"
-                                    class="btn btn-primary btn-lg w-100 mt-4">
-                                ����������� �����
-                            </button>
-                        </div>
-                    </form>
-                </div>
+<!-- ===== HERO ===== -->
+<section class="hero container">
+    <span class="chip">Быстро · Удобно · Красиво</span>
+    <h1>Бронирование столика</h1>
+    <p class="lead">Заполните форму — мы подтвердим бронь по e-mail и/или телефону.</p>
+</section>
 
-                <div class="col-lg-5">
-                    <div class="booking-summary shadow-sm">
-                        <h4 class="summary-title">���� ������������</h4>
-                        <ul class="summary-list">
-                            <li><span>������:</span> <strong id="summary-guests">�</strong></li>
-                            <li><span>����:</span> <strong id="summary-date">�</strong></li>
-                            <li><span>������:</span> <strong id="summary-budget">�</strong></li>
-                            <li><span>��������� �����:</span> <strong id="summary-total">�</strong></li>
-                        </ul>
-                        <p class="summary-note">
-                            ����� �������� ������ �� �������� � ���� ��� �������������. ���� ����� ����� ������ � ��������� ���.
-                        </p>
+<!-- ===== CONTENT ===== -->
+<main class="container section">
+    <div class="grid">
 
-                        <div class="map_search mb-2">
-                            <input id="map-search" class="form-control"
-                                   type="text" placeholder="����� ��� ��������" />
-                        </div>
-                        <div class="map_container">
-                            <div id="googleMap"></div>
+        <!-- ===== ФОРМА ===== -->
+        <div class="card">
+            <div class="card-body">
+                <form class="form-grid booking-form" data-gateway-endpoint="/api/reservations" id="reservation-form"
+                      novalidate>
+                    <div class="col-6">
+                        <label class="form-label" for="customerName">Имя</label>
+                        <input autocomplete="name" class="input" id="customerName" name="customerName" placeholder="Иван Иванов"
+                               required type="text"/>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label" for="phoneNumber">Телефон</label>
+                        <input autocomplete="tel" class="input" id="phoneNumber" name="phoneNumber"
+                               placeholder="+373 600 00 000" required type="tel"/>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label" for="userEmail">E-mail</label>
+                        <input autocomplete="email" class="input" id="userEmail" name="userEmail"
+                               placeholder="guest@example.com" required type="email"/>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label" for="numberOfPeople">Гостей</label>
+                        <select class="select" id="numberOfPeople" name="numberOfPeople" required>
+                            <option value="">Выберите…</option>
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                            <option>6</option>
+                            <option>7</option>
+                            <option>8</option>
+                            <option>9</option>
+                            <option>10</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label" for="reservationDateTime">Дата и время</label>
+                        <input class="input" id="reservationDateTime" name="reservationDateTime" required
+                               type="datetime-local"/>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label" for="budgetPerGuest">Бюджет на гостя</label>
+                        <div class="affix">
+                            <input id="budgetPerGuest" min="0" name="budgetPerGuest" placeholder="0.00" step="0.5"
+                                   type="number"/>
+                            <span class="suffix">LEI</span>
                         </div>
                     </div>
-                </div>
+
+                    <div class="col-6">
+                        <label class="form-label" for="occasion">Повод</label>
+                        <select class="select" id="occasion" name="occasion">
+                            <option value="">Не выбрано</option>
+                            <option value="birthday">День рождения</option>
+                            <option value="anniversary">Годовщина</option>
+                            <option value="business">Деловая встреча</option>
+                            <option value="romantic">Романтический ужин</option>
+                            <option value="other">Другое</option>
+                        </select>
+                    </div>
+
+                    <div class="col-6">
+                        <label class="form-label" for="seatingPreference">Место</label>
+                        <select class="select" id="seatingPreference" name="seatingPreference">
+                            <option value="">Без предпочтений</option>
+                            <option value="indoor">В зале</option>
+                            <option value="outdoor">На террасе</option>
+                            <option value="quiet">Тихая зона</option>
+                            <option value="window">У окна</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" for="specialRequests">Особые пожелания</label>
+                        <textarea class="textarea" id="specialRequests" name="specialRequests"
+                                  placeholder="Аллергии, дети, детский стул и т. п."></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <button class="btn btn-primary btn-block" id="reserveSubmit" type="submit">Подтвердить бронь
+                        </button>
+                        <div aria-live="polite" class="alert" id="reservation-feedback" role="alert"></div>
+                    </div>
+                </form>
             </div>
         </div>
-    </section>
 
-    <footer>
-        � 2025 Feane Restaurant | <a href="#">�������� ������������������</a>
-    </footer>
+        <!-- ===== СВОДКА ===== -->
+        <aside class="card summary">
+            <div class="card-body">
+                <h2>Ваша бронь</h2>
+                <ul class="summary-list">
+                    <li><span>Гостей:</span> <strong id="sum-guests">—</strong></li>
+                    <li><span>Дата:</span> <strong id="sum-date">—</strong></li>
+                    <li><span>Бюджет/гость:</span> <strong id="sum-budget">—</strong></li>
+                    <li><span>Оценочный бюджет:</span> <strong id="sum-total">—</strong></li>
+                </ul>
+                <p class="note">После отправки заявки мы свяжемся с вами для подтверждения. Бронь можно отменить или
+                    перенести.</p>
+                <div class="btn-row">
+                    <a class="btn" href="/menu">Открыть меню</a>
+                    <a class="btn" href="/account/reservationhistory">Мои резервации</a>
+                </div>
+            </div>
+        </aside>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/auth-guard.js"></script>
+    </div>
+</main>
+
+<!-- ===== ФУТЕР ===== -->
+<footer aria-label="Footer" class="feane-footer container" role="contentinfo">
+    <div class="footer-inner">
+        <div class="footer-col">
+            <h4>Контакты</h4>
+            <div class="footer-links">
+                <a href="#"><span>📍</span><span>Наш адрес</span></a>
+                <a href="tel:+011234567890"><span>☎</span><span>+01 1234567890</span></a>
+                <a href="mailto:demo@gmail.com"><span>✉</span><span>demo@gmail.com</span></a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <a class="footer-logo" href="/">Feane</a>
+            <p class="footer-text">Мы создаём дружелюбный цифровой опыт для гостей. Вкусно, быстро и удобно — так
+                работает Feane.</p>
+            <div aria-label="Social links" class="footer-social">
+                <a aria-label="Facebook" href="#">🌐</a>
+                <a aria-label="Twitter" href="#">🐦</a>
+                <a aria-label="LinkedIn" href="#">💼</a>
+                <a aria-label="Instagram" href="#">📸</a>
+            </div>
+        </div>
+
+        <div class="footer-col">
+            <h4>Режим работы</h4>
+            <p>Ежедневно</p>
+            <p>10:00 — 22:00</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        © <span id="displayYear"></span> Feane. Все права защищены.
+    </div>
+</footer>
+
+<!-- ===== JS ===== -->
+<script>
+    // Год в футере
+    (function () {
+        const y = document.getElementById('displayYear');
+        if (y) y.textContent = new Date().getFullYear();
+    })();
+
+    // Navbar: бургер/офф-канвас + активный пункт + тень при скролле
+    const toggle = document.getElementById('navbarToggle');
+    const links = document.getElementById('navbarLinks');
+    const backd = (() => {
+        const n = document.getElementById('navBackdrop') || document.createElement('div');
+        n.id = 'navBackdrop';
+        n.className = 'nav-backdrop';
+        if (!n.parentNode) document.body.appendChild(n);
+        return n;
+    })();
+    const body = document.body;
+
+    function setMenu(open) {
+        if (!toggle || !links) return;
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        links.classList.toggle('show', open);
+        backd.classList.toggle('show', open);
+        body.classList.toggle('no-scroll', open);
+    }
+
+    if (toggle) toggle.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
+    backd.addEventListener('click', () => setMenu(false));
+    if (links) links.addEventListener('click', e => {
+        if (e.target.tagName === 'A') setMenu(false);
+    });
+
+    (function markActive() {
+        const path = location.pathname.replace(/\/+$/, '') || '/';
+        document.querySelectorAll('#navbarLinks a').forEach(a => {
+            const href = (a.getAttribute('href') || '#').replace(/\/+$/, '');
+            if (href === path || (href !== '/' && path.startsWith(href))) a.classList.add('active');
+        });
+    })();
+
+    (function headerShadow() {
+        const header = document.getElementById('siteHeader');
+        if (!header) return;
+        const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 6);
+        onScroll();
+        window.addEventListener('scroll', onScroll, {passive: true});
+    })();
+
+    // Подключение клиентского функционала находится в /js/reservation-book.js
+</script>
+<script src="/js/gateway-client.js"></script>
+<script src="/js/reservation-book.js"></script>
+<script src="/js/navbar-role.js"></script>
 </body>
 </html>
-
-

@@ -6,6 +6,7 @@
     function $(sel, root) {
         return (root || document).querySelector(sel);
     }
+
     function $all(sel, root) {
         return Array.prototype.slice.call((root || document).querySelectorAll(sel));
     }
@@ -135,7 +136,7 @@
         // Пытаемся через feaneGateway, иначе fetch:
         var reader = (window.feaneGateway && typeof window.feaneGateway.get === 'function')
             ? window.feaneGateway.get(endpoint)
-            : fetch(endpoint, { credentials: 'include' })
+            : fetch(endpoint, {credentials: 'include'})
                 .then(function (r) {
                     if (!r.ok) throw new Error(r.statusText);
                     // пробуем как JSON, затем как текст

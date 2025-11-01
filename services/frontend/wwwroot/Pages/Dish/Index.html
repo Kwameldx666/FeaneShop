@@ -1,386 +1,226 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link rel="shortcut icon" href="/images/favicon.png" type="">
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
     <title>Feane · Dishes</title>
 
-    <!-- Base styles already used in the project -->
-    <link rel="stylesheet" href="/css/bootstrap.css" />
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/responsive.css" />
-    <link rel="stylesheet" href="/css/navbar.css" />
-
-    <!-- Page look & feel -->
     <style>
-        :root {
-            --accent: #ffbe33; /* Feane orange */
-            --accent-2: #ff7a1a; /* warm mate for gradients */
-            --bg: #0f1115; /* page background */
-            --panel: #141922; /* panel background */
-            --panel-2: #0e1320; /* input background */
-            --ink: #eef2fb; /* main text */
-            --muted: #9aa4b2; /* secondary text */
-            --line: rgba(255,255,255,.08);
-            --danger: #ff4d4d;
-            --radius: 18px;
-            --shadow: 0 20px 44px rgba(0,0,0,.35);
-            --ring: 0 0 0 3px rgba(255,190,51,.25);
+        /* ===== Стили только для этой страницы ===== */
+
+        body.dish-admin-page {
+            background-color: #141824;
+            color: #f8f9fb;
+            font-family: "Poppins", sans-serif;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Atmosphere */
-        body.sub_page {
-            background: radial-gradient(1100px 520px at -10% -10%, #1b2236 0%, transparent 60%), radial-gradient(1200px 680px at 110% 120%, #181f33 0%, transparent 60%), var(--bg);
-            color: var(--ink);
+        .dish-admin-page .admin-container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 50px auto;
+            background-color: #1b2130;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            padding: 30px;
         }
 
-        /* Container (card) */
-        .admin-container {
-            width: min(1100px, 94vw);
-            margin: clamp(28px, 6vh, 64px) auto;
-            background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.015)), var(--panel);
-            border: 1px solid var(--line);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: clamp(18px, 4vw, 32px);
-            position: relative;
-            overflow: hidden;
-            isolation: isolate;
-        }
-
-            .admin-container::before {
-                content: "";
-                position: absolute;
-                inset: -120px auto auto -120px;
-                width: 320px;
-                height: 320px;
-                border-radius: 50%;
-                background: radial-gradient(closest-side, rgba(255,190,51,.2), transparent);
-                filter: blur(22px);
-                z-index: -1;
-                pointer-events: none;
-            }
-
-        /* Header */
-        .admin-header {
+        .dish-admin-page .admin-header {
             display: flex;
-            align-items: center;
-            gap: 14px;
             justify-content: space-between;
-            margin-bottom: 18px;
-        }
-
-            .admin-header h2 {
-                margin: 0;
-                font-size: clamp(22px, 3.2vw, 28px);
-                letter-spacing: .4px;
-            }
-
-        .add-dish-btn {
-            display: inline-flex;
             align-items: center;
-            gap: .6rem;
-            border: 0;
-            border-radius: 14px;
-            padding: 12px 16px;
-            background: linear-gradient(180deg, var(--accent), var(--accent-2));
-            color: #1b1103;
-            font-weight: 800;
-            text-decoration: none;
-            box-shadow: 0 12px 28px rgba(255,190,51,.32);
-            transition: transform .08s ease, filter .18s ease;
-        }
-
-            .add-dish-btn:hover {
-                filter: brightness(1.05);
-            }
-
-            .add-dish-btn:active {
-                transform: translateY(1px);
-            }
-
-        /* Feedback alert */
-        #dish-feedback {
-            border-radius: 12px;
-            background: #122034;
-            color: var(--ink);
-            border: 1px solid var(--line);
-            padding: 10px 14px;
-            margin-bottom: 12px;
-        }
-
-        .d-none {
-            display: none !important;
-        }
-
-        /* Seeder */
-        .seed-section {
-            border: 1px dashed var(--line);
-            background: rgba(255,255,255,.02);
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 16px;
-        }
-
-        .seed-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-            .seed-form label {
-                font-size: 13px;
-                color: #cfd6e4;
-            }
-
-        .seed-input-group {
-            display: flex;
-            gap: 10px;
             flex-wrap: wrap;
+            margin-bottom: 25px;
         }
 
-        #seed-count {
-            width: 120px;
-            min-height: 44px;
-            color: var(--ink);
-            background: var(--panel-2);
-            border: 1px solid var(--line);
-            border-radius: 12px;
-            padding: 10px 12px;
-            outline: none;
-            transition: .18s border-color, .18s box-shadow, .18s background;
+        .dish-admin-page .admin-header h2 {
+            color: #ffbe33;
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
         }
 
-            #seed-count:focus {
-                border-color: var(--accent);
-                box-shadow: var(--ring);
-                background: #0c111e;
-            }
-
-        .seed-btn {
-            min-height: 44px;
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 0;
-            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+        .dish-admin-page .add-dish-btn {
+            background: linear-gradient(180deg, #ffbe33, #ff7a1a);
             color: #1b1103;
             font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 18px;
+            text-decoration: none;
             cursor: pointer;
-            box-shadow: 0 10px 22px rgba(255,190,51,.28);
-            transition: filter .18s ease, transform .08s ease;
+            transition: 0.2s ease;
+            box-shadow: 0 4px 10px rgba(255, 190, 51, 0.35);
         }
 
-            .seed-btn:hover:not([disabled]) {
-                filter: brightness(1.05);
-            }
-
-            .seed-btn:active:not([disabled]) {
-                transform: translateY(1px);
-            }
-
-            .seed-btn[disabled] {
-                filter: grayscale(.65) opacity(.6);
-                cursor: not-allowed;
-            }
-
-        .seed-hint {
-            margin: 0;
-            color: var(--muted);
-            font-size: 12px;
+        .dish-admin-page .add-dish-btn:hover {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
         }
 
-        /* Table wrapper for small screens */
-        .table-wrap {
+        .dish-admin-page .table-wrap {
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            border-radius: 12px;
-            border: 1px solid var(--line);
-            background: #0e1320;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #232a3b;
         }
 
-        /* Table */
-        table.table {
+        .dish-admin-page table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 760px; /* allow horizontal scroll on phone */
+            border-radius: 8px;
+            overflow: hidden;
         }
 
-        .table thead th {
+        .dish-admin-page thead {
+            background-color: #2c3448;
+        }
+
+        .dish-admin-page th,
+        .dish-admin-page td {
+            padding: 14px 16px;
             text-align: left;
+        }
+
+        .dish-admin-page th {
+            color: #ffbe33;
             font-weight: 700;
-            font-size: 13px;
-            letter-spacing: .2px;
-            color: #cfd6e4;
-            background: #0f1628;
-            border-bottom: 1px solid var(--line);
-            padding: 12px 14px;
-            position: sticky;
-            top: 0;
-            z-index: 1;
+            font-size: 14px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.15);
         }
 
-        .table tbody td {
-            border-bottom: 1px solid var(--line);
-            padding: 12px 14px;
+        .dish-admin-page td {
+            color: #eaeef7;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             vertical-align: middle;
-            color: var(--ink);
+            font-size: 15px;
         }
 
-        .table tbody tr:hover {
-            background: rgba(255,255,255,.02);
+        .dish-admin-page tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
         }
 
-        .thumb {
-            width: 60px;
-            height: 60px;
+        .dish-admin-page .thumb {
+            display: block;
+            width: 80px;
+            height: 80px;
             border-radius: 10px;
             object-fit: cover;
-            border: 1px solid var(--line);
-            box-shadow: 0 6px 14px rgba(0,0,0,.28);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            margin: 0 auto;
         }
 
-        /* Actions */
-        .table-actions {
+        .dish-admin-page .actions-cell,
+        .dish-admin-page .table-actions {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .edit-btn, .delete-btn {
-            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            padding: 8px 12px;
-            border-radius: 12px;
-            border: 1px solid var(--line);
-            text-decoration: none;
-            font-weight: 700;
+            justify-content: flex-end;
+            gap: 12px;
+            white-space: nowrap;
+        }
+
+        .dish-admin-page .edit-btn,
+        .dish-admin-page .delete-btn {
+            border: none;
+            border-radius: 6px;
+            padding: 8px 14px;
             cursor: pointer;
-            transition: .18s border-color, .18s filter, .08s transform;
-            background: #10172a;
-            color: var(--ink);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
         }
 
-            .edit-btn:hover {
-                border-color: rgba(255,255,255,.18);
-            }
-
-        .delete-btn {
-            background: #201019;
-            border-color: rgba(255,77,77,.25);
-            color: #ffdede;
+        .dish-admin-page .edit-btn {
+            background-color: #007bff;
+            color: #fff;
         }
 
-            .delete-btn:hover {
-                filter: brightness(1.05) saturate(1.05);
+        .dish-admin-page .edit-btn:hover {
+            background-color: #0a84ff;
+        }
+
+        .dish-admin-page .delete-btn {
+            background-color: #e55353;
+            color: #fff;
+        }
+
+        .dish-admin-page .delete-btn:hover {
+            background-color: #ff6666;
+        }
+
+        @media (max-width: 700px) {
+            .dish-admin-page .admin-header {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
-            .edit-btn:active, .delete-btn:active {
-                transform: translateY(1px);
+            .dish-admin-page .actions-cell,
+            .dish-admin-page .table-actions {
+                justify-content: flex-start;
+                gap: 8px;
             }
 
-            .delete-btn[disabled] {
-                opacity: .55;
-                cursor: not-allowed;
+            .dish-admin-page .thumb {
+                width: 65px;
+                height: 65px;
             }
-
-        /* Small helpers */
-        .text-muted {
-            color: var(--muted) !important;
         }
     </style>
 </head>
 
-<body class="sub_page">
-    <div data-include="/partials/navbar.html"></div>
+<body class="dish-admin-page">
+<!-- Navbar и footer автоматически подгружаются -->
+<div data-include="/partials/navbar.html"></div>
 
-    <main class="admin-container" data-delete-url="#">
-        <div class="admin-header">
-            <h2>Dishes List</h2>
-            <a href="/dish/adddish" class="add-dish-btn">Add New Dish</a>
-        </div>
+<main class="admin-container"
+      data-delete-template="/api/dishes/{id}"
+      data-dishes-endpoint="/api/dishes">
+    <div class="admin-header">
+        <h2>Dishes List</h2>
+        <a class="add-dish-btn" href="/dish/adddish">+ Add New Dish</a>
+    </div>
 
-        <div id="dish-feedback" class="alert d-none" role="alert"></div>
+    <div class="alert d-none" id="dish-feedback" role="alert"></div>
 
-        <div class="seed-section">
-            <form class="seed-form" action="javascript:void(0)">
-                <label for="seed-count">Seed sample dishes</label>
-                <div class="seed-input-group">
-                    <input id="seed-count" name="count" type="number" min="1" max="50" value="12" />
-                    <button type="button" class="seed-btn" disabled>Fill with sample data</button>
-                </div>
-                <p class="seed-hint">Quickly generate placeholder dishes for testing. Existing dishes with the same name are skipped.</p>
-            </form>
-        </div>
+    <div class="table-wrap">
+        <table>
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody id="dish-table-body">
+            <!-- пример -->
+            <tr>
+                <td>Classic Burger</td>
+                <td>Juicy beef patty with cheddar cheese and lettuce.</td>
+                <td>12.50 LEI</td>
+                <td>Burger</td>
+                <td><img alt="Classic Burger" class="thumb" src="/images/demo/burger.jpg"/></td>
+                <td class="actions-cell">
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</main>
 
-        <div class="table-wrap">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th style="min-width:160px;">Name</th>
-                        <th style="min-width:260px;">Description</th>
-                        <th style="min-width:100px;">Price</th>
-                        <th style="min-width:100px;">Category</th>
-                        <th style="min-width:120px;">Image</th>
-                        <th style="min-width:160px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Margherita Pizza</td>
-                        <td>Classic pizza with mozzarella, tomatoes and basil.</td>
-                        <td>$12.00</td>
-                        <td>Pizza</td>
-                        <td>
-                            <img class="thumb" src="/images/pizza1.jpg" alt="Margherita Pizza" />
-                        </td>
-                        <td>
-                            <div class="table-actions">
-                                <a href="/dish/editdish" class="edit-btn">Edit</a>
-                                <button class="delete-btn" disabled>Delete</button>
-                            </div>
-                        </td>
-                    </tr>
+<div data-include="/partials/footer.html"></div>
 
-                    <tr>
-                        <td>Chicken Burger</td>
-                        <td>Grilled chicken burger with lettuce and special sauce.</td>
-                        <td>$9.50</td>
-                        <td>Burger</td>
-                        <td>
-                            <img class="thumb" src="/images/burger1.jpg" alt="Chicken Burger" />
-                        </td>
-                        <td>
-                            <div class="table-actions">
-                                <a href="/dish/editdish" class="edit-btn">Edit</a>
-                                <button class="delete-btn" disabled>Delete</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <td>Pasta Alfredo</td>
-                        <td>Creamy pasta with mushrooms and parmesan cheese.</td>
-                        <td>$10.50</td>
-                        <td>Pasta</td>
-                        <td>
-                            <img class="thumb" src="/images/pasta1.jpg" alt="Pasta Alfredo" />
-                        </td>
-                        <td>
-                            <div class="table-actions">
-                                <a href="/dish/editdish" class="edit-btn">Edit</a>
-                                <button class="delete-btn" disabled>Delete</button>
-                            </div>
-                        </td>
-                    </tr>
-
-                </tbody>
-            </table>
-        </div>
-    </main>
-
-    <div data-include="/partials/footer.html"></div>
+<!-- ✅ Только нужные JS -->
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script src="/js/gateway-client.js"></script>
+<script src="/js/partials-loader.js"></script>
+<script src="/js/dish-index.js"></script>
 </body>
 </html>

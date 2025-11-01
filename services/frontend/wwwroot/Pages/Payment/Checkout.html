@@ -1,84 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Basic -->
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <!-- Mobile Metas -->
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <!-- Site Metas -->
-  <meta name="keywords" content="" />
-  <meta name="description" content="" />
-  <meta name="author" content="" />
-  <link rel="shortcut icon" href="/images/favicon.png" type="">
+    <!-- Basic -->
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <!-- Mobile Metas -->
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport"/>
+    <!-- Site Metas -->
+    <meta content="" name="keywords"/>
+    <meta content="" name="description"/>
+    <meta content="" name="author"/>
+    <link href="/images/favicon.png" rel="shortcut icon" type="">
 
-  <title>Feane</title>
+    <title>Feane</title>
 
-  <!-- bootstrap core css -->
-  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+    <!-- bootstrap core css -->
+    <link href="/css/bootstrap.css" rel="stylesheet" type="text/css"/>
 
-  <!--owl slider stylesheet -->
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
-  <!-- nice select  -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css"
-        integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ=="
-        crossorigin="anonymous" />
-  <!-- font awesome style -->
-  <link href="/css/font-awesome.min.css" rel="stylesheet" />
+    <!--owl slider stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" rel="stylesheet"
+          type="text/css"/>
+    <!-- nice select  -->
+    <link crossorigin="anonymous"
+          href="https://cdnjs.cloudflare.com/ajax/libs/jquery-nice-select/1.1.0/css/nice-select.min.css"
+          integrity="sha512-CruCP+TD3yXzlvvijET8wV5WxxEh5H8P4cmz0RFbKK6FlZ2sYl3AEsKlLPHbniXKSrDdFewhbmBK5skbdsASbQ=="
+          rel="stylesheet"/>
+    <!-- font awesome style -->
+    <link href="/css/font-awesome.min.css" rel="stylesheet"/>
 
-  <!-- Custom styles for this template -->
-  <link href="/css/style.css" rel="stylesheet" />
-  <!-- responsive style -->
-  <link href="/css/responsive.css" rel="stylesheet" />
-  <link href="/css/navbar.css" rel="stylesheet" />
-  <link href="/css/payment-checkout.css" rel="stylesheet" />
+    <!-- Custom styles for this template -->
+    <link href="/css/style.css" rel="stylesheet"/>
+    <!-- responsive style -->
+    <link href="/css/responsive.css" rel="stylesheet"/>
+    <link href="/css/navbar.css" rel="stylesheet"/>
+    <link href="/css/payment-checkout.css" rel="stylesheet"/>
 </head>
 <body class="sub_page">
-  <div data-include="/partials/navbar.html"></div>
+<div data-include="/partials/navbar.html"></div>
 
-  <div class="payment-wrapper">
+<div class="payment-wrapper">
     <div class="payment-card">
-      <h1 class="payment-title">Payment Information</h1>
-      <p class="payment-amount">Amount due: <strong>$49.99</strong></p>
+        <h1 class="payment-title">Payment Information</h1>
+        <p class="payment-amount">Amount due: <strong>49.99 LEI</strong></p>
 
-      <form class="payment-form" action="#" method="post" novalidate>
-        <div class="form-group">
-          <label for="cardNumber">Card Number</label>
-          <input id="cardNumber" name="cardNumber" class="form-control" autocomplete="cc-number" placeholder="1234 5678 9012 3456" />
-        </div>
+        <form action="#" class="payment-form" method="post" novalidate>
+            <div class="form-group">
+                <label for="cardNumber">Card Number</label>
+                <input autocomplete="cc-number" class="form-control" id="cardNumber" name="cardNumber"
+                       placeholder="1234 5678 9012 3456"/>
+            </div>
 
-        <div class="form-group">
-          <label for="cardHolder">Card Holder Name</label>
-          <input id="cardHolder" name="cardHolder" class="form-control" autocomplete="cc-name" placeholder="John Doe" />
-        </div>
+            <div class="form-group">
+                <label for="cardHolder">Card Holder Name</label>
+                <input autocomplete="cc-name" class="form-control" id="cardHolder" name="cardHolder"
+                       placeholder="John Doe"/>
+            </div>
 
-        <div class="form-group form-group-inline">
-          <div class="form-field">
-            <label for="expiryDate">Expiry Date</label>
-            <input id="expiryDate" name="expiryDate" type="month" class="form-control" />
-          </div>
-          <div class="form-field">
-            <label for="cardCvv">CVV</label>
-            <input id="cardCvv" name="cardCvv" class="form-control" autocomplete="cc-csc" placeholder="123" />
-          </div>
-        </div>
+            <div class="form-group form-group-inline">
+                <div class="form-field">
+                    <label for="expiryDate">Expiry Date</label>
+                    <input class="form-control" id="expiryDate" name="expiryDate" type="month"/>
+                </div>
+                <div class="form-field">
+                    <label for="cardCvv">CVV</label>
+                    <input autocomplete="cc-csc" class="form-control" id="cardCvv" name="cardCvv" placeholder="123"/>
+                </div>
+            </div>
 
-        <div class="form-group">
-          <label for="currency">Currency</label>
-          <input id="currency" name="currency" class="form-control" value="USD" />
-        </div>
+            <div class="form-group">
+                <label for="currency">Currency</label>
+                <input class="form-control" id="currency" name="currency" value="USD"/>
+            </div>
 
-        <input type="hidden" name="totalPrice" value="49.99" />
-        <input type="hidden" name="amount" value="49.99" />
+            <input name="totalPrice" type="hidden" value="49.99"/>
+            <input name="amount" type="hidden" value="49.99"/>
 
-        <div class="form-group">
-          <button type="submit" class="btn btn-primary pay-button">Pay Now</button>
-        </div>
-      </form>
+            <div class="form-group">
+                <button class="btn btn-primary pay-button" type="submit">Pay Now</button>
+            </div>
+        </form>
     </div>
-  </div>
+</div>
 
-  <div data-include="/partials/footer.html"></div>
+<div data-include="/partials/footer.html"></div>
 
 </body>
 </html>

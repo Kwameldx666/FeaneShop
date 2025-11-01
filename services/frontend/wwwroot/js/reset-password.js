@@ -1,7 +1,9 @@
 (function () {
     'use strict';
 
-    var $ = function (id) { return document.getElementById(id); };
+    var $ = function (id) {
+        return document.getElementById(id);
+    };
     var toggleBtn = $('forgot-password-btn');
     var panel = $('forgot-password-panel');
     var emailEl = $('reset-email');
@@ -9,9 +11,21 @@
     var okBox = $('reset-ok');
     var errBox = $('reset-err');
 
-    function show(el, on) { if (!el) return; el.classList[on ? 'remove' : 'add']('hidden'); }
-    function setMsg(el, txt) { if (!el) return; el.textContent = txt; show(el, !!txt); }
-    function clearMsgs() { setMsg(okBox, ''); setMsg(errBox, ''); }
+    function show(el, on) {
+        if (!el) return;
+        el.classList[on ? 'remove' : 'add']('hidden');
+    }
+
+    function setMsg(el, txt) {
+        if (!el) return;
+        el.textContent = txt;
+        show(el, !!txt);
+    }
+
+    function clearMsgs() {
+        setMsg(okBox, '');
+        setMsg(errBox, '');
+    }
 
     // Показ/скрытие панели
     toggleBtn && toggleBtn.addEventListener('click', function () {
@@ -48,6 +62,9 @@
 
     // Enter в поле — как клик по кнопке
     emailEl && emailEl.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') { e.preventDefault(); handleSend(); }
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSend();
+        }
     });
 })();

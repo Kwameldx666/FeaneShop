@@ -96,6 +96,9 @@
             window.feaneGateway.post(updateEndpoint, formData).then(function (response) {
                 if (response && (response.success || response.status === 'success')) {
                     showFeedback(feedback, response.message || 'Dish updated successfully.', 'success');
+                    setTimeout(function () {
+                        window.location.href = '/dish/index';
+                    }, 600);
                     return;
                 }
 

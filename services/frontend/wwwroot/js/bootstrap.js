@@ -7,9 +7,9 @@
     typeof exports === "object" && typeof module !== "undefined"
         ? factory(exports, require("jquery"), require("popper.js"))
         : typeof define === "function" && define.amd
-        ? define(["exports", "jquery", "popper.js"], factory)
-        : ((global = global || self),
-          factory((global.bootstrap = {}), global.jQuery, global.Popper));
+            ? define(["exports", "jquery", "popper.js"], factory)
+            : ((global = global || self),
+                factory((global.bootstrap = {}), global.jQuery, global.Popper));
 })(this, function (exports, $, Popper) {
     "use strict";
 
@@ -134,6 +134,7 @@
         $.fn.emulateTransitionEnd = transitionEndEmulator;
         $.event.special[Util.TRANSITION_END] = getSpecialTransitionEndEvent();
     }
+
     /**
      * --------------------------------------------------------------------------
      * Public Util Api
@@ -219,13 +220,13 @@
                     if (!new RegExp(expectedTypes).test(valueType)) {
                         throw new Error(
                             componentName.toUpperCase() +
-                                ": " +
-                                ('Option "' +
-                                    property +
-                                    '" provided type "' +
-                                    valueType +
-                                    '" ') +
-                                ('but expected type "' + expectedTypes + '".')
+                            ": " +
+                            ('Option "' +
+                                property +
+                                '" provided type "' +
+                                valueType +
+                                '" ') +
+                            ('but expected type "' + expectedTypes + '".')
                         );
                     }
                 }
@@ -783,8 +784,8 @@
                 if (this._config.interval && !this._isPaused) {
                     this._interval = setInterval(
                         (document.visibilityState
-                            ? this.nextWhenVisible
-                            : this.next
+                                ? this.nextWhenVisible
+                                : this.next
                         ).bind(this),
                         this._config.interval
                     );
@@ -896,7 +897,7 @@
                         _this3._pointerEvent &&
                         PointerType[
                             event.originalEvent.pointerType.toUpperCase()
-                        ]
+                            ]
                     ) {
                         _this3.touchStartX = event.originalEvent.clientX;
                     } else if (!_this3._pointerEvent) {
@@ -924,7 +925,7 @@
                         _this3._pointerEvent &&
                         PointerType[
                             event.originalEvent.pointerType.toUpperCase()
-                        ]
+                            ]
                     ) {
                         _this3.touchDeltaX =
                             event.originalEvent.clientX - _this3.touchStartX;
@@ -1005,10 +1006,10 @@
                 this._items =
                     element && element.parentNode
                         ? [].slice.call(
-                              element.parentNode.querySelectorAll(
-                                  Selector$2.ITEM
-                              )
-                          )
+                            element.parentNode.querySelectorAll(
+                                Selector$2.ITEM
+                            )
+                        )
                         : [];
                 return this._items.indexOf(element);
             };
@@ -1071,7 +1072,7 @@
 
                     var nextIndicator = this._indicatorsElement.children[
                         this._getItemIndex(element)
-                    ];
+                        ];
 
                     if (nextIndicator) {
                         $(nextIndicator).addClass(ClassName$2.ACTIVE);
@@ -1180,10 +1181,10 @@
                                 .addClass(ClassName$2.ACTIVE);
                             $(activeElement).removeClass(
                                 ClassName$2.ACTIVE +
-                                    " " +
-                                    orderClassName +
-                                    " " +
-                                    directionalClassName
+                                " " +
+                                orderClassName +
+                                " " +
+                                directionalClassName
                             );
                             _this4._isSliding = false;
                             setTimeout(function () {
@@ -1384,11 +1385,11 @@
                 this._triggerArray = [].slice.call(
                     document.querySelectorAll(
                         '[data-toggle="collapse"][href="#' +
+                        element.id +
+                        '"],' +
+                        ('[data-toggle="collapse"][data-target="#' +
                             element.id +
-                            '"],' +
-                            ('[data-toggle="collapse"][data-target="#' +
-                                element.id +
-                                '"]')
+                            '"]')
                     )
                 );
                 var toggleList = [].slice.call(
@@ -2210,7 +2211,7 @@
                     if (
                         event &&
                         ((event.type === "click" &&
-                            /input|textarea/i.test(event.target.tagName)) ||
+                                /input|textarea/i.test(event.target.tagName)) ||
                             (event.type === "keyup" &&
                                 event.which === TAB_KEYCODE)) &&
                         $.contains(parent, event.target)
@@ -2266,11 +2267,11 @@
                 if (
                     /input|textarea/i.test(event.target.tagName)
                         ? event.which === SPACE_KEYCODE ||
-                          (event.which !== ESCAPE_KEYCODE &&
-                              ((event.which !== ARROW_DOWN_KEYCODE &&
-                                  event.which !== ARROW_UP_KEYCODE) ||
-                                  $(event.target).closest(Selector$4.MENU)
-                                      .length))
+                        (event.which !== ESCAPE_KEYCODE &&
+                            ((event.which !== ARROW_DOWN_KEYCODE &&
+                                    event.which !== ARROW_UP_KEYCODE) ||
+                                $(event.target).closest(Selector$4.MENU)
+                                    .length))
                         : !REGEXP_KEYDOWN.test(event.which)
                 ) {
                     return;
@@ -2358,7 +2359,6 @@
             return Dropdown;
         })();
 
-    
 
     /**
      * ------------------------------------------------------------------------
@@ -2899,8 +2899,8 @@
                             .css(
                                 "padding-right",
                                 parseFloat(calculatedPadding) +
-                                    _this9._scrollbarWidth +
-                                    "px"
+                                _this9._scrollbarWidth +
+                                "px"
                             );
                     }); // Adjust sticky content margin
 
@@ -2912,8 +2912,8 @@
                             .css(
                                 "margin-right",
                                 parseFloat(calculatedMargin) -
-                                    _this9._scrollbarWidth +
-                                    "px"
+                                _this9._scrollbarWidth +
+                                "px"
                             );
                     }); // Adjust body padding
 
@@ -2926,8 +2926,8 @@
                         .css(
                             "padding-right",
                             parseFloat(calculatedPadding) +
-                                this._scrollbarWidth +
-                                "px"
+                            this._scrollbarWidth +
+                            "px"
                         );
                 }
 
@@ -3153,7 +3153,7 @@
             if (uriAttrs.indexOf(attrName) !== -1) {
                 return Boolean(
                     attr.nodeValue.match(SAFE_URL_PATTERN) ||
-                        attr.nodeValue.match(DATA_URL_PATTERN)
+                    attr.nodeValue.match(DATA_URL_PATTERN)
                 );
             }
 
@@ -3216,7 +3216,7 @@
         for (var i = 0, len = elements.length; i < len; i++) {
             var _ret = _loop(i, len);
 
-            if (_ret === "continue") continue;
+            if (_ret === "continue") ;
         }
 
         return createdDocument.body.innerHTML;
@@ -3456,10 +3456,10 @@
                     var placement =
                         typeof this.config.placement === "function"
                             ? this.config.placement.call(
-                                  this,
-                                  tip,
-                                  this.element
-                              )
+                                this,
+                                tip,
+                                this.element
+                            )
                             : this.config.placement;
 
                     var attachment = this._getAttachment(placement);
@@ -3810,7 +3810,7 @@
                 if (event) {
                     context._activeTrigger[
                         event.type === "focusin" ? Trigger.FOCUS : Trigger.HOVER
-                    ] = true;
+                        ] = true;
                 }
 
                 if (
@@ -3853,7 +3853,7 @@
                         event.type === "focusout"
                             ? Trigger.FOCUS
                             : Trigger.HOVER
-                    ] = false;
+                        ] = false;
                 }
 
                 if (context._isWithActiveTrigger()) {
@@ -4521,7 +4521,7 @@
 
                 var offsetLength = this._offsets.length;
 
-                for (var i = offsetLength; i--; ) {
+                for (var i = offsetLength; i--;) {
                     var isActiveTarget =
                         this._activeTarget !== this._targets[i] &&
                         scrollTop >= this._offsets[i] &&
@@ -4651,7 +4651,7 @@
         );
         var scrollSpysLength = scrollSpys.length;
 
-        for (var i = scrollSpysLength; i--; ) {
+        for (var i = scrollSpysLength; i--;) {
             var $spy = $(scrollSpys[i]);
 
             ScrollSpy._jQueryInterface.call($spy, $spy.data());
@@ -4729,7 +4729,7 @@
                 if (
                     (this._element.parentNode &&
                         this._element.parentNode.nodeType ===
-                            Node.ELEMENT_NODE &&
+                        Node.ELEMENT_NODE &&
                         $(this._element).hasClass(ClassName$9.ACTIVE)) ||
                     $(this._element).hasClass(ClassName$9.DISABLED)
                 ) {
@@ -5242,6 +5242,6 @@
     exports.Toast = Toast;
     exports.Tooltip = Tooltip;
 
-    Object.defineProperty(exports, "__esModule", { value: true });
+    Object.defineProperty(exports, "__esModule", {value: true});
 });
 //# sourceMappingURL=bootstrap.js.map

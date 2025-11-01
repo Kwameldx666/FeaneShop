@@ -1,0 +1,84 @@
+﻿### Analytics Service API Tests
+
+@Gateway_HostAddress = http://localhost:5000
+@Analytics_HostAddress = http://localhost:5080
+@token = your_jwt_token_here
+
+### Get Dashboard Data (via Gateway)
+GET {{Gateway_HostAddress}}/api/analytics/dashboard
+Authorization: Bearer {{token}}
+
+### Get Dashboard Data with Date Range (via Gateway)
+GET {{Gateway_HostAddress}}/api/analytics/dashboard?startDate=2025-10-01&endDate=2025-10-31
+Authorization: Bearer {{token}}
+
+### Get Revenue Report (via Gateway)
+GET {{Gateway_HostAddress}}/api/analytics/revenue?startDate=2025-10-01&endDate=2025-10-31
+Authorization: Bearer {{token}}
+
+### Get Revenue Report - Last 7 Days (via Gateway)
+GET {{Gateway_HostAddress}}/api/analytics/revenue
+Authorization: Bearer {{token}}
+
+### Get Product Performance - Top 10 (via Gateway)
+GET {{Gateway_HostAddress}}/api/analytics/products?top=10
+Authorization: Bearer {{token}}
+
+### Get Product Performance - Top 5 (via Gateway)
+GET {{Gateway_HostAddress}}/api/analytics/products?top=5
+Authorization: Bearer {{token}}
+
+### Record Analytics Event (via Gateway)
+POST {{Gateway_HostAddress}}/api/analytics/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "eventType": "OrderCreated",
+  "entityType": "Order",
+  "entityId": "11111111-1111-1111-1111-111111111111",
+  "data": "{\"totalAmount\": 125.99, \"itemsCount\": 3}",
+  "userId": "22222222-2222-2222-2222-222222222222"
+}
+
+### Record Product Viewed Event (via Gateway)
+POST {{Gateway_HostAddress}}/api/analytics/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "eventType": "ProductViewed",
+  "entityType": "Product",
+  "entityId": "33333333-3333-3333-3333-333333333333",
+  "userId": "22222222-2222-2222-2222-222222222222"
+}
+
+### Record Order Completed Event (via Gateway)
+POST {{Gateway_HostAddress}}/api/analytics/events
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "eventType": "OrderCompleted",
+  "entityType": "Order",
+  "entityId": "11111111-1111-1111-1111-111111111111",
+  "data": "{\"completedAt\": \"2025-11-01T10:30:00Z\"}",
+  "userId": "22222222-2222-2222-2222-222222222222"
+}
+
+###############################################
+# Direct Service Tests (without Gateway)
+###############################################
+
+### Get Dashboard Data (Direct)
+GET {{Analytics_HostAddress}}/api/analytics/dashboard
+Authorization: Bearer {{token}}
+
+### Get Revenue Report (Direct)
+GET {{Analytics_HostAddress}}/api/analytics/revenue?startDate=2025-10-01&endDate=2025-10-31
+Authorization: Bearer {{token}}
+
+### Get Product Performance (Direct)
+GET {{Analytics_HostAddress}}/api/analytics/products?top=10
+Authorization: Bearer {{token}}
+

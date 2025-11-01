@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using UserService.Application.DTOs;
 using UserService.Application.Interfaces;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
@@ -15,7 +15,8 @@ public class UserRepository : IUserRepository
     private readonly ILogger<UserRepository> _logger;
     private readonly INotificationService _notificationService;
 
-    public UserRepository(UserDbContext context, ILogger<UserRepository> logger, INotificationService notificationService)
+    public UserRepository(UserDbContext context, ILogger<UserRepository> logger,
+        INotificationService notificationService)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -39,19 +40,13 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            if (id == Guid.Empty)
-            {
-                return OperationResult<UserProfile>.Failure("Invalid ID");
-            }
+            if (id == Guid.Empty) return OperationResult<UserProfile>.Failure("Invalid ID");
 
             var user = await _context.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.Id == id);
 
-            if (user == null)
-            {
-                return OperationResult<UserProfile>.Failure("User not found");
-            }
+            if (user == null) return OperationResult<UserProfile>.Failure("User not found");
 
             return OperationResult<UserProfile>.Success(new UserProfile { User = user }, "User retrieved successfully");
         }
@@ -66,31 +61,22 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            if (user == null)
-            {
-                return OperationResult<UserProfile>.Failure("User data is null");
-            }
+            if (user == null) return OperationResult<UserProfile>.Failure("User data is null");
 
             user.Email = user.Email?.Trim() ?? string.Empty;
             user.Username = user.Username?.Trim() ?? string.Empty;
             user.NormalizedEmail = string.IsNullOrWhiteSpace(user.Email) ? null : user.Email.ToUpperInvariant();
-            user.NormalizedUserName = string.IsNullOrWhiteSpace(user.Username) ? null : user.Username.ToUpperInvariant();
+            user.NormalizedUserName =
+                string.IsNullOrWhiteSpace(user.Username) ? null : user.Username.ToUpperInvariant();
 
-            if (user.Id == Guid.Empty)
-            {
-                user.Id = Guid.NewGuid();
-            }
+            if (user.Id == Guid.Empty) user.Id = Guid.NewGuid();
 
             if (_context.Users.Any(u => u.NormalizedEmail == user.NormalizedEmail))
-            {
                 return OperationResult<UserProfile>.Failure("User with the same email already exists");
-            }
 
             if (!string.IsNullOrWhiteSpace(user.NormalizedUserName) &&
                 _context.Users.Any(u => u.NormalizedUserName == user.NormalizedUserName))
-            {
                 return OperationResult<UserProfile>.Failure("User with the same username already exists");
-            }
 
             user.Password = LoginHelper.HashGen(user.Password);
             user.IsActive = true;
@@ -110,32 +96,50 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task<OperationResult<UserProfile>> UpdateUser(UserData userNew)
+    public async Task<OperationResult<UserProfile>> UpdateUserAsync(Guid id, UserUpdateRequest request)
     {
         try
         {
-            var userOld = await _context.Users.FirstOrDefaultAsync(u => u.Id == userNew.Id);
-            if (userOld == null)
-            {
-                return OperationResult<UserProfile>.Failure("User not found.");
-            }
+            var userOld = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (userOld == null) return OperationResult<UserProfile>.Failure("User not found.");
 
-            userOld.Username = userNew.Username?.Trim() ?? string.Empty;
-            userOld.Email = userNew.Email?.Trim() ?? string.Empty;
-            userOld.NormalizedUserName = string.IsNullOrWhiteSpace(userOld.Username) ? null : userOld.Username.ToUpperInvariant();
-            userOld.NormalizedEmail = string.IsNullOrWhiteSpace(userOld.Email) ? null : userOld.Email.ToUpperInvariant();
-            userOld.Address = userNew.Address;
-            userOld.PhoneNumber = userNew.PhoneNumber;
-            userOld.Roles = userNew.Roles;
+            var newUsername = request.Username?.Trim() ?? string.Empty;
+            var newEmail = request.Email?.Trim() ?? string.Empty;
+            var newNormalizedUserName = string.IsNullOrWhiteSpace(newUsername) ? null : newUsername.ToUpperInvariant();
+            var newNormalizedEmail = string.IsNullOrWhiteSpace(newEmail) ? null : newEmail.ToUpperInvariant();
+
+            // Check for duplicate email (excluding current user)
+            if (!string.IsNullOrWhiteSpace(newNormalizedEmail) &&
+                newNormalizedEmail != userOld.NormalizedEmail &&
+                await _context.Users.AnyAsync(u => u.Id != id && u.NormalizedEmail == newNormalizedEmail))
+                return OperationResult<UserProfile>.Failure("User with the same email already exists.");
+
+            // Check for duplicate username (excluding current user)
+            if (!string.IsNullOrWhiteSpace(newNormalizedUserName) &&
+                newNormalizedUserName != userOld.NormalizedUserName &&
+                await _context.Users.AnyAsync(u => u.Id != id && u.NormalizedUserName == newNormalizedUserName))
+                return OperationResult<UserProfile>.Failure("User with the same username already exists.");
+
+            userOld.Username = newUsername;
+            userOld.Email = newEmail;
+            userOld.NormalizedUserName = newNormalizedUserName;
+            userOld.NormalizedEmail = newNormalizedEmail;
+            userOld.Address = string.IsNullOrWhiteSpace(request.Address) ? userOld.Address : request.Address;
+            userOld.PhoneNumber = string.IsNullOrWhiteSpace(request.PhoneNumber)
+                ? userOld.PhoneNumber
+                : request.PhoneNumber;
+            userOld.Roles = request.Role;
+            userOld.IsActive = request.IsActive;
             userOld.ConcurrencyStamp = Guid.NewGuid().ToString();
 
             await _context.SaveChangesAsync();
 
-            return OperationResult<UserProfile>.Success(new UserProfile { User = userOld }, "User updated successfully");
+            return OperationResult<UserProfile>.Success(new UserProfile { User = userOld },
+                "User updated successfully");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while updating user {UserId}.", userNew.Id);
+            _logger.LogError(ex, "An error occurred while updating user {UserId}.", id);
             return OperationResult<UserProfile>.Failure("An error occurred while updating the user.");
         }
     }
@@ -144,18 +148,12 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            if (id == Guid.Empty)
-            {
-                return OperationResult<UserProfile>.Failure("Invalid ID");
-            }
+            if (id == Guid.Empty) return OperationResult<UserProfile>.Failure("Invalid ID");
 
             var user = _context.Users
                 .FirstOrDefault(u => u.Id == id);
 
-            if (user == null)
-            {
-                return OperationResult<UserProfile>.Failure("User not found");
-            }
+            if (user == null) return OperationResult<UserProfile>.Failure("User not found");
 
             _context.Users.Remove(user);
             _context.SaveChanges();
@@ -173,10 +171,7 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return new List<UserData>();
-            }
+            if (string.IsNullOrWhiteSpace(name)) return new List<UserData>();
 
             return _context.Users.AsNoTracking().Where(u => u.Username.Contains(name)).ToList();
         }
@@ -192,9 +187,7 @@ public class UserRepository : IUserRepository
         try
         {
             if (string.IsNullOrWhiteSpace(credential) || string.IsNullOrWhiteSpace(password))
-            {
                 return OperationResult<UserProfile>.Failure("Credential or password is invalid");
-            }
 
             var normalizedCredential = credential.Trim();
             var hashedPassword = LoginHelper.HashGen(password);
@@ -207,16 +200,15 @@ public class UserRepository : IUserRepository
                  u.Username.ToUpper() == normalizedCredentialUpper ||
                  u.Email.ToUpper() == normalizedCredentialUpper));
 
-            if (user == null)
-            {
-                return OperationResult<UserProfile>.Failure("Authentication failed");
-            }
+            if (user == null) return OperationResult<UserProfile>.Failure("Authentication failed");
 
-            return OperationResult<UserProfile>.Success(new UserProfile { User = user }, "User authenticated successfully");
+            return OperationResult<UserProfile>.Success(new UserProfile { User = user },
+                "User authenticated successfully");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred during user authentication for credential {Credential}.", credential);
+            _logger.LogError(ex, "An error occurred during user authentication for credential {Credential}.",
+                credential);
             return OperationResult<UserProfile>.Failure("An error occurred during authentication.");
         }
     }
@@ -225,10 +217,7 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            if (id == Guid.Empty)
-            {
-                return Enumerable.Empty<Role>();
-            }
+            if (id == Guid.Empty) return Enumerable.Empty<Role>();
 
             var user = _context.Users.SingleOrDefault(u => u.Id == id);
             return user == null ? Enumerable.Empty<Role>() : new List<Role> { user.Roles };
@@ -244,16 +233,10 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(email))
-            {
-                return OperationResult<UserProfile>.Failure("Email is invalid");
-            }
+            if (string.IsNullOrWhiteSpace(email)) return OperationResult<UserProfile>.Failure("Email is invalid");
 
             var user = _context.Users.FirstOrDefault(u => u.Email == email);
-            if (user == null)
-            {
-                return OperationResult<UserProfile>.Failure("User not found");
-            }
+            if (user == null) return OperationResult<UserProfile>.Failure("User not found");
 
             var password = PasswordGenerator.GeneratePassword();
             _notificationService?.SendNotification($"New password is:{password}", email);
@@ -261,7 +244,8 @@ public class UserRepository : IUserRepository
             user.Password = LoginHelper.HashGen(password);
             _context.SaveChanges();
 
-            return OperationResult<UserProfile>.Success(new UserProfile { User = user }, "Password changed successfully");
+            return OperationResult<UserProfile>.Success(new UserProfile { User = user },
+                "Password changed successfully");
         }
         catch (Exception ex)
         {
@@ -274,10 +258,7 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            if (id == Guid.Empty)
-            {
-                return OperationResult<UserProfile>.Failure("Invalid ID");
-            }
+            if (id == Guid.Empty) return OperationResult<UserProfile>.Failure("Invalid ID");
 
             var exists = _context.Users.Any(u => u.Id == id);
             return exists
@@ -296,15 +277,9 @@ public class UserRepository : IUserRepository
         try
         {
             var user = _context.Users.SingleOrDefault(u => u.Id == userId);
-            if (user == null)
-            {
-                return OperationResult<UserProfile>.Failure("User not found");
-            }
+            if (user == null) return OperationResult<UserProfile>.Failure("User not found");
 
-            if (user.Roles == role)
-            {
-                return OperationResult<UserProfile>.Failure("Role already assigned to user");
-            }
+            if (user.Roles == role) return OperationResult<UserProfile>.Failure("Role already assigned to user");
 
             user.Roles = role;
             _context.SaveChanges();
@@ -322,21 +297,16 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            if (id == Guid.Empty)
-            {
-                return OperationResult<UserProfile>.Failure("Invalid ID");
-            }
+            if (id == Guid.Empty) return OperationResult<UserProfile>.Failure("Invalid ID");
 
             var user = _context.Users.Find(id);
-            if (user == null)
-            {
-                return OperationResult<UserProfile>.Failure("User not found");
-            }
+            if (user == null) return OperationResult<UserProfile>.Failure("User not found");
 
             user.IsActive = false;
             _context.SaveChanges();
 
-            return OperationResult<UserProfile>.Success(new UserProfile { User = user }, "User deactivated successfully");
+            return OperationResult<UserProfile>.Success(new UserProfile { User = user },
+                "User deactivated successfully");
         }
         catch (Exception ex)
         {
@@ -350,10 +320,7 @@ public class UserRepository : IUserRepository
         try
         {
             var user = _context.Users.FirstOrDefault(u => u.Email == data.Credential || u.Username == data.Credential);
-            if (user == null)
-            {
-                return OperationResult<UserProfile>.Failure("User not found");
-            }
+            if (user == null) return OperationResult<UserProfile>.Failure("User not found");
 
             user.FirstLoginTime = DateTime.UtcNow;
             _context.SaveChanges();
@@ -361,16 +328,14 @@ public class UserRepository : IUserRepository
             var isPasswordMatch = data.Password == user.Password;
             var result = OperationResult<UserProfile>.Success(new UserProfile { User = user });
             result.Status = isPasswordMatch;
-            if (!isPasswordMatch)
-            {
-                result.Message = "Incorrect password";
-            }
+            if (!isPasswordMatch) result.Message = "Incorrect password";
 
             return result;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while retrieving user data for credential {Credential}.", data.Credential);
+            _logger.LogError(ex, "An error occurred while retrieving user data for credential {Credential}.",
+                data.Credential);
             return OperationResult<UserProfile>.Failure("An error occurred while retrieving user data.");
         }
     }
@@ -379,10 +344,7 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            if (string.IsNullOrEmpty(value))
-            {
-                return null;
-            }
+            if (string.IsNullOrEmpty(value)) return null;
 
             return await _context.Users
                 .AsNoTracking()
@@ -400,7 +362,8 @@ public class UserRepository : IUserRepository
         return OperationResult.Success("User logout acknowledged.");
     }
 
-    public async Task<bool> UpdateUserLoginAuditAsync(Guid userId, string cookieValue, DateTime loginTime, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateUserLoginAuditAsync(Guid userId, string cookieValue, DateTime loginTime,
+        CancellationToken cancellationToken = default)
     {
         try
         {
@@ -412,7 +375,9 @@ public class UserRepository : IUserRepository
 
             if (string.IsNullOrWhiteSpace(cookieValue))
             {
-                _logger.LogWarning("Cannot update login audit data for user {UserId} because the generated cookie value is empty.", userId);
+                _logger.LogWarning(
+                    "Cannot update login audit data for user {UserId} because the generated cookie value is empty.",
+                    userId);
                 return false;
             }
 
@@ -437,4 +402,3 @@ public class UserRepository : IUserRepository
         }
     }
 }
-

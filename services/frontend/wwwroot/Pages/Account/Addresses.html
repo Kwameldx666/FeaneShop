@@ -1,120 +1,412 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <link rel="shortcut icon" href="/images/favicon.png" type="image/png" />
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <link href="/images/favicon.png" rel="shortcut icon" type="image/png"/>
     <title>Feane — Адрес доставки</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet"/>
 
-    <!-- Базовые стили темы -->
-    <link rel="stylesheet" href="/css/bootstrap.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/css/style.css" />
-    <link rel="stylesheet" href="/css/responsive.css" />
-    <link rel="stylesheet" href="/css/navbar.css" />
+    <style>
+        /* ===== Изоляция только для этой страницы ===== */
+        .addresses-page {
+            --bg: #0f1117;
+            --bg2: #0b0e14;
+            --panel: #141922;
+            --panel-2: #0e1320;
+            --ink: #eef2fb;
+            --muted: #9aa4b2;
+            --muted2: #cbd3e1;
+            --line: rgba(255, 255, 255, .10);
+            --accent: #ffbe33;
+            --accent-2: #ff7a1a;
+            --success: #27d17c;
+            --warn: #ffb020;
+            --danger: #ff4d4d;
+            --radius: 16px;
+            --rsm: 12px;
+            --shadow: 0 24px 48px rgba(0, 0, 0, .45);
+            --ring: 0 0 0 3px rgba(255, 190, 51, .25);
+            min-height: 100dvh;
+            margin: 0;
+            color: var(--ink);
+            background: radial-gradient(1200px 700px at -12% -18%, #1b2236 0%, transparent 60%),
+            radial-gradient(1200px 800px at 112% 118%, #181f33 0%, transparent 60%),
+            linear-gradient(180deg, var(--bg2), var(--bg));
+            font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        }
 
-    <!-- Стили страницы -->
-    <link rel="stylesheet" href="/css/account-addresses.css" />
+        /* Заголовок */
+        .addresses-page .page-title {
+            width: min(1100px, 94vw);
+            margin: 24px auto 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .addresses-page h1 {
+            margin: 0;
+            font-size: clamp(22px, 3.2vw, 28px);
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: .3px;
+        }
+
+        /* Сетка макета */
+        .addresses-page .shell {
+            width: min(1100px, 94vw);
+            margin: clamp(26px, 6vh, 64px) auto;
+            display: grid;
+            gap: 16px;
+            grid-template-columns: 260px 1fr;
+        }
+
+        @media (max-width: 960px) {
+            .addresses-page .shell {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Боковое меню (как на истории резерваций) */
+        .addresses-page .sidebar {
+            position: relative;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 14px;
+            height: max-content;
+        }
+
+        #co-menu-toggle {
+            display: none;
+        }
+
+        .addresses-page .co-menu-toggle {
+            display: none;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #dfe7fb;
+            cursor: pointer;
+        }
+
+        .addresses-page .co-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .addresses-page .co-menu a {
+            display: block;
+            text-decoration: none;
+            color: #e7edff;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: #0f1628;
+            border: 1px solid var(--line);
+            transition: filter .18s, border-color .18s, transform .06s;
+            font-weight: 600;
+            letter-spacing: .1px;
+        }
+
+        .addresses-page .co-menu a:hover {
+            filter: brightness(1.05);
+            border-color: rgba(255, 255, 255, .18);
+        }
+
+        .addresses-page .co-menu a.active {
+            background: linear-gradient(180deg, var(--accent), var(--accent-2));
+            color: #1b1103;
+            border: 0;
+            box-shadow: 0 10px 22px rgba(255, 190, 51, .28);
+        }
+
+        @media (max-width: 960px) {
+            .addresses-page .co-menu-toggle {
+                display: block;
+            }
+
+            .addresses-page .co-menu {
+                display: none;
+            }
+
+            #co-menu-toggle:checked + .co-menu {
+                display: flex;
+            }
+        }
+
+        /* Основная панель */
+        .addresses-page .panel {
+            background: linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(255, 255, 255, .01)), var(--panel);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: clamp(16px, 3.6vw, 24px);
+        }
+
+        .addresses-page .panel h2 {
+            margin: 0 0 10px;
+            font-size: 18px;
+            color: #dfe7fb;
+        }
+
+        .addresses-page .lead {
+            margin: 0 0 12px;
+            color: var(--muted);
+        }
+
+        /* Алерт */
+        .addresses-page .alert {
+            border-radius: 12px;
+            background: #122034;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            padding: 10px 14px;
+            margin: 10px 0 16px;
+        }
+
+        .addresses-page .d-none {
+            display: none !important;
+        }
+
+        /* Формы */
+        .addresses-page .form-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .addresses-page .form-grid .col-span-2 {
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 820px) {
+            .addresses-page .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .addresses-page .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .addresses-page .label {
+            font-size: 12px;
+            color: #cfd6e4;
+            letter-spacing: .2px;
+            font-weight: 700;
+        }
+
+        .addresses-page input[type="text"],
+        .addresses-page textarea {
+            width: 100%;
+            background: #0f1628;
+            color: var(--ink);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 12px 14px;
+            box-shadow: inset 0 0 0 0 transparent;
+            transition: box-shadow .15s, border-color .15s, filter .18s;
+            font-size: 14px;
+        }
+
+        .addresses-page textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .addresses-page input::placeholder,
+        .addresses-page textarea::placeholder {
+            color: #9aa4b2;
+            opacity: .9;
+        }
+
+        .addresses-page input:focus,
+        .addresses-page textarea:focus {
+            outline: none;
+            border-color: rgba(255, 190, 51, .45);
+            box-shadow: var(--ring);
+        }
+
+        /* Кнопки (совместимы с теми же классами) */
+        .addresses-page .actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .addresses-page .btn {
+            --bg: #10182a;
+            --fg: var(--ink);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 14px;
+            min-height: 42px;
+            border-radius: 12px;
+            border: 1px solid var(--line);
+            background: var(--bg);
+            color: var(--fg);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: border-color .18s, filter .18s, transform .06s;
+        }
+
+        .addresses-page .btn:hover {
+            border-color: rgba(255, 255, 255, .18);
+            filter: brightness(1.05);
+        }
+
+        .addresses-page .btn:active {
+            transform: translateY(1px);
+        }
+
+        .addresses-page .btn-primary {
+            --bg: linear-gradient(180deg, var(--accent), var(--accent-2));
+            --fg: #1b1103;
+            border: 0;
+            box-shadow: 0 10px 22px rgba(255, 190, 51, .28);
+        }
+
+        .addresses-page .btn-ghost {
+            --bg: #0f1628;
+        }
+
+        .addresses-page .btn[disabled] {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+
+        /* Карта */
+        .addresses-page .map-wrap {
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            background: var(--panel-2);
+            overflow: hidden;
+        }
+
+        .addresses-page #googleMap {
+            width: 100%;
+            height: 320px;
+            background: #0f1628;
+        }
+
+        /* Подсказки */
+        .addresses-page .note {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+    </style>
 </head>
-<body class="adaptive sub_page" data-multi-lang="false">
-    <!-- Навбар (partial) -->
-    <div data-include="/partials/navbar.html"></div>
 
-    <!-- Контент страницы -->
-    <main class="container py-4" data-addresses-endpoint="/api/account/address">
-        <div class="page_layout page_layout-clear">
-            <div class="layout">
-                <div class="layout__content">
-                    <div class="content-wrapper section--content_wrapper">
+<body class="addresses-page" data-multi-lang="false">
+<!-- Navbar (partial) -->
+<div data-include="/partials/navbar.html"></div>
 
-                        <!-- Боковое меню -->
-                        <aside class="sidebar--menu">
-                            <label class="menu-toggle" data-title="Личный кабинет" for="menu-toggle"></label>
-                            <nav class="menu menu--personal content-block--padded">
-                                <div class="menu-item menu-item--personal">
-                                    <a class="menu-link menu-link--personal link" href="/account/reservationhistory">История резерваций</a>
-                                </div>
-                                <div class="menu-item menu-item--personal">
-                                    <a class="menu-link menu-link--personal link menu-link--active" href="/account/addresses">Адрес доставки</a>
-                                </div>
-                                <div class="menu-item menu-item--personal">
-                                    <a class="menu-link menu-link--personal link" href="/account/contacts">Контактные данные</a>
-                                </div>
-                                <div class="menu-item menu-item--personal">
-                                    <a class="menu-link menu-link--personal link" href="/account/logout">Выход</a>
-                                </div>
-                            </nav>
-                        </aside>
+<div class="page-title">
+    <h1>Адрес доставки</h1>
+</div>
 
-                        <!-- Основной контент -->
-                        <section class="section--content">
-                            <div class="section--checkout_header content-block--padded">
-                                <h1 class="section-title title title--h1">Адрес доставки</h1>
-                            </div>
+<!-- Контент -->
+<main class="shell" data-addresses-endpoint="/api/account/address">
+    <!-- Боковое меню -->
+    <aside class="sidebar">
+        <label class="co-menu-toggle" for="co-menu-toggle">Личный кабинет</label>
+        <input id="co-menu-toggle" type="checkbox"/>
+        <nav aria-label="Личное меню" class="co-menu">
+            <a href="/account/reservationhistory">История резерваций</a>
+            <a aria-current="page" class="active" href="/account/addresses">Адрес доставки</a>
+            <a href="/account/contacts">Контактные данные</a>
+            <a href="/account/logout">Выход</a>
+        </nav>
+    </aside>
 
-                            <div class="content-block--padded">
-                                <div id="addresses-feedback" class="alert d-none" role="alert"></div>
+    <!-- Основная панель -->
+    <section aria-labelledby="section-title" class="panel">
+        <h2 id="section-title">Ваш адрес</h2>
+        <p class="lead">Укажите детали доставки. Мы сохраним их для будущих заказов.</p>
 
-                                <!-- Без <form>: просто поля и кнопки -->
-                                <div class="address-form">
-                                    <label for="address-street">Улица:</label>
-                                    <input type="text" id="address-street" placeholder="Улица" autocomplete="address-line1" />
+        <div aria-live="polite" class="alert d-none" id="addresses-feedback" role="alert"></div>
 
-                                    <label for="address-city">Город:</label>
-                                    <input type="text" id="address-city" placeholder="Город" autocomplete="address-level2" />
+        <!-- Поля без формы -->
+        <div class="form-grid" id="address-form">
+            <div class="field col-span-2">
+                <label class="label" for="address-street">Улица</label>
+                <input autocomplete="address-line1" id="address-street" inputmode="text"
+                       placeholder="Например: ул. Пушкина, 10" type="text"/>
+            </div>
 
-                                    <label for="address-zip">Почтовый индекс:</label>
-                                    <input type="text" id="address-zip" placeholder="Почтовый индекс" autocomplete="postal-code" />
+            <div class="field">
+                <label class="label" for="address-city">Город</label>
+                <input autocomplete="address-level2" id="address-city" placeholder="Город"
+                       type="text"/>
+            </div>
 
-                                    <label for="address-country">Страна:</label>
-                                    <input type="text" id="address-country" placeholder="Страна" autocomplete="country-name" />
+            <div class="field">
+                <label class="label" for="address-zip">Почтовый индекс</label>
+                <input autocomplete="postal-code" id="address-zip" inputmode="numeric"
+                       placeholder="Индекс" type="text"/>
+            </div>
 
-                                    <label for="address-details">Дополнительные детали:</label>
-                                    <textarea id="address-details" placeholder="Подъезд/этаж/домофон и т.п."></textarea>
+            <div class="field">
+                <label class="label" for="address-country">Страна</label>
+                <input autocomplete="country-name" id="address-country" placeholder="Страна"
+                       type="text"/>
+            </div>
 
-                                    <!-- Поиск места и карта -->
-                                    <div class="mt-3">
-                                        <label for="map-search">Найти на карте:</label>
-                                        <input type="text" id="map-search" placeholder="Введите адрес или место" />
-                                    </div>
-                                    <div id="googleMap" class="mt-2" aria-label="Карта адреса"></div>
+            <div class="field col-span-2">
+                <label class="label" for="address-details">Дополнительные детали</label>
+                <textarea id="address-details" placeholder="Подъезд/этаж/код домофона и т.п."></textarea>
+                <div class="note">Не указывайте конфиденциальные данные, которые не нужны курьеру.</div>
+            </div>
 
-                                    <div class="mt-3 d-flex btn-row">
-                                        <button id="save-address-btn" type="button" class="btn btn-primary">Сохранить изменения</button>
-                                        <button id="reset-address-btn" type="button" class="btn btn-outline-secondary">Сбросить</button>
-                                    </div>
+            <!-- Поиск и карта -->
+            <div class="field col-span-2">
+                <label class="label" for="map-search">Найти на карте</label>
+                <input id="map-search" placeholder="Введите адрес или место" type="text"/>
+            </div>
 
-                                </div>
-                            </div>
-                        </section>
+            <div aria-label="Карта адреса" class="map-wrap col-span-2">
+                <div id="googleMap"></div>
+            </div>
 
-                    </div>
-                </div>
+            <!-- Действия -->
+            <div class="actions col-span-2">
+                <button class="btn btn-primary" id="save-address-btn" type="button">Сохранить изменения</button>
+                <button class="btn btn-ghost" id="reset-address-btn" type="button">Сбросить</button>
             </div>
         </div>
-    </main>
+    </section>
+</main>
 
-    <!-- Футер (partial) -->
-    <div data-include="/partials/footer.html"></div>
+<!-- Footer (partial) -->
+<div data-include="/partials/footer.html"></div>
 
-    <!-- Скрипты -->
-    <script src="/js/jquery-3.4.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="/js/bootstrap.js"></script>
+<!-- Скрипты -->
+<script src="/js/jquery-3.4.1.min.js"></script>
+<script src="/js/partials-loader.js"></script>
+<!-- Логика загрузки/сохранения адреса -->
+<script src="/js/account-addresses.js"></script>
+<!-- Общие эффекты/инициализация карты (initMap, привязка #map-search к Places) -->
+<script src="/js/custom.js"></script>
 
-    <!-- Лоадер partial’ов (подтягивает navbar/footer) -->
-    <script src="/js/partials-loader.js"></script>
-
-    <!-- Логика страницы: загрузка/сохранение адреса через feaneGateway -->
-    <script src="/js/account-addresses.js"></script>
-
-    <!-- Общие эффекты темы (твоя версия с защитами) -->
-    <script src="/js/custom.js"></script>
-
-    <!-- Google Maps (под твой ключ и callback initMap из custom.js) -->
-    <script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAOVYRIgupAurZup5y1PRh8Ismb1A3lLao&libraries=places&callback=initMap">
-    </script>
+<!-- Google Maps (замени ключ и убедись, что в custom.js есть window.initMap) -->
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_KEY&libraries=places&callback=initMap">
+</script>
 </body>
 </html>

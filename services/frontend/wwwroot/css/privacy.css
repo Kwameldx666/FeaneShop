@@ -7,24 +7,24 @@
     font-size: 0.95rem;
 }
 
-    .privacy-toc .toc-title {
-        font-weight: 600;
-        margin-bottom: .5rem;
-    }
+.privacy-toc .toc-title {
+    font-weight: 600;
+    margin-bottom: .5rem;
+}
 
-    .privacy-toc ol,
-    .privacy-toc ul {
-        padding-left: 1.2rem;
-        margin-bottom: 0;
-    }
+.privacy-toc ol,
+.privacy-toc ul {
+    padding-left: 1.2rem;
+    margin-bottom: 0;
+}
 
-    .privacy-toc a {
-        text-decoration: none;
-    }
+.privacy-toc a {
+    text-decoration: none;
+}
 
-        .privacy-toc a:hover {
-            text-decoration: underline;
-        }
+.privacy-toc a:hover {
+    text-decoration: underline;
+}
 
 /* Типографика контента */
 .privacy-page #privacy-content h2,

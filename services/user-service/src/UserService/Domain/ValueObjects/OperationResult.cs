@@ -5,33 +5,45 @@ public class OperationResult
     public bool Status { get; set; }
     public string? Message { get; set; }
 
-    public static OperationResult Success(string? message = null) => new()
+    public static OperationResult Success(string? message = null)
     {
-        Status = true,
-        Message = message
-    };
+        return new OperationResult
+        {
+            Status = true,
+            Message = message
+        };
+    }
 
-    public static OperationResult Failure(string message) => new()
+    public static OperationResult Failure(string message)
     {
-        Status = false,
-        Message = message
-    };
+        return new OperationResult
+        {
+            Status = false,
+            Message = message
+        };
+    }
 }
 
 public class OperationResult<T> : OperationResult
 {
     public T? Data { get; set; }
 
-    public static OperationResult<T> Success(T? data = default, string? message = null) => new()
+    public static OperationResult<T> Success(T? data = default, string? message = null)
     {
-        Status = true,
-        Message = message,
-        Data = data
-    };
+        return new OperationResult<T>
+        {
+            Status = true,
+            Message = message,
+            Data = data
+        };
+    }
 
-    public new static OperationResult<T> Failure(string message) => new()
+    public new static OperationResult<T> Failure(string message)
     {
-        Status = false,
-        Message = message
-    };
+        return new OperationResult<T>
+        {
+            Status = false,
+            Message = message
+        };
+    }
 }

@@ -6,7 +6,6 @@ using AuthService.Domain.Services;
 using AuthService.Domain.ValueObjects;
 using AuthService.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace AuthService.Infrastructure.Repositories;
 
@@ -23,7 +22,8 @@ public class UserRepository : IUserRepository
         _userProfileClient = userProfileClient ?? throw new ArgumentNullException(nameof(userProfileClient));
     }
 
-    public async Task<OperationResult<User>> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken = default)
+    public async Task<OperationResult<User>> RegisterAsync(RegisterRequest request,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -33,14 +33,10 @@ public class UserRepository : IUserRepository
             var normalizedUserName = request.Username.Trim().ToUpperInvariant();
 
             if (await _context.Users.AnyAsync(u => u.NormalizedEmail == normalizedEmail, cancellationToken))
-            {
                 return OperationResult<User>.Failure("User with the same email already exists");
-            }
 
             if (await _context.Users.AnyAsync(u => u.NormalizedUserName == normalizedUserName, cancellationToken))
-            {
                 return OperationResult<User>.Failure("User with the same username already exists");
-            }
 
             var user = new User
             {
@@ -60,13 +56,17 @@ public class UserRepository : IUserRepository
             await _context.Users.AddAsync(user, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var profileCreated = await _userProfileClient.CreateUserProfileAsync(user, request.Password, cancellationToken);
-            if (!profileCreated)
+            var provisioningResult =
+                await _userProfileClient.CreateUserProfileAsync(user, request.Password, cancellationToken);
+            if (!provisioningResult.Status)
             {
-                _logger.LogWarning("Rolling back auth user creation because user-service provisioning failed for {Email}", request.Email);
+                var reason = provisioningResult.Message ?? "User profile provisioning failed.";
+                _logger.LogWarning(
+                    "Rolling back auth user creation because user-service provisioning failed for {Email}. Reason: {Reason}",
+                    request.Email, reason);
                 _context.Users.Remove(user);
                 await _context.SaveChangesAsync(cancellationToken);
-                return OperationResult<User>.Failure("Failed to create user profile.");
+                return OperationResult<User>.Failure(reason);
             }
 
             return OperationResult<User>.Success(user, "User registered successfully");
@@ -78,7 +78,8 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task<OperationResult<User>> AuthenticateAsync(LoginRequest request, CancellationToken cancellationToken = default)
+    public async Task<OperationResult<User>> AuthenticateAsync(LoginRequest request,
+        CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -93,15 +94,9 @@ public class UserRepository : IUserRepository
                       u.NormalizedEmail == normalizedCredential),
                 cancellationToken);
 
-            if (user == null)
-            {
-                return OperationResult<User>.Failure("Authentication failed");
-            }
+            if (user == null) return OperationResult<User>.Failure("Authentication failed");
 
-            if (!user.IsActive)
-            {
-                return OperationResult<User>.Failure("User account is inactive");
-            }
+            if (!user.IsActive) return OperationResult<User>.Failure("User account is inactive");
 
             user.FirstLoginTime ??= DateTime.UtcNow;
             await _context.SaveChangesAsync(cancellationToken);

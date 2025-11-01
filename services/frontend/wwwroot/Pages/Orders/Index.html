@@ -1,0 +1,367 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="http://localhost:5000" name="gateway-origin">
+    <title>My Orders - Feane Restaurant</title>
+    <link href="/images/favicon.png" rel="shortcut icon" type="image/png"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="/css/bootstrap.css" rel="stylesheet">
+    <link href="/css/style.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        .page-content {
+            padding: 20px 0;
+        }
+
+        .orders-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            margin: 0;
+            color: #333;
+            font-weight: 700;
+        }
+
+        .order-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .order-number {
+            font-size: 20px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .order-status {
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-confirmed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-preparing {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-ready {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-delivered {
+            background: #d6d8db;
+            color: #383d41;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .order-details {
+            margin: 15px 0;
+        }
+
+        .order-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            color: #666;
+        }
+
+        .order-info-label {
+            font-weight: 500;
+        }
+
+        .order-total {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+            margin-top: 15px;
+        }
+
+        .order-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-view {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-view:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-cancel {
+            padding: 12px 24px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            transform: scale(1.05);
+            background: #ff3333;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .btn-browse {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 18px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+<div id="navbar-placeholder"></div>
+
+<div class="page-content">
+    <div class="orders-container">
+        <div class="page-header">
+            <h1>🛍️ My Orders</h1>
+            <p class="text-muted mb-0">View and manage your order history</p>
+        </div>
+
+        <div id="alert-container"></div>
+        <div class="loading" id="loading">Loading your orders...</div>
+        <div id="orders-list" style="display: none;"></div>
+    </div>
+</div>
+
+<script>
+    // Load navbar
+    fetch('/partials/navbar.html')
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('navbar-placeholder').innerHTML = html;
+        });
+</script>
+
+<script src="/js/gateway-client.js"></script>
+<script>
+    const gatewayClient = new GatewayClient();
+
+    async function loadOrders() {
+        try {
+            const response = await gatewayClient.get('/api/orders');
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('orders-list').style.display = 'block';
+
+            if (response.success && response.orders && response.orders.length > 0) {
+                renderOrders(response.orders);
+            } else {
+                renderEmptyState();
+            }
+        } catch (error) {
+            console.error('Error loading orders:', error);
+
+            // Check if error is 401 Unauthorized
+            if (error.message === 'Unauthorized') {
+                document.getElementById('loading').innerHTML =
+                    '<div class="alert alert-danger">Please login to view your orders.</div>';
+                setTimeout(() => {
+                    window.location.href = '/account/authentication?returnUrl=' + encodeURIComponent(window.location.pathname);
+                }, 1500);
+            } else {
+                document.getElementById('loading').innerHTML =
+                    '<div class="alert alert-danger">Failed to load orders. Please try again.</div>';
+            }
+        }
+    }
+
+    function renderOrders(orders) {
+        const container = document.getElementById('orders-list');
+        container.innerHTML = orders.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-number">Order #${order.id.substring(0, 8).toUpperCase()}</div>
+                        <span class="order-status status-${order.status.toLowerCase()}">${order.status}</span>
+                    </div>
+                    <div class="order-details">
+                        <div class="order-info-row">
+                            <span class="order-info-label">Date:</span>
+                            <span>${new Date(order.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+        })}</span>
+                        </div>
+                        ${order.deliveryAddress ? `
+                        <div class="order-info-row">
+                            <span class="order-info-label">Delivery:</span>
+                            <span>${order.deliveryAddress}</span>
+                        </div>
+                        ` : ''}
+                        <div class="order-info-row">
+                            <span class="order-info-label">Items:</span>
+                            <span>${order.items.length} item(s)</span>
+                        </div>
+                    </div>
+                    <div class="order-total">$${order.totalAmount.toFixed(2)}</div>
+                    <div class="order-actions">
+                        <button class="btn-view" onclick="viewOrder('${order.id}')">View Details</button>
+                        ${(order.status === 'Pending' || order.status === 'Confirmed') ?
+            `<button class="btn-cancel" onclick="cancelOrder('${order.id}')">Cancel</button>` : ''}
+                    </div>
+                </div>
+            `).join('');
+    }
+
+    function renderEmptyState() {
+        const container = document.getElementById('orders-list');
+        container.innerHTML = `
+                <div class="empty-state">
+                    <div style="font-size: 80px;">🛒</div>
+                    <h3>No orders yet</h3>
+                    <p class="text-muted">Start shopping and create your first order!</p>
+                    <a href="/home/menu" class="btn-browse">Browse Menu</a>
+                </div>
+            `;
+    }
+
+    function viewOrder(orderId) {
+        window.location.href = `/orders/details?id=${orderId}`;
+    }
+
+    async function cancelOrder(orderId) {
+        if (!confirm('Are you sure you want to cancel this order?')) {
+            return;
+        }
+
+        try {
+            const response = await gatewayClient.delete(`/api/orders/${orderId}`);
+            if (response.success) {
+                showAlert('Order cancelled successfully!', 'success');
+                setTimeout(() => loadOrders(), 1000);
+            } else {
+                showAlert('Failed to cancel order.', 'danger');
+            }
+        } catch (error) {
+            console.error('Error cancelling order:', error);
+            showAlert('Failed to cancel order. Please try again.', 'danger');
+        }
+    }
+
+    function showAlert(message, type) {
+        const alertContainer = document.getElementById('alert-container');
+        alertContainer.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+        setTimeout(() => alertContainer.innerHTML = '', 5000);
+    }
+
+    // Load orders on page load
+    loadOrders();
+</script>
+</body>
+</html>
+

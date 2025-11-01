@@ -14,14 +14,19 @@
     var INIT_FLAG_ATTR = 'data-food-section-ready';
     var CARD_TEMPLATE_ID = 'food-card-template';
     var FEEDBACK_ID = 'food-feedback';
-    var GRID_SELECTOR = '.grid';                // контейнер для карточек (внутри .food_section)
-    var FILTERS_SELECTOR = '.filters_menu';     // <ul> с <li data-filter="*|.pizza|.burger">
+    var GRID_SELECTOR = '.grid, .food-grid';
+    var FILTERS_SELECTOR = '.filters_menu, .food-filters';
     var BASE_CARD_CLASS = 'all';                // базовый класс карточки для фильтра по категориям
 
     // ---- Helpers --------------------------------------------------------
 
-    function $(sel, root) { return (root || document).querySelector(sel); }
-    function $all(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+    function $(sel, root) {
+        return (root || document).querySelector(sel);
+    }
+
+    function $all(sel, root) {
+        return Array.prototype.slice.call((root || document).querySelectorAll(sel));
+    }
 
     function toNumber(v, fallback) {
         var n = Number(v);
@@ -46,15 +51,19 @@
         }
         return {
             get: function (url) {
-                return fetch(url, { credentials: 'include' }).then(function (r) { return r.json(); });
+                return fetch(url, {credentials: 'include'}).then(function (r) {
+                    return r.json();
+                });
             },
             post: function (url, body) {
                 return fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {'Content-Type': 'application/json'},
                     credentials: 'include',
                     body: JSON.stringify(body || {})
-                }).then(function (r) { return r.json(); });
+                }).then(function (r) {
+                    return r.json();
+                });
             }
         };
     }
@@ -85,27 +94,41 @@
     function createCardFromTemplate(template, item, addToCartUrl, currency) {
         if (!(template instanceof HTMLTemplateElement)) return null;
 
-        var root = template.content.firstElementChild.cloneNode(true);
-        var cat = slugifyCategory(item.category);
+        var content = template.content.firstElementChild || template.content.querySelector('*');
+        if (!content) {
+            return null;
+        }
+
+        var root = content.cloneNode(true);
+        var cat = slugifyCategory(item.category || item.Category);
         root.classList.add(BASE_CARD_CLASS, cat);
         root.dataset.name = item.name || '';
-        root.dataset.price = String(item.price != null ? item.price : 0);
+        var rawPrice = item.price != null ? item.price : item.Price;
+        root.dataset.price = String(rawPrice != null ? rawPrice : 0);
 
         var img = $('.img-box img', root);
         if (img) {
-            img.src = item.imageUrl || '/images/default.png';
-            img.alt = item.name || 'Menu item';
+            var imageSource = item.imageUrl || item.ImageUrl || null;
+            if (!imageSource) {
+                var imageBase64 = item.imageBase64 || item.ImageBase64;
+                if (imageBase64) {
+                    var mime = item.imageMimeType || item.ImageMimeType || 'image/png';
+                    imageSource = 'data:' + mime + ';base64,' + imageBase64;
+                }
+            }
+            img.src = imageSource || '/images/default.png';
+            img.alt = item.name || item.Name || 'Menu item';
         }
 
         var nameEl = $('.name', root);
-        if (nameEl) nameEl.textContent = item.name || 'Menu item';
+        if (nameEl) nameEl.textContent = item.name || item.Name || 'Menu item';
 
         var descEl = $('.description', root);
-        if (descEl) descEl.textContent = item.description || 'No description provided.';
+        if (descEl) descEl.textContent = item.description || item.Description || 'No description provided.';
 
         var priceEl = $('.price', root);
         if (priceEl) {
-            var price = toNumber(item.price, 0);
+            var price = toNumber(item.price != null ? item.price : item.Price, 0);
             priceEl.textContent = price > 0 ? fmtMoney(price, currency) : 'Price on request';
         }
 
@@ -114,10 +137,22 @@
             if (!addToCartUrl) {
                 btn.classList.add('d-none');
             } else {
-                btn.dataset.id = item.id || item.dishId || '';
-                btn.dataset.name = item.name || '';
-                btn.dataset.price = String(item.price != null ? item.price : 0);
+                btn.dataset.id = item.id || item.Id || item.dishId || item.DishId || '';
+                btn.dataset.name = item.name || item.Name || '';
+                var priceValue = item.price != null ? item.price : (item.Price != null ? item.Price : 0);
+                btn.dataset.price = String(priceValue);
                 btn.dataset.quantity = String(item.quantity != null ? item.quantity : 1);
+
+                // Set image for cart
+                var imageSource = item.imageUrl || item.ImageUrl || null;
+                if (!imageSource) {
+                    var imageBase64 = item.imageBase64 || item.ImageBase64;
+                    if (imageBase64) {
+                        var mime = item.imageMimeType || item.ImageMimeType || 'image/png';
+                        imageSource = 'data:' + mime + ';base64,' + imageBase64;
+                    }
+                }
+                btn.dataset.image = imageSource || '';
             }
         }
 
@@ -152,11 +187,13 @@
             if (!target) return;
 
             var filter = target.getAttribute('data-filter') || '*';
-            $all('li', filtersMenu).forEach(function (li) { li.classList.remove('active'); });
+            $all('li', filtersMenu).forEach(function (li) {
+                li.classList.remove('active');
+            });
             target.classList.add('active');
 
             if (useIsotope && $iso) {
-                $iso.isotope({ filter: filter });
+                $iso.isotope({filter: filter});
             } else {
                 // Fallback: просто скрываем/показываем по классу
                 $all('.' + BASE_CARD_CLASS, grid).forEach(function (el) {
@@ -175,23 +212,25 @@
             var arr = raw ? JSON.parse(raw) : [];
             if (!Array.isArray(arr)) arr = [];
 
+            var productId = String(payload.ProductId || payload.DishId || '');
             var idx = arr.findIndex(function (x) {
-                return String(x.id || x.DishId) === String(payload.DishId);
+                return String(x.id || x.ProductId || x.DishId || '') === productId;
             });
 
             if (idx === -1) {
                 arr.push({
-                    id: payload.DishId,
-                    name: payload.DishName,
-                    price: toNumber(payload.DishPrice, 0),
+                    id: productId,
+                    name: payload.ProductName || payload.DishName || '',
+                    price: toNumber(payload.UnitPrice || payload.DishPrice, 0),
                     quantity: toNumber(payload.Quantity, 1)
                 });
             } else {
                 arr[idx].quantity = toNumber(arr[idx].quantity, 1) + toNumber(payload.Quantity, 1);
             }
             localStorage.setItem('cart', JSON.stringify(arr));
-            document.dispatchEvent(new CustomEvent('cart:updated', { detail: { items: arr } }));
-        } catch (_) { /* silent */ }
+            document.dispatchEvent(new CustomEvent('cart:updated', {detail: {items: arr}}));
+        } catch (_) { /* silent */
+        }
     }
 
     function attachAddToCart(grid, addToCartUrl, section) {
@@ -204,12 +243,21 @@
             if (!btn) return;
             ev.preventDefault();
 
+            var dishId = btn.getAttribute('data-id');
+            var dishName = btn.getAttribute('data-name');
+            var dishPrice = btn.getAttribute('data-price');
+            var dishImage = btn.getAttribute('data-image') || '';
+            var quantity = parseInt(btn.getAttribute('data-quantity') || '1', 10);
+
             var payload = {
-                DishId: btn.getAttribute('data-id'),
-                DishName: btn.getAttribute('data-name'),
-                DishPrice: btn.getAttribute('data-price'),
-                Quantity: btn.getAttribute('data-quantity') || '1'
+                ProductId: dishId,
+                ProductName: dishName,
+                ProductImageUrl: dishImage,
+                UnitPrice: parseFloat(dishPrice) || 0,
+                Quantity: quantity
             };
+
+            console.log('[FoodSection] Adding to cart:', payload);
 
             // Оптимистично — сразу обновим localStorage (и уведомим слушателей)
             optimisticAddToLocalStorage(payload);
@@ -217,15 +265,21 @@
             showFeedback('Adding dish to cart…', 'info', section);
 
             gateway.post(addToCartUrl, payload).then(function (res) {
+                console.log('[FoodSection] Add to cart response:', res);
                 if (res && (res.success || res.status === 'success')) {
                     showFeedback(res.message || 'Dish added to cart successfully!', 'success', section);
+                    // Dispatch event for cart count update
+                    document.dispatchEvent(new CustomEvent('cart:updated'));
                     if (res.redirect) {
-                        setTimeout(function () { window.location.href = res.redirect; }, 1200);
+                        setTimeout(function () {
+                            window.location.href = res.redirect;
+                        }, 1200);
                     }
                 } else {
                     showFeedback((res && res.message) || 'Unable to add dish to cart.', 'error', section);
                 }
             }).catch(function (err) {
+                console.error('[FoodSection] Add to cart failed:', err);
                 showFeedback('Failed to add dish: ' + (err && err.message || 'Network error'), 'error', section);
             });
         });
@@ -291,7 +345,11 @@
     }
 
     function init() {
-        $all('.food_section').forEach(initOne);
+        var nodes = $all('.food_section, .food-section');
+        if (!nodes.length) {
+            nodes = $all('[data-menu-endpoint], [data-dishes-endpoint]');
+        }
+        nodes.forEach(initOne);
     }
 
     // Первый запуск

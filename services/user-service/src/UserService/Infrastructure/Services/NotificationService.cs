@@ -1,7 +1,5 @@
 using System.Net;
 using System.Net.Mail;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
 using UserService.Application.Interfaces;
 
 namespace UserService.Infrastructure.Services;
@@ -37,7 +35,8 @@ public sealed class NotificationService : INotificationService
             return;
         }
 
-        if (string.IsNullOrWhiteSpace(smtpServer) || string.IsNullOrWhiteSpace(senderEmail) || string.IsNullOrWhiteSpace(password))
+        if (string.IsNullOrWhiteSpace(smtpServer) || string.IsNullOrWhiteSpace(senderEmail) ||
+            string.IsNullOrWhiteSpace(password))
         {
             _logger.LogError("Email notification settings are incomplete.");
             return;

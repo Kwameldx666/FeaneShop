@@ -1,0 +1,279 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>📋 Инструкция по диагностике</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        h2 {
+            color: #764ba2;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .step {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .step strong {
+            color: #667eea;
+        }
+
+        .code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 10px 0;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+
+        .button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .button:hover {
+            background: #5568d3;
+        }
+
+        img {
+            max-width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>📋 Инструкция: Как увидеть логи перед редиректом</h1>
+
+    <div class="warning">
+        <strong>⚠️ Проблема:</strong> Консоль очищается при редиректе и вы не успеваете увидеть логи.
+    </div>
+
+    <h2>🔧 Решение 1: Настройка консоли (РЕКОМЕНДУЕТСЯ)</h2>
+
+    <div class="step">
+        <strong>Шаг 1:</strong> Откройте DevTools (F12)
+    </div>
+
+    <div class="step">
+        <strong>Шаг 2:</strong> Перейдите на вкладку <strong>Console</strong>
+    </div>
+
+    <div class="step">
+        <strong>Шаг 3:</strong> Найдите иконку <strong>⚙️ (Settings)</strong> в правом верхнем углу консоли
+    </div>
+
+    <div class="step">
+        <strong>Шаг 4:</strong> Включите опцию <strong>"Preserve log"</strong> (Сохранять журнал)
+        <div class="code">☑️ Preserve log</div>
+    </div>
+
+    <div class="success">
+        ✅ Теперь логи НЕ будут очищаться при переходах между страницами!
+    </div>
+
+    <h2>🕐 Решение 2: Задержка перед редиректом</h2>
+
+    <div class="step">
+        Я добавил <strong>задержку 3 секунды</strong> перед редиректом.
+        <br>Теперь у вас есть время увидеть логи!
+    </div>
+
+    <div class="code">
+        [ReservationsHistory] ===== SCRIPT LOADED =====
+        [ReservationsHistory] JWT token: EXISTS (605 chars) или NULL
+        [ReservationsHistory] Redirecting in 3 seconds...
+    </div>
+
+    <h2>🛑 Решение 3: Отмена редиректа</h2>
+
+    <div class="step">
+        <strong>Если хотите отменить редирект:</strong>
+        <br>В консоли выполните:
+        <div class="code">window.cancelRedirect = true</div>
+        <br>Это отменит редирект и страница останется загруженной.
+    </div>
+
+    <h2>🧪 Тестирование</h2>
+
+    <div class="step">
+        <strong>1.</strong> Откройте DevTools (F12) на этой странице
+    </div>
+
+    <div class="step">
+        <strong>2.</strong> Включите "Preserve log" в консоли
+    </div>
+
+    <div class="step">
+        <strong>3.</strong> Проверьте что токен есть:
+        <div class="code">localStorage.getItem('jwt') ? 'TOKEN EXISTS' : 'NO TOKEN'</div>
+    </div>
+
+    <div class="step">
+        <strong>4.</strong> Нажмите кнопку ниже:
+        <br><br>
+        <a class="button" href="/account/reservationhistory">Открыть историю резерваций</a>
+    </div>
+
+    <div class="step">
+        <strong>5.</strong> Смотрите консоль - логи должны остаться!
+    </div>
+
+    <h2>📊 Что должны увидеть в логах</h2>
+
+    <h3>✅ Если токен есть:</h3>
+    <div class="code">
+        [ReservationsHistory] ===== SCRIPT LOADED =====
+        [ReservationsHistory] Current URL: http://localhost:5003/account/reservationhistory
+        [ReservationsHistory] Checking token...
+        [ReservationsHistory] JWT token: EXISTS (605 chars)
+        [ReservationsHistory] localStorage available: true
+        [ReservationsHistory] Token preview: eyJhbGciOiJIUzI1NiIsInR5cCI6...
+        [ReservationsHistory] ✅ TOKEN FOUND - continuing with page initialization
+    </div>
+
+    <h3>❌ Если токена нет:</h3>
+    <div class="code">
+        [ReservationsHistory] ===== SCRIPT LOADED =====
+        [ReservationsHistory] Current URL: http://localhost:5003/account/reservationhistory
+        [ReservationsHistory] Checking token...
+        [ReservationsHistory] JWT token: NULL
+        [ReservationsHistory] localStorage available: true
+        [ReservationsHistory] ❌ NO JWT TOKEN FOUND!
+        [ReservationsHistory] Redirecting to authentication in 3 seconds...
+        [ReservationsHistory] To cancel redirect, execute: window.cancelRedirect = true
+        [ReservationsHistory] Redirect URL: /account/authentication?redir=...
+    </div>
+
+    <h2>🎯 Следующие шаги</h2>
+
+    <div class="step">
+        <strong>1.</strong> Включите "Preserve log" в консоли
+    </div>
+
+    <div class="step">
+        <strong>2.</strong> Откройте:
+        <a class="button" href="/account/reservationhistory">История резерваций</a>
+    </div>
+
+    <div class="step">
+        <strong>3.</strong> Скопируйте ВСЕ логи из консоли
+    </div>
+
+    <div class="step">
+        <strong>4.</strong> Покажите мне логи
+    </div>
+
+    <div class="success">
+        <strong>✅ После этих шагов</strong> я точно увижу в чем проблема и исправлю её!
+    </div>
+
+    <h2>⚡ Быстрая проверка токена</h2>
+
+    <button class="button" onclick="checkToken()">Проверить токен прямо сейчас</button>
+    <button class="button" onclick="goToHistory()">Перейти на страницу резерваций</button>
+
+    <div id="result" style="margin-top: 20px;"></div>
+
+    <script>
+        function checkToken() {
+            var result = document.getElementById('result');
+            var token = localStorage.getItem('jwt');
+
+            if (token) {
+                try {
+                    var payload = JSON.parse(atob(token.split('.')[1]));
+                    var exp = payload.exp;
+                    var isExpired = exp < Math.floor(Date.now() / 1000);
+
+                    result.innerHTML = '<div class="success">' +
+                        '<strong>✅ Токен найден!</strong><br>' +
+                        'Длина: ' + token.length + ' символов<br>' +
+                        'Истекает: ' + new Date(exp * 1000).toLocaleString() + '<br>' +
+                        'Истек: ' + (isExpired ? '❌ ДА' : '✅ НЕТ') +
+                        '</div>';
+
+                    console.log('[TokenCheck] Token exists:', token.length, 'chars');
+                    console.log('[TokenCheck] Expires:', new Date(exp * 1000));
+                    console.log('[TokenCheck] Is expired:', isExpired);
+                } catch (e) {
+                    result.innerHTML = '<div class="warning"><strong>⚠️ Токен поврежден:</strong> ' + e.message + '</div>';
+                }
+            } else {
+                result.innerHTML = '<div class="warning"><strong>❌ Токен отсутствует!</strong><br>' +
+                    'Необходимо <a href="/jwt-test">войти в систему</a></div>';
+                console.log('[TokenCheck] No token found');
+            }
+        }
+
+        function goToHistory() {
+            console.log('[Navigation] Going to /account/reservationhistory...');
+            console.log('[Navigation] Preserve log should be enabled!');
+            window.location.href = '/account/reservationhistory';
+        }
+
+        // Проверяем при загрузке
+        window.addEventListener('load', function () {
+            console.log('[InstructionsPage] Page loaded');
+            console.log('[InstructionsPage] Check if Preserve log is enabled in Console settings!');
+            checkToken();
+        });
+    </script>
+</div>
+</body>
+</html>
+

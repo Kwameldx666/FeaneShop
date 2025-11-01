@@ -1,3 +1,4 @@
+using UserService.Application.DTOs;
 using UserService.Domain.Entities;
 using UserService.Domain.Enums;
 using UserService.Domain.ValueObjects;
@@ -9,7 +10,7 @@ public interface IUserRepository
     IEnumerable<UserData> GetAllUsers();
     Task<OperationResult<UserProfile>> GetOneUserByIdAsync(Guid id);
     OperationResult<UserProfile> AddUser(UserData user);
-    Task<OperationResult<UserProfile>> UpdateUser(UserData userNew);
+    Task<OperationResult<UserProfile>> UpdateUserAsync(Guid id, UserUpdateRequest request);
     OperationResult<UserProfile> DeleteUser(Guid id);
     IEnumerable<UserData> FindUsersByName(string name);
     OperationResult<UserProfile> AuthenticateUser(string credential, string password);
@@ -21,5 +22,7 @@ public interface IUserRepository
     OperationResult<UserProfile> GetUserData(UserData loginData);
     Task<UserData?> GetUserByCookie(string value);
     OperationResult UserLogout();
-    Task<bool> UpdateUserLoginAuditAsync(Guid userId, string cookieValue, DateTime loginTime, CancellationToken cancellationToken = default);
+
+    Task<bool> UpdateUserLoginAuditAsync(Guid userId, string cookieValue, DateTime loginTime,
+        CancellationToken cancellationToken = default);
 }

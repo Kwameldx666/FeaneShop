@@ -7,10 +7,7 @@ public static class DishMapper
 {
     public static DishResponse ToResponse(this Dish dish)
     {
-        if (dish == null)
-        {
-            throw new ArgumentNullException(nameof(dish));
-        }
+        if (dish == null) throw new ArgumentNullException(nameof(dish));
 
         var imageUrl = string.IsNullOrWhiteSpace(dish.ImageBase64)
             ? "/images/Default.png"

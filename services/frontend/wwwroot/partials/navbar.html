@@ -1,104 +1,396 @@
-﻿<link rel="stylesheet" href="/css/navbar.css" />
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Feane · Navbar</title>
 
+    <style>
+        /* Базовые утилиты */
+        .d-none {
+            display: none !important
+        }
+
+        .no-scroll {
+            overflow: hidden
+        }
+
+        /* ======= Навбар (без Bootstrap) ======= */
+        .header_section {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(14, 16, 24, .72);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            transition: box-shadow .2s ease, background .2s ease;
+        }
+
+        .header_section.scrolled {
+            background: rgba(14, 16, 24, .86);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+        }
+
+        .navbar-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 14px 22px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .navbar-brand {
+            display: inline-block;
+            text-decoration: none;
+            font-weight: 900;
+            letter-spacing: .5px;
+            font-size: 26px;
+            line-height: 1;
+            background: linear-gradient(180deg, #ffbe33, #ff7a1a);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            transition: transform .08s ease;
+        }
+
+        .navbar-brand:active {
+            transform: translateY(1px);
+        }
+
+        /* Бургер */
+        .navbar-toggle {
+            display: none;
+            width: 34px;
+            height: 26px;
+            background: none;
+            border: 0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .navbar-toggle span {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            border-radius: 2px;
+            background: #fff;
+            transition: transform .25s, opacity .2s, top .25s, bottom .25s;
+        }
+
+        .navbar-toggle span:nth-child(1) {
+            top: 2px;
+        }
+
+        .navbar-toggle span:nth-child(2) {
+            top: calc(50% - 1.5px);
+        }
+
+        .navbar-toggle span:nth-child(3) {
+            bottom: 2px;
+        }
+
+        .navbar-toggle[aria-expanded="true"] span:nth-child(1) {
+            top: calc(50% - 1.5px);
+            transform: rotate(45deg);
+        }
+
+        .navbar-toggle[aria-expanded="true"] span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .navbar-toggle[aria-expanded="true"] span:nth-child(3) {
+            bottom: auto;
+            top: calc(50% - 1.5px);
+            transform: rotate(-45deg);
+        }
+
+        /* Ссылки */
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-links a {
+            color: #f3f5fa;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            position: relative;
+            padding: 6px 2px;
+            transition: color .2s ease;
+        }
+
+        .navbar-links a:hover {
+            color: #ffbe33;
+        }
+
+        .navbar-links a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -3px;
+            height: 2px;
+            background: linear-gradient(90deg, #ffbe33, #ff7a1a);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .2s ease;
+        }
+
+        .navbar-links a:hover::after, .navbar-links a.active::after {
+            transform: scaleX(1);
+        }
+
+        /* Иконки/кнопки справа */
+        .user_option {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .admin_links {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin_button {
+            background: #ffbe33;
+            color: #1b1103;
+            border-radius: 10px;
+            padding: 7px 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+            border: 1px solid rgba(0, 0, 0, .1);
+            transition: filter .15s ease, transform .06s ease;
+        }
+
+        .admin_button:hover {
+            filter: brightness(1.05);
+        }
+
+        .admin_button:active {
+            transform: translateY(1px);
+        }
+
+        .feane-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-grid;
+            place-items: center;
+            color: #121620;
+            background: #ffbe33;
+            text-decoration: none;
+            transition: transform .1s ease, filter .2s ease;
+            border: 1px solid rgba(0, 0, 0, .12);
+        }
+
+        .feane-icon:hover {
+            filter: brightness(1.05);
+        }
+
+        .feane-icon:active {
+            transform: translateY(1px);
+        }
+
+        .feane-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Мобилка: офф-канвас */
+        .nav-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .4);
+            opacity: 0;
+            visibility: hidden;
+            transition: .2s ease;
+            z-index: 999;
+        }
+
+        .nav-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        @media (max-width: 900px) {
+            .navbar-toggle {
+                display: block;
+            }
+
+            .navbar-links {
+                position: fixed;
+                top: 0;
+                right: 0;
+                height: 100vh;
+                width: min(86vw, 340px);
+                background: #101525;
+                border-left: 1px solid rgba(255, 255, 255, .08);
+                padding: 80px 24px 24px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 18px;
+                transform: translateX(100%);
+                transition: transform .25s ease;
+                z-index: 1000;
+            }
+
+            .navbar-links.show {
+                transform: translateX(0);
+            }
+
+            .user_option {
+                gap: 10px;
+            }
+        }
+
+        /* Фокус и доступность */
+        .header_section a:focus-visible, .navbar-toggle:focus-visible {
+            outline: 3px solid rgba(255, 190, 51, .5);
+            outline-offset: 2px;
+            border-radius: 10px;
+        }
+
+        /* Фон-герой (если нужен) */
+        .bg-box {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(.45);
+        }
+    </style>
+</head>
+
+<body>
 <div class="hero_area">
-  <div class="bg-box" aria-hidden="true">
-    <img src="/images/hero-bg.jpg" alt="Feane background" />
-  </div>
-  <header class="header_section">
-    <div class="container">
-      <nav class="navbar navbar-expand-lg custom_nav-container">
-        <a class="navbar-brand" href="/">
-          <span>Feane</span>
-        </a>
-
-        <button class="navbar-toggler" type="button" data-toggle="collapse"
-                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
-          <span></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav mx-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="/">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/home/about">About</a>
-            </li>
-            <li class="nav-item d-none" data-role="authenticated">
-              <a class="nav-link" href="/reservation">Book Table</a>
-            </li>
-            <li class="nav-item d-none" data-role="guest">
-              <a class="nav-link" href="/account/authentication?redir=/reservation">Book Table</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/weather/index">Weather</a>
-            </li>
-          </ul>
-
-          <div class="user_option">
-            <div class="admin_links">
-              <a href="/dish/index" class="feane-admin d-none admin_button" data-role="admin,moderator">
-                Manage Dishes
-              </a>
-              <a href="/user/index" class="feane-admin d-none admin_button" data-role="admin">
-                Manage Users
-              </a>
-              <a href="/analytics/index" class="feane-admin d-none admin_button" data-role="admin,moderator">
-                Analytics
-              </a>
-            </div>
-            <a href="/account/authentication" class="feane-icon d-none" data-role="guest" title="Sign in">
-              <i class="fa fa-sign-in" aria-hidden="true"></i><span class="sr-only">Sign in</span>
-            </a>
-
-            <a href="/account/reservationhistory" class="feane-icon d-none" data-role="authenticated" title="Profile">
-              <i class="fa fa-user" aria-hidden="true"></i><span class="sr-only">Profile</span>
-            </a>
-
-            <a href="/cart/cart" class="feane-icon" title="View Cart">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 457.627 457.627" width="22" height="22" fill="currentColor" aria-hidden="true">
-                <path d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-          C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-          c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-          C457.728,97.71,450.56,86.958,439.296,84.91z" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </nav>
+    <div aria-hidden="true" class="bg-box">
+        <img alt="Feane background" src="/images/hero-bg.jpg"/>
     </div>
-  </header>
+
+    <header class="header_section" id="siteHeader">
+        <div class="navbar-wrapper">
+            <a class="navbar-brand" href="/">Feane</a>
+
+            <button aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggle" id="navbarToggle">
+                <span></span><span></span><span></span>
+            </button>
+
+            <ul class="navbar-links" id="navbarLinks">
+                <li><a href="/">Home</a></li>
+                <li><a href="/home/about">About</a></li>
+                <li><a href="/reservation">Book Table</a></li>
+                <li><a href="/orders">My Orders</a></li>
+                <li><a href="/weather/index">Weather</a></li>
+            </ul>
+
+            <div class="user_option">
+                <div class="admin_links">
+                    <a class="feane-admin d-none admin_button" data-role="admin,moderator" href="/dish/index">Manage
+                        Dishes</a>
+                    <a class="feane-admin d-none admin_button" data-role="admin" href="/user/index">Manage Users</a>
+                    <a class="feane-admin d-none admin_button" data-role="admin,moderator" href="/analytics/index">Analytics</a>
+                </div>
+
+                <!-- Профиль -->
+                <a aria-label="Profile" class="feane-icon" href="/account/reservationhistory" title="Profile">
+                    <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5Z"/>
+                    </svg>
+                </a>
+
+                <!-- Корзина -->
+                <a aria-label="Cart" class="feane-icon" href="/cart/cart" title="View Cart">
+                    <svg aria-hidden="true" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 4h-2l-1 2v2h2l3.6 7.59L8.25 18A2 2 0 1 0 10 19h6a2 2 0 1 0 1.75-1H9.42l.9-2H17a2 2 0 0 0 1.8-1.1l3.1-6.2A1 1 0 0 0 21 7H7V4Z"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </header>
 </div>
-<script src="/js/navbar-role.js"></script>
+
+<div class="nav-backdrop" id="navBackdrop"></div>
+
+<!-- === JS === -->
 <script>
-  (function () {
-    var style = document.createElement('style');
-    style.textContent = 'body[data-role-debug*="admin"] .feane-admin{display:inline-flex !important;visibility:visible !important;opacity:1 !important;}';
-    document.head.appendChild(style);
+    // Бургер/офф-канвас
+    const toggle = document.getElementById('navbarToggle');
+    const links = document.getElementById('navbarLinks');
+    const backd = document.getElementById('navBackdrop');
+    const body = document.body;
 
-    function showAdminLinks() {
-      var role = null;
-      try {
-        role = (localStorage.getItem('userRole') || sessionStorage.getItem('userRole') || '').toLowerCase();
-      } catch (_) { }
-
-      if (role === 'admin') {
-        try {
-          document.body.setAttribute('data-role-debug', 'admin');
-        } catch (_) { }
-
-        var nodes = document.querySelectorAll('.feane-admin');
-        nodes.forEach(function (node) {
-          node.classList.remove('d-none');
-          node.removeAttribute('aria-hidden');
-          node.style.removeProperty('display');
-        });
-      }
+    function setMenu(open) {
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        links.classList.toggle('show', open);
+        backd.classList.toggle('show', open);
+        body.classList.toggle('no-scroll', open);
     }
 
-    document.addEventListener('feane:user-role-changed', showAdminLinks);
-    document.addEventListener('DOMContentLoaded', showAdminLinks);
-    showAdminLinks();
-  })();
+    toggle.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
+    backd.addEventListener('click', () => setMenu(false));
+    links.addEventListener('click', (e) => {
+        if (e.target.tagName === 'A') setMenu(false);
+    });
+
+    // Активный пункт по URL
+    (function markActive() {
+        const path = location.pathname.replace(/\/+$/, '') || '/';
+        document.querySelectorAll('#navbarLinks a').forEach(a => {
+            const href = a.getAttribute('href') || '#';
+            const clean = href.replace(/\/+$/, '');
+            if (clean === path || (clean !== '/' && path.startsWith(clean))) a.classList.add('active');
+        });
+    })();
+
+    // Тень при скролле
+    (function headerShadow() {
+        const header = document.getElementById('siteHeader');
+        const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 6);
+        onScroll();
+        window.addEventListener('scroll', onScroll, {passive: true});
+    })();
 </script>
+
+<!-- Поддержка ролей (если используешь) -->
+<script src="/js/navbar-role.js"></script>
+<script>
+    (function () {
+        const style = document.createElement('style');
+        style.textContent =
+            'body[data-role-debug*="admin"] .feane-admin{display:inline-flex!important;visibility:visible!important;opacity:1!important;}';
+        document.head.appendChild(style);
+
+        function syncAdminButtons() {
+            if (window.feaneRefreshRoleViews) {
+                window.feaneRefreshRoleViews();
+            } else {
+                document.dispatchEvent(new CustomEvent('feane:page-ready'));
+            }
+        }
+
+        document.addEventListener('feane:user-role-changed', syncAdminButtons);
+        document.addEventListener('partials:loaded', syncAdminButtons);
+        document.addEventListener('DOMContentLoaded', syncAdminButtons);
+        syncAdminButtons();
+    })();
+</script>
+</body>
+</html>

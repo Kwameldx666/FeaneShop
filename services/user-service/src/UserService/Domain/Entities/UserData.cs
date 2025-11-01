@@ -5,27 +5,21 @@ namespace UserService.Domain.Entities;
 
 public class UserData
 {
-    [Key]
-    public Guid Id { get; set; }
+    [Key] public Guid Id { get; set; }
 
-    [Required]
-    public string Username { get; set; } = string.Empty;
+    [Required] public string Username { get; set; } = string.Empty;
 
     public string? NormalizedUserName { get; set; }
 
-    [Required]
-    [EmailAddress]
-    public string Email { get; set; } = string.Empty;
+    [Required] [EmailAddress] public string Email { get; set; } = string.Empty;
 
     public string? NormalizedEmail { get; set; }
 
     public bool EmailConfirmed { get; set; }
 
-    [Required]
-    public string Password { get; set; } = string.Empty;
+    [Required] public string Password { get; set; } = string.Empty;
 
-    [Required]
-    public Role Roles { get; set; }
+    [Required] public Role Roles { get; set; }
 
     public string? SecurityStamp { get; set; }
 
@@ -53,6 +47,5 @@ public class UserData
 
     public string? Address { get; set; }
 
-    [Phone]
-    public string? PhoneNumber { get; set; }
+    [Phone] public string? PhoneNumber { get; set; }
 }

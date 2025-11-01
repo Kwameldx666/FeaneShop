@@ -19,7 +19,8 @@ public class MenuController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetMenu([FromQuery] string? category, [FromQuery] bool? featuredOnly, [FromQuery] int? limit,
+    public async Task<IActionResult> GetMenu([FromQuery] string? category, [FromQuery] bool? featuredOnly,
+        [FromQuery] int? limit,
         CancellationToken cancellationToken)
     {
         var options = new DishQueryOptions
@@ -31,7 +32,8 @@ public class MenuController : ControllerBase
             Limit = limit is > 0 ? limit : 12
         };
 
-        _logger.LogInformation("Retrieving menu. Category: {Category}, Featured only: {FeaturedOnly}, Limit: {Limit}", category, featuredOnly ?? false, options.Limit);
+        _logger.LogInformation("Retrieving menu. Category: {Category}, Featured only: {FeaturedOnly}, Limit: {Limit}",
+            category, featuredOnly ?? false, options.Limit);
 
         var dishes = await _dishRepository.GetAsync(options, cancellationToken);
         var filtered = featuredOnly == true

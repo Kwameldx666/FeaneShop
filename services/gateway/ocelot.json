@@ -1,55 +1,290 @@
-﻿{
-    "Routes": [
+{
+  "Routes": [
+    {
+      "DownstreamPathTemplate": "/api/dishes",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
         {
-            "DownstreamPathTemplate": "/api/dishes",
-            "DownstreamScheme": "http",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "product-service",
-                    "Port": 8080
-                }
-            ],
-            "UpstreamPathTemplate": "/api/dishes",
-            "UpstreamHttpMethod": [ "Get", "Post", "Options" ]
-        },
-        {
-            "DownstreamPathTemplate": "/api/dishes/{everything}",
-            "DownstreamScheme": "http",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "product-service",
-                    "Port": 8080
-                }
-            ],
-            "UpstreamPathTemplate": "/api/dishes/{everything}",
-            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Options" ]
-        },
-        {
-            "DownstreamPathTemplate": "/api/menu",
-            "DownstreamScheme": "http",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "product-service",
-                    "Port": 8080
-                }
-            ],
-            "UpstreamPathTemplate": "/api/menu",
-            "UpstreamHttpMethod": [ "Get", "Options" ]
-        },
-        {
-            "DownstreamPathTemplate": "/api/analytics/{everything}",
-            "DownstreamScheme": "http",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "product-service",
-                    "Port": 8080
-                }
-            ],
-            "UpstreamPathTemplate": "/api/analytics/{everything}",
-            "UpstreamHttpMethod": [ "Get", "Options" ]
+          "Host": "product-service",
+          "Port": 8080
         }
-    ],
-    "GlobalConfiguration": {
-        "BaseUrl": "http://feane-gateway:8080"
+      ],
+      "UpstreamPathTemplate": "/api/dishes",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Options"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/dishes/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "product-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/dishes/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete",
+        "Options"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/menu",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "product-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/menu",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Options"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/users",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/users",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Options"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/users/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "user-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/users/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete",
+        "Options"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/books",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "book-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/books",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Options"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/books/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "book-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/books/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete",
+        "Options"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/reservations",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "reservation-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/reservations",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Options"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/reservations/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "reservation-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/reservations/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete",
+        "Options"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/cart",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "cart-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/cart",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Delete",
+        "Options"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "AddHeadersToRequest": {},
+      "AddClaimsToRequest": {},
+      "RouteClaimsRequirement": {},
+      "AddQueriesToRequest": {},
+      "ChangeDownstreamPathTemplate": {},
+      "AddHeadersToDownstream": {},
+      "UpstreamHeaderTransform": {},
+      "DownstreamHeaderTransform": {}
+    },
+    {
+      "DownstreamPathTemplate": "/api/cart/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "cart-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/cart/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete",
+        "Options"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "AddHeadersToRequest": {},
+      "AddClaimsToRequest": {},
+      "RouteClaimsRequirement": {},
+      "AddQueriesToRequest": {},
+      "ChangeDownstreamPathTemplate": {},
+      "AddHeadersToDownstream": {},
+      "UpstreamHeaderTransform": {},
+      "DownstreamHeaderTransform": {}
+    },
+    {
+      "DownstreamPathTemplate": "/api/orders",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "order-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/orders",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Options"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/orders/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "order-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/orders/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Patch",
+        "Delete",
+        "Options"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
+    },
+    {
+      "DownstreamPathTemplate": "/api/analytics/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "analytics-service",
+          "Port": 8080
+        }
+      ],
+      "UpstreamPathTemplate": "/api/analytics/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Post",
+        "Put",
+        "Delete",
+        "Options"
+      ],
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      }
     }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://feane-gateway:8080"
+  }
 }

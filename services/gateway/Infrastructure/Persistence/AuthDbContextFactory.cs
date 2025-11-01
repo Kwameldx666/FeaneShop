@@ -1,24 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace AuthService.Infrastructure.Persistence
+namespace AuthService.Infrastructure.Persistence;
+
+public class AuthDbContextFactory : IDesignTimeDbContextFactory<AuthDbContext>
 {
-    public class AuthDbContextFactory : IDesignTimeDbContextFactory<AuthDbContext>
+    public AuthDbContext CreateDbContext(string[] args)
     {
-        public AuthDbContext CreateDbContext(string[] args)
-        {
-            // Загружаем конфигурацию (используем appsettings.json из корня проекта)
-            IConfigurationRoot configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .Build();
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Development";
 
-            var builder = new DbContextOptionsBuilder<AuthDbContext>();
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", true, false)
+            .AddJsonFile($"appsettings.{environment}.json", true, false)
+            .AddEnvironmentVariables()
+            .Build();
 
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            builder.UseSqlServer(connectionString);
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+                               ?? throw new InvalidOperationException(
+                                   "Connection string 'DefaultConnection' not found.");
 
-            return new AuthDbContext(builder.Options);
-        }
+        var builder = new DbContextOptionsBuilder<AuthDbContext>();
+        builder.UseSqlServer(connectionString);
+
+        return new AuthDbContext(builder.Options);
     }
 }
