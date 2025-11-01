@@ -2,10 +2,15 @@
 
 <div align="center">
 
-![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet)
+![.NET](https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet)
 ![Microservices](https://img.shields.io/badge/Architecture-Microservices-green?style=for-the-badge)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)
 ![SQL Server](https://img.shields.io/badge/SQL_Server-2022-CC2927?style=for-the-badge&logo=microsoft-sql-server)
+
+[![CI](https://github.com/Kwameldx666/FeaneShop/actions/workflows/ci.yml/badge.svg)](https://github.com/Kwameldx666/FeaneShop/actions/workflows/ci.yml)
+[![CD](https://github.com/Kwameldx666/FeaneShop/actions/workflows/cd.yml/badge.svg)](https://github.com/Kwameldx666/FeaneShop/actions/workflows/cd.yml)
+[![Tests](https://github.com/Kwameldx666/FeaneShop/actions/workflows/tests.yml/badge.svg)](https://github.com/Kwameldx666/FeaneShop/actions/workflows/tests.yml)
+[![Nightly](https://github.com/Kwameldx666/FeaneShop/actions/workflows/nightly.yml/badge.svg)](https://github.com/Kwameldx666/FeaneShop/actions/workflows/nightly.yml)
 
 **Полнофункциональная система управления рестораном с микросервисной архитектурой**
 
@@ -1143,6 +1148,80 @@ If you have any questions or issues, please:
 
 ---
 
+## 🔄 CI/CD Pipeline
+
+Проект использует качественную CI/CD инфраструктуру для автоматизации процессов разработки и развертывания.
+
+### 🚀 Workflow'ы
+
+#### 1. **Continuous Integration (CI)**
+- 🔍 **Code Quality Checks** - проверка качества кода и форматирования
+- 🧪 **Build & Test** - сборка всех сервисов и запуск тестов с покрытием
+- 🔒 **Security Scan** - проверка зависимостей на уязвимости
+- 🐳 **Docker Build** - сборка Docker образов для всех сервисов
+- 🔗 **Integration Tests** - интеграционное тестирование сервисов
+
+#### 2. **Continuous Deployment (CD)**
+- 📋 **Prepare Deployment** - подготовка версии и окружения
+- 🐳 **Build & Push Images** - сборка и публикация Docker образов
+- 🎯 **Deploy to Staging** - автоматическое развертывание в staging
+- 🌟 **Deploy to Production** - развертывание в production (с ручным одобрением)
+- 📊 **Post-Deployment** - проверка и мониторинг после развертывания
+
+#### 3. **Pull Request Checks**
+- 📋 **PR Information** - информация о PR и измененных файлах
+- 🎨 **Lint & Format** - проверка форматирования кода
+- 🔨 **Build Validation** - валидация сборки
+- 🧪 **Unit Tests** - запуск юнит-тестов
+- 🔒 **Security Check** - проверка безопасности
+- 📊 **Code Coverage** - анализ покрытия кода тестами
+
+#### 4. **Release Management**
+- 🏷️ **Create Release** - создание релиза с changelog
+- 🐳 **Build & Publish** - публикация Docker образов в registry
+- 📦 **Release Artifacts** - создание артефактов релиза
+- Поддержка semantic versioning (v1.0.0)
+
+#### 5. **Nightly Build**
+- 🌙 Ежедневная сборка всех сервисов (2:00 UTC)
+- 🧪 Полный набор тестов
+- 🔒 Аудит безопасности
+- 📦 Проверка обновлений зависимостей
+- 🐳 Тестирование Docker сборки
+- 📊 Генерация метрик кода
+
+#### 6. **Dependabot**
+- 📦 Автоматическое обновление NuGet пакетов
+- 🐳 Обновление Docker base images
+- 🔄 Обновление GitHub Actions
+
+### 🛠️ Используемые технологии
+
+- **GitHub Actions** - платформа CI/CD
+- **Docker** - контейнеризация
+- **dotnet CLI** - сборка и тестирование
+- **XPlat Code Coverage** - покрытие кода
+- **Dependabot** - управление зависимостями
+
+### 📊 Мониторинг качества
+
+Все workflow'ы генерируют детальные отчеты:
+- ✅ Статус сборки и тестов
+- 📈 Покрытие кода тестами
+- 🔒 Отчеты о безопасности
+- 📦 Статус зависимостей
+- 🐳 Статус Docker образов
+
+### 🎯 Стратегия развертывания
+
+```
+main branch → CI → CD → Staging → Manual Approval → Production
+develop branch → CI → CD → Staging
+pull requests → PR Checks → Code Review → Merge
+```
+
+---
+
 ## 📊 Status
 
 <div align="center">
@@ -1159,7 +1238,7 @@ If you have any questions or issues, please:
 
 <div align="center">
 
-**Built with ❤️ using .NET 10 and Microservices Architecture**
+**Built with ❤️ using .NET 9.0 and Microservices Architecture**
 
 [⬆ Back to top](#️-feane-restaurant---full-stack-e-commerce-system)
 
