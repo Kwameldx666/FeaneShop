@@ -38,7 +38,7 @@
 
 ### Требования
 
-- .NET 10.0 SDK
+- .NET 9.0 SDK
 - Docker Desktop
 - SQL Server 2022 (или через Docker)
 - Visual Studio 2022 / JetBrains Rider / VS Code
@@ -640,12 +640,12 @@ FeaneShop/
 
 | Технология | Версия | Описание |
 |------------|--------|----------|
-| .NET | 10.0-preview | Framework |
-| ASP.NET Core | 10.0 | Web API |
-| Entity Framework Core | 10.0 | ORM |
+| .NET | 9.0 | Framework |
+| ASP.NET Core | 9.0 | Web API |
+| Entity Framework Core | 9.0 | ORM |
 | SQL Server | 2022 | Database |
 | Ocelot | 23.4.0 | API Gateway |
-| JWT Bearer | 10.0 | Authentication |
+| JWT Bearer | 9.0 | Authentication |
 | Swagger/OpenAPI | 7.0 | API Documentation |
 
 ### Frontend
@@ -899,7 +899,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '9.0.x'
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
@@ -915,7 +915,7 @@ jobs:
 ### Требования для разработки
 
 - Visual Studio 2022 / JetBrains Rider / VS Code
-- .NET 10.0 SDK
+- .NET 9.0 SDK
 - Docker Desktop
 - SQL Server 2022 (или через Docker)
 - Git
