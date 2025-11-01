@@ -1,6 +1,8 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using ReservationService.Domain.Entities;
 using ReservationService.Domain.Enums;
+using Xunit;
 
 namespace ReservationService.Tests.Domain;
 

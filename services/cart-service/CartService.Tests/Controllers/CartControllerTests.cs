@@ -1,4 +1,6 @@
-﻿using CartService.Application.DTOs;
+﻿using System;
+using System.Collections.Generic;
+using CartService.Application.DTOs;
 using CartService.Application.Interfaces;
 using CartService.Controllers;
 using CartService.Domain.Entities;
@@ -8,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace CartService.Tests.Controllers;

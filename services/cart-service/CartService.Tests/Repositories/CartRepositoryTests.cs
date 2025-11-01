@@ -1,4 +1,9 @@
-﻿using CartService.Application.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using CartService.Application.Interfaces;
 using CartService.Domain.Entities;
 using CartService.Infrastructure.Repositories;
 using FluentAssertions;
@@ -6,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using CartService.Infrastructure.Persistence;
+using Xunit;
 
 namespace CartService.Tests.Repositories;
 

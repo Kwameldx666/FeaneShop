@@ -1,3 +1,5 @@
+using System;
+
 namespace CartService.Application.DTOs;
 
 public class CartItemResponse

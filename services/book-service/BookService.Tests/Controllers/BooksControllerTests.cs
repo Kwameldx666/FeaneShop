@@ -1,4 +1,8 @@
-﻿using BookService.Application.DTOs;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using BookService.Application.DTOs;
 using BookService.Application.Interfaces;
 using BookService.Controllers;
 using BookService.Domain.Entities;
@@ -6,6 +10,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Xunit;
 
 namespace BookService.Tests.Controllers;
 
@@ -190,8 +195,8 @@ public class BooksControllerTests
 
 }
 /*
-    // Note: BookService uses books, not bookings. 
-    // Tests for CreateBook, UpdateBook, DeleteBook would require handling multipart/form-data 
+    // Note: BookService uses books, not bookings.
+    // Tests for CreateBook, UpdateBook, DeleteBook would require handling multipart/form-data
     // which is complex to test. The main GET endpoints are tested above.
     [Fact]
     public async Task CreateBooking_WithValidData_CreatesBooking()

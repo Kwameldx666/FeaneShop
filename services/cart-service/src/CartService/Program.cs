@@ -1,10 +1,16 @@
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using CartService.Application.Interfaces;
 using CartService.Infrastructure.Persistence;
 using CartService.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using ProductService.Domain.Entities;
+using Xunit;
 
 namespace ProductService.Tests.Domain;
 

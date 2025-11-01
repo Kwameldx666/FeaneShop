@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -9,6 +11,9 @@ using ReservationService.Controllers;
 using ReservationService.Domain.Entities;
 using ReservationService.Domain.Enums;
 using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace ReservationService.Tests.Controllers;
 
@@ -23,14 +28,14 @@ public class ReservationsControllerTestsNew
         _mockRepository = new Mock<IReservationRepository>();
         _mockLogger = new Mock<ILogger<ReservationsController>>();
         _controller = new ReservationsController(_mockRepository.Object, _mockLogger.Object);
-        
+
         var httpContext = new DefaultHttpContext();
         var userId = Guid.NewGuid();
         httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
             new Claim("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier", userId.ToString())
         }, "TestAuthentication"));
-        
+
         _controller.ControllerContext = new ControllerContext { HttpContext = httpContext };
     }
 
@@ -285,7 +290,7 @@ public class ReservationsControllerTestsNew
     {
         var userIdClaim = _controller.HttpContext.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
         var userId = Guid.Parse(userIdClaim!.Value);
-        
+
         var status = Enum.Parse<ReservationStatus>(statusFilter);
         var reservations = new List<Reservation>
         {
@@ -326,7 +331,7 @@ public class ReservationsControllerTestsNew
     {
         var userIdClaim = _controller.HttpContext.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
         var userId = Guid.Parse(userIdClaim!.Value);
-        
+
         var reservations = new List<Reservation>();
         for (int i = 0; i < pageSize; i++)
         {

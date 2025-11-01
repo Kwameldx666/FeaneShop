@@ -1,4 +1,8 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -6,6 +10,7 @@ using ProductService.Application.DTOs;
 using ProductService.Application.Interfaces;
 using ProductService.Controllers;
 using ProductService.Domain.Entities;
+using Xunit;
 
 namespace ProductService.Tests.Controllers;
 
