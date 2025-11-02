@@ -2,514 +2,591 @@
 
 ## Обзор
 
-Проект использует комплексную CI/CD инфраструктуру на базе GitHub Actions для автоматизации процессов сборки, тестирования и развертывания.
+Проект использует единый унифицированный CI/CD pipeline на базе GitHub Actions для автоматизации всех процессов сборки, тестирования, проверки качества, сборки Docker образов, развертывания и релизов.
 
 ## 📋 Содержание
 
-- [Workflows](#-workflows)
+- [Workflow](#-workflow)
 - [Настройка](#-настройка)
 - [Использование](#-использование)
+- [Jobs](#-jobs)
 - [Лучшие практики](#-лучшие-практики)
 - [Troubleshooting](#-troubleshooting)
 
 ---
 
-## 🔄 Workflows
+## 🔄 Workflow
 
-### 1. Continuous Integration (`.github/workflows/ci.yml`)
+### Unified CI/CD Pipeline (`.github/workflows/main.yml`)
+
+Единый workflow, который объединяет все необходимые процессы CI/CD в одном месте.
 
 **Триггеры:**
-- Push в ветки `main`, `develop`
+- Push в ветки `main`, `develop`, `copilot/**`
+- Push тегов `v*.*.*` (для релизов)
 - Pull requests в ветки `main`, `develop`
-- Ручной запуск
+- Ручной запуск с опцией выбора окружения для развертывания
 
-**Jobs:**
+**Переменные окружения:**
+- `DOTNET_VERSION: '9.0.x'`
+- `DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true`
+- `DOTNET_CLI_TELEMETRY_OPTOUT: true`
+- `REGISTRY: ghcr.io`
 
-#### 📍 Code Quality Checks
-- Проверка форматирования кода (`dotnet format`)
-- Генерация статистики проекта
-- Анализ качества кода
+---
 
-**Артефакты:** нет
+## 📦 Jobs
 
-#### 📍 Build & Test
-- Параллельное тестирование всех сервисов (matrix strategy)
-- Сборка в Release конфигурации
-- Запуск юнит-тестов с покрытием кода
+### 1. 🔨 Build Solution
+
+**Назначение:** Сборка всего решения
+
+**Шаги:**
+- Checkout кода с полной историей
+- Настройка .NET SDK
 - Кэширование NuGet пакетов
+- Восстановление зависимостей
+- Сборка в Release конфигурации
+- Генерация отчета о сборке
 
-**Артефакты:**
-- `test-results-*` - результаты тестов (.trx)
-- `coverage-*` - отчеты покрытия кода
+**Timeout:** 15 минут
 
-#### 📍 Test Summary
-- Агрегация результатов тестов
-- Публикация сводного отчета
-
-#### 📍 Security Scan
-- Сканирование зависимостей на уязвимости
-- Генерация отчета безопасности
-
-**Артефакты:**
-- `security-report` - отчет безопасности
-
-#### 📍 Docker Build
-- Параллельная сборка Docker образов всех сервисов
-- Использование GitHub Actions cache
-- Проверка работоспособности сборки
-
-#### 📍 Integration Test
-- Запуск всех сервисов через Docker Compose
-- Health check проверки
-- Только для main ветки
-
-**Время выполнения:** ~15-20 минут
+**Кэширование:**
+- Путь: `~/.nuget/packages`
+- Ключ: `${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}`
 
 ---
 
-### 2. Continuous Deployment (`.github/workflows/cd.yml`)
+### 2. 🧪 Run Tests
 
-**Триггеры:**
-- Успешное выполнение CI workflow (для main)
-- Ручной запуск с выбором окружения
+**Назначение:** Параллельное выполнение всех тестов
 
-**Jobs:**
+**Matrix Strategy:**
+- `user-service`
+- `product-service`
+- `book-service`
+- `reservation-service`
+- `cart-service`
+- `order-service`
+- `analytics-service`
 
-#### 📍 Prepare Deployment
-- Определение целевого окружения (staging/production)
+**Шаги:**
+- Checkout кода
+- Настройка .NET SDK
+- Кэширование NuGet пакетов
+- Восстановление зависимостей
+- Сборка проекта
+- Запуск тестов с генерацией .trx отчетов
+- Загрузка результатов тестов как артефакты
+
+**Timeout:** 20 минут
+
+**Артефакты:**
+- `test-results-*` - TRX файлы с результатами тестов
+- Retention: 30 дней
+
+**Настройки:**
+- `fail-fast: false` - все тесты выполняются независимо
+- `continue-on-error: true` - сбой тестов не прерывает pipeline
+
+---
+
+### 3. 🔍 Code Quality & Security
+
+**Назначение:** Проверка качества кода и безопасности
+
+**Шаги:**
+
+#### a) Проверка форматирования кода
+```bash
+dotnet format --verify-no-changes --no-restore --verbosity diagnostic
+```
+
+#### b) Сканирование безопасности
+```bash
+dotnet list package --vulnerable --include-transitive
+```
+
+#### c) Статистика проекта
+- Количество проектов
+- Количество C# файлов
+- Общее количество строк кода
+- Количество сервисов
+
+**Timeout:** 10 минут
+
+**Отчеты:**
+- Форматирование кода (предупреждения)
+- Уязвимости в зависимостях
+- Метрики проекта
+
+---
+
+### 4. 🐳 Docker Build
+
+**Назначение:** Сборка Docker образов для всех сервисов
+
+**Условия запуска:**
+- Push в `main` или `develop`
+- Push тега `v*.*.*`
+
+**Matrix Strategy:**
+Все сервисы:
+- user-service
+- product-service
+- book-service
+- reservation-service
+- cart-service
+- order-service
+- analytics-service
+- gateway
+- frontend
+
+**Шаги:**
+- Checkout кода
+- Настройка Docker Buildx
+- Авторизация в Container Registry (только для тегов)
+- Генерация тегов Docker
+- Сборка образа
+- Push образа (только для тегов)
+
+**Docker Tags:**
+- `SHA` - всегда
+- `version` - для тегов
+- `latest` - для тегов
+- `main` - для main ветки
+- `develop` - для develop ветки
+
+**Timeout:** 45 минут
+
+**Кэширование:**
+- Тип: GitHub Actions cache
+- Mode: max
+
+---
+
+### 5. 🚀 Deploy
+
+**Назначение:** Развертывание приложения
+
+**Условия запуска:**
+- Ручной запуск с выбором окружения (staging/production)
+- Push в `main` (автоматически в staging)
+
+**GitHub Environments:**
+- `staging` - https://staging.feane.app
+- `production` - https://feane.app
+
+**Шаги:**
+- Checkout кода
 - Генерация версии (YYYY.MM.DD-SHA)
-- Создание deployment summary
+- Определение целевого окружения
+- Развертывание (симуляция)
+- Health checks
+- Генерация отчета о развертывании
 
-**Outputs:**
-- `environment` - целевое окружение
-- `version` - версия для развертывания
+**Timeout:** 20 минут
 
-#### 📍 Build & Push Images
-- Сборка Docker образов для всех сервисов
-- Тегирование образов (версия, latest, branch-sha)
-- Публикация в GitHub Container Registry (опционально)
-
-**Требования:**
-- `GITHUB_TOKEN` для авторизации в registry
-
-#### 📍 Deploy Staging
-- Автоматическое развертывание в staging
-- Проверка развертывания
-- Environment: `staging`
-- URL: https://staging.feane.app
-
-#### 📍 Deploy Production
-- Развертывание в production с ручным одобрением
-- Environment: `production`
-- URL: https://feane.app
-
-**Требования:**
-- Ручное одобрение в GitHub UI
-
-#### 📍 Post-Deployment
-- Сводка развертывания
-- Рекомендации по мониторингу
-
-**Время выполнения:** ~10-15 минут
+**Версионирование:**
+```bash
+VERSION=$(date +'%Y.%m.%d')-${GITHUB_SHA::7}
+```
 
 ---
 
-### 3. Pull Request Checks (`.github/workflows/pr-checks.yml`)
+### 6. 📦 Create Release
 
-**Триггеры:**
-- Открытие PR
-- Обновление PR
-- Повторное открытие PR
+**Назначение:** Создание GitHub Release
 
-**Jobs:**
+**Условия запуска:**
+- Push тега `v*.*.*`
 
-#### 📍 PR Info
-- Информация о PR
-- Список измененных файлов
+**Permissions:**
+- `contents: write`
 
-#### 📍 Lint & Format
-- Проверка форматирования кода
-- Рекомендации по исправлению
-
-#### 📍 Build Validation
-- Полная сборка решения
-- Проверка отсутствия ошибок компиляции
-
-#### 📍 Unit Tests
-- Запуск всех юнит-тестов
-- Публикация результатов в PR
-
-#### 📍 Security Check
-- Проверка зависимостей на уязвимости
-- Отчет в PR
-
-#### 📍 Code Coverage
-- Анализ покрытия кода
-- Генерация отчетов
-
-**Артефакты:**
-- `code-coverage` - отчеты покрытия
-
-**Время выполнения:** ~10-15 минут
-
----
-
-### 4. Release Management (`.github/workflows/release.yml`)
-
-**Триггеры:**
-- Push тега `v*.*.*` (например, v1.0.0)
-- Ручной запуск с указанием версии
-
-**Jobs:**
-
-#### 📍 Create Release
-- Генерация changelog из коммитов
+**Шаги:**
+- Checkout кода с полной историей
+- Извлечение версии из тега
+- Генерация changelog
 - Создание GitHub Release
-- Прикрепление changelog
 
-#### 📍 Build & Publish
-- Сборка и публикация всех Docker образов
-- Тегирование semantic versioning
-- Публикация в registry
-
-#### 📍 Release Artifacts
-- Сборка release конфигурации
-- Создание артефактов для скачивания
-
-**Время выполнения:** ~15-20 минут
+**Changelog:**
+- Список изменений с предыдущего тега
+- Информация о Docker образах
+- Ссылки на коммиты
 
 ---
 
-### 5. Nightly Build (`.github/workflows/nightly.yml`)
+### 7. 📋 Pipeline Summary
 
-**Триггеры:**
-- Расписание: ежедневно в 2:00 UTC
-- Ручной запуск
+**Назначение:** Итоговый отчет о выполнении pipeline
 
-**Jobs:**
+**Условия:** Всегда выполняется (`if: always()`)
 
-#### 📍 Nightly Build
-- Сборка в Debug и Release
-- Проверка сборки
-
-#### 📍 Nightly Tests
-- Полный набор тестов с детальным выводом
-- Длительное хранение результатов (90 дней)
-
-#### 📍 Security Audit
-- Глубокая проверка безопасности
-- Отчет по уязвимостям
-
-#### 📍 Dependency Check
-- Проверка устаревших пакетов
-- Рекомендации по обновлению
-
-#### 📍 Docker Build Test
-- Тестовая сборка через Docker Compose
-- Проверка работоспособности
-
-#### 📍 Code Metrics
-- Статистика проекта
-- Git метрики
-- Отчет о размере кодовой базы
-
-**Артефакты:**
-- `nightly-test-results` (90 дней)
-- `security-audit-report` (90 дней)
-- `dependency-report` (90 дней)
-- `code-metrics-report` (90 дней)
-
-**Время выполнения:** ~25-30 минут
-
----
-
-### 6. Dependabot (`.github/dependabot.yml`)
-
-**Конфигурация:**
-
-#### NuGet пакеты
-- Проверка: еженедельно (понедельник, 9:00)
-- Лимит PR: 10
-- Стратегия версионирования: increase
-
-#### Docker образы
-- Проверка каждого сервиса: еженедельно
-- Автоматические PR для обновления base images
-
-#### GitHub Actions
-- Проверка: еженедельно
-- Обновление версий actions
+**Отчет включает:**
+- Статус всех jobs
+- Детали pipeline (branch, event, actor)
+- Ссылки на артефакты и логи
 
 ---
 
 ## ⚙️ Настройка
 
-### Требования
+### 1. Repository Settings
 
-1. **GitHub Repository Settings:**
-   - Actions включены
-   - Permissions для GITHUB_TOKEN:
-     - contents: write
-     - packages: write
+#### Secrets
+Для полной функциональности требуется:
 
-2. **Environments (опционально):**
-   ```
-   staging:
-     - URL: https://staging.feane.app
-     - Без ограничений
-   
-   production:
-     - URL: https://feane.app
-     - Required reviewers: [@your-team]
-     - Deployment branch: main
-   ```
+| Secret | Описание | Использование |
+|--------|----------|---------------|
+| `GITHUB_TOKEN` | Автоматически предоставляется | Docker registry, Releases |
 
-3. **Secrets (опционально):**
-   - `GITHUB_TOKEN` - создается автоматически
-   - Дополнительные secrets для deployment
+#### Environments
 
-### Первый запуск
+**Staging Environment:**
+```yaml
+name: staging
+url: https://staging.feane.app
+protection_rules: none
+```
 
-1. **Проверка workflows:**
-   ```bash
-   # Проверить синтаксис всех workflows
-   git ls-files .github/workflows/*.yml | xargs -I {} sh -c 'echo "Checking {}" && yamllint {}'
-   ```
+**Production Environment:**
+```yaml
+name: production
+url: https://feane.app
+protection_rules:
+  - required_reviewers: 1
+  - wait_timer: 5
+```
 
-2. **Тестовый запуск:**
-   - Перейдите в Actions
-   - Выберите "Continuous Integration"
-   - Нажмите "Run workflow"
-   - Выберите ветку
-   - Нажмите "Run workflow"
+#### Actions Permissions
+- Workflows: Read and write permissions
+- Allow GitHub Actions to create and approve pull requests: ✓
 
-3. **Настройка Dependabot:**
-   - Dependabot настроен автоматически
-   - PR будут создаваться автоматически
+---
+
+### 2. Branch Protection Rules
+
+**Main Branch:**
+- Require pull request reviews before merging
+- Require status checks to pass before merging:
+  - `Build Solution`
+  - `Run Tests`
+  - `Code Quality & Security`
+- Require conversation resolution before merging
+- Do not allow bypassing the above settings
+
+**Develop Branch:**
+- Require status checks to pass before merging:
+  - `Build Solution`
+  - `Run Tests`
 
 ---
 
 ## 🚀 Использование
 
-### Ежедневная разработка
+### Создание Pull Request
 
-1. **Создание feature branch:**
-   ```bash
-   git checkout -b feature/my-feature
-   # Внесите изменения
-   git add .
-   git commit -m "feat: add new feature"
-   git push origin feature/my-feature
-   ```
+1. Создайте feature branch:
+```bash
+git checkout -b feature/your-feature
+```
 
-2. **Создание Pull Request:**
-   - Откройте PR в GitHub
-   - Автоматически запустятся PR Checks
-   - Дождитесь успешного выполнения
-   - Запросите code review
+2. Внесите изменения и закоммитьте:
+```bash
+git add .
+git commit -m "feat: описание изменений"
+```
 
-3. **Merge в develop/main:**
-   - После одобрения, merge PR
-   - Автоматически запустится CI
-   - Для main: автоматически запустится CD в staging
+3. Отправьте изменения:
+```bash
+git push origin feature/your-feature
+```
 
-### Release процесс
+4. Создайте Pull Request на GitHub
 
-1. **Подготовка релиза:**
-   ```bash
-   # Убедитесь что все тесты проходят
-   git checkout main
-   git pull origin main
-   ```
-
-2. **Создание тега:**
-   ```bash
-   git tag -a v1.0.0 -m "Release version 1.0.0"
-   git push origin v1.0.0
-   ```
-
-3. **Автоматический процесс:**
-   - Запустится Release workflow
-   - Создастся GitHub Release
-   - Соберутся и опубликуются Docker образы
-   - Changelog сгенерируется автоматически
-
-4. **Production deployment:**
-   - Перейдите в Actions → CD workflow
-   - Выберите "Run workflow"
-   - Установите environment: production
-   - Одобрите deployment в GitHub UI
-
-### Мониторинг
-
-1. **Проверка статуса:**
-   - README.md отображает badges статуса
-   - GitHub Actions → текущие runs
-
-2. **Просмотр отчетов:**
-   - Artifacts в completed runs
-   - Job summaries в каждом run
-
-3. **Анализ ошибок:**
-   - Logs в failed jobs
-   - Annotations в PR checks
+**Автоматически запустится:**
+- ✅ Build Solution
+- ✅ Run Tests
+- ✅ Code Quality & Security
 
 ---
 
-## ✅ Лучшие практики
+### Merge в Main
 
-### Коммиты
+При merge PR в `main`:
 
+**Автоматически:**
+1. ✅ Build
+2. ✅ Tests
+3. ✅ Quality checks
+4. 🐳 Docker build
+5. 🚀 Deploy to Staging
+
+---
+
+### Ручное развертывание
+
+1. Перейдите в Actions → "CI/CD Pipeline"
+2. Нажмите "Run workflow"
+3. Выберите:
+   - Branch (main/develop)
+   - Deploy environment (none/staging/production)
+4. Нажмите "Run workflow"
+
+**Примеры:**
+- Deploy to staging: выберите `main` + `staging`
+- Deploy to production: выберите `main` + `production`
+- Only build & test: выберите любую ветку + `none`
+
+---
+
+### Создание Release
+
+1. Определите версию (semver):
 ```bash
-# Используйте conventional commits
-feat: add new feature
-fix: resolve bug in user service
-docs: update CI/CD documentation
-ci: improve build performance
-test: add unit tests for cart service
-refactor: optimize product service
-perf: improve query performance
-style: fix code formatting
+VERSION=v1.2.3
 ```
 
-### Pull Requests
+2. Создайте и отправьте тег:
+```bash
+git tag -a $VERSION -m "Release $VERSION"
+git push origin $VERSION
+```
 
-1. **Дождитесь завершения всех checks**
-2. **Исправьте все найденные проблемы**
-3. **Запросите code review от команды**
-4. **Merge только после одобрения**
+3. Pipeline автоматически:
+   - Соберет проект
+   - Прогонит тесты
+   - Создаст Docker образы
+   - Создаст GitHub Release
+   - Опубликует образы в registry
 
-### Deployment
+---
 
-1. **Staging first:** всегда деплойте в staging перед production
-2. **Smoke tests:** проверьте основную функциональность после deployment
-3. **Мониторинг:** следите за метриками после deployment
-4. **Rollback plan:** будьте готовы к откату
+## 💡 Лучшие практики
 
-### Безопасность
+### Commit Messages
 
-1. **Регулярно проверяйте отчеты безопасности**
-2. **Обновляйте зависимости** через Dependabot PR
-3. **Не храните секреты в коде**
-4. **Используйте GitHub Secrets** для sensitive data
+Используйте conventional commits:
+```
+feat: новая функциональность
+fix: исправление бага
+docs: изменения в документации
+style: форматирование кода
+refactor: рефакторинг
+test: добавление тестов
+chore: обновление зависимостей, конфигурации
+```
+
+### Branching Strategy
+
+```
+main
+  ├── develop
+  │   ├── feature/user-auth
+  │   ├── feature/order-system
+  │   └── fix/payment-bug
+  └── hotfix/critical-fix
+```
+
+**Правила:**
+- `main` - production-ready код
+- `develop` - интеграционная ветка
+- `feature/*` - новые функции
+- `fix/*` - исправления багов
+- `hotfix/*` - критические исправления для main
+- `copilot/*` - автоматические изменения от GitHub Copilot
+
+### Версионирование
+
+Семантическое версионирование (SemVer):
+```
+v{MAJOR}.{MINOR}.{PATCH}
+
+MAJOR - breaking changes
+MINOR - новая функциональность (обратно совместимая)
+PATCH - исправления (обратно совместимые)
+
+Примеры:
+v1.0.0 - первый релиз
+v1.1.0 - новая функция
+v1.1.1 - исправление бага
+v2.0.0 - breaking change
+```
+
+### Testing
+
+- Покрытие кода минимум 70%
+- Все тесты должны проходить перед merge
+- Добавляйте тесты для новой функциональности
+- Обновляйте существующие тесты при изменении логики
+
+### Docker Images
+
+**Naming:**
+```
+feane/{service-name}:{tag}
+
+Примеры:
+feane/user-service:latest
+feane/user-service:v1.2.3
+feane/user-service:main
+feane/user-service:develop
+feane/user-service:abc123
+```
+
+**Best Practices:**
+- Используйте multi-stage builds
+- Минимизируйте размер образов
+- Не включайте sensitive data
+- Используйте .dockerignore
 
 ---
 
 ## 🔧 Troubleshooting
 
-### CI падает с ошибкой сборки
+### Build Failed
 
-**Проблема:** `dotnet build` завершается с ошибками
+**Проблема:** Сборка падает с ошибкой
 
-**Решение:**
-```bash
-# Локально проверьте сборку
-dotnet restore
-dotnet build --configuration Release
-
-# Проверьте версию .NET
-dotnet --version  # Должна быть 9.0.x
-```
-
-### Тесты не проходят в CI
-
-**Проблема:** Тесты проходят локально, но падают в CI
-
-**Решение:**
-1. Проверьте зависимости тестов от environment
-2. Убедитесь что тесты не зависят друг от друга
-3. Проверьте connection strings и пути
-4. Запустите тесты локально в Docker
-
-### Docker build timeout
-
-**Проблема:** Docker сборка превышает timeout
-
-**Решение:**
-1. Увеличьте timeout в workflow
-2. Оптимизируйте Dockerfile (multi-stage builds)
-3. Используйте .dockerignore
-4. Проверьте размер зависимостей
-
-### Dependabot PR конфликты
-
-**Проблема:** Dependabot PR имеют конфликты
-
-**Решение:**
-```bash
-# Rebase Dependabot branch
-gh pr checkout <pr-number>
-git fetch origin main
-git rebase origin/main
-git push --force-with-lease
-```
-
-### Failed deployment
-
-**Проблема:** Deployment завершился с ошибкой
-
-**Решение:**
-1. Проверьте logs в failed job
-2. Проверьте health checks сервисов
-3. Проверьте connection strings
-4. Rollback к предыдущей версии:
+**Решения:**
+1. Проверьте логи сборки:
    ```bash
-   # Deployment через Docker
-   docker-compose down
-   git checkout <previous-tag>
-   docker-compose up -d
+   dotnet build --verbosity detailed
    ```
+
+2. Убедитесь, что все зависимости восстановлены:
+   ```bash
+   dotnet restore
+   ```
+
+3. Проверьте версию .NET SDK:
+   ```bash
+   dotnet --version
+   ```
+
+4. Очистите кэш:
+   ```bash
+   dotnet clean
+   rm -rf ~/.nuget/packages
+   ```
+
+### Tests Failed
+
+**Проблема:** Тесты не проходят
+
+**Решения:**
+1. Запустите тесты локально:
+   ```bash
+   dotnet test --verbosity normal
+   ```
+
+2. Проверьте конкретный проект:
+   ```bash
+   dotnet test services/user-service/UserService.Tests
+   ```
+
+3. Посмотрите детали ошибок в TRX файлах (артефакты)
+
+4. Убедитесь, что тестовые данные актуальны
+
+### Docker Build Failed
+
+**Проблема:** Не удается собрать Docker образ
+
+**Решения:**
+1. Проверьте Dockerfile синтаксис
+2. Убедитесь, что все файлы существуют
+3. Проверьте .dockerignore
+4. Соберите локально:
+   ```bash
+   docker build -t test-image .
+   ```
+
+### Deployment Failed
+
+**Проблема:** Развертывание не удается
+
+**Решения:**
+1. Проверьте логи развертывания
+2. Убедитесь, что environment настроен
+3. Проверьте permissions для GITHUB_TOKEN
+4. Проверьте доступность целевого окружения
+
+### Артефакты не загружаются
+
+**Проблема:** Test results не появляются
+
+**Решения:**
+1. Проверьте путь к артефактам
+2. Убедитесь, что тесты генерируют TRX файлы
+3. Проверьте права на artifacts (Actions permissions)
 
 ---
 
-## 📊 Метрики и KPI
+## 📊 Метрики
 
-### Рекомендуемые метрики
+### Время выполнения
 
-- **Build Success Rate:** >95%
-- **Test Success Rate:** >98%
-- **Average Build Time:** <20 минут
-- **Code Coverage:** >80%
-- **Deployment Frequency:** ежедневно (staging), еженедельно (production)
-- **Mean Time to Recovery:** <1 час
-- **Change Failure Rate:** <5%
+| Job | Среднее время | Timeout |
+|-----|---------------|---------|
+| Build | 3-5 мин | 15 мин |
+| Tests | 5-10 мин | 20 мин |
+| Quality | 2-3 мин | 10 мин |
+| Docker | 15-30 мин | 45 мин |
+| Deploy | 5-10 мин | 20 мин |
+| Release | 2-5 мин | - |
 
-### Мониторинг
+**Общее время pipeline:** 20-40 минут
 
-```yaml
-# Metrics отслеживаемые в workflows:
-- Build time
-- Test execution time
-- Docker build time
-- Number of tests
-- Code coverage percentage
-- Security vulnerabilities
-- Outdated packages
-```
+### Оптимизация
+
+**Кэширование:**
+- NuGet packages: ~2-3 минуты экономии
+- Docker layers: ~5-10 минут экономии
+
+**Matrix Strategy:**
+- Параллельное выполнение тестов: 8x быстрее
+
+**Best Practices:**
+- Используйте `continue-on-error` для не критичных jobs
+- Настройте правильные timeouts
+- Оптимизируйте Docker образы
+- Кэшируйте зависимости
 
 ---
 
 ## 🔗 Полезные ссылки
 
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
-- [.NET Testing Guide](https://docs.microsoft.com/en-us/dotnet/core/testing/)
-- [Semantic Versioning](https://semver.org/)
+- [Docker Build Push Action](https://github.com/docker/build-push-action)
+- [.NET CLI Reference](https://docs.microsoft.com/en-us/dotnet/core/tools/)
 - [Conventional Commits](https://www.conventionalcommits.org/)
+- [Semantic Versioning](https://semver.org/)
+
+---
+
+## 📝 Changelog
+
+### 2024.11.02
+- ✨ Создан единый унифицированный CI/CD pipeline
+- 🔄 Объединены все workflows в один (main.yml)
+- 🗑️ Удалены отдельные workflows: ci.yml, cd.yml, pr-checks.yml, release.yml, nightly.yml, tests.yml
+- 📝 Обновлена документация
 
 ---
 
 ## 🤝 Contributing
 
-При внесении изменений в CI/CD:
+Если у вас есть предложения по улучшению CI/CD pipeline:
 
-1. Тестируйте изменения в feature branch
-2. Документируйте изменения в этом файле
-3. Обновите README.md при необходимости
-4. Создайте PR с описанием изменений
+1. Создайте Issue с описанием предложения
+2. Обсудите изменения с командой
+3. Создайте PR с изменениями
+4. Обновите документацию
 
 ---
 
-**Last Updated:** November 1, 2025  
-**Version:** 1.0.0  
-**Maintainer:** @Kwameldx666
+## 📧 Контакты
+
+Вопросы по CI/CD? Создайте Issue или обратитесь к maintainer'ам проекта.

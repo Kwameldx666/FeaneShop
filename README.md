@@ -7,10 +7,7 @@
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker)
 ![SQL Server](https://img.shields.io/badge/SQL_Server-2022-CC2927?style=for-the-badge&logo=microsoft-sql-server)
 
-[![CI](https://github.com/Kwameldx666/FeaneShop/actions/workflows/ci.yml/badge.svg)](https://github.com/Kwameldx666/FeaneShop/actions/workflows/ci.yml)
-[![CD](https://github.com/Kwameldx666/FeaneShop/actions/workflows/cd.yml/badge.svg)](https://github.com/Kwameldx666/FeaneShop/actions/workflows/cd.yml)
-[![Tests](https://github.com/Kwameldx666/FeaneShop/actions/workflows/tests.yml/badge.svg)](https://github.com/Kwameldx666/FeaneShop/actions/workflows/tests.yml)
-[![Nightly](https://github.com/Kwameldx666/FeaneShop/actions/workflows/nightly.yml/badge.svg)](https://github.com/Kwameldx666/FeaneShop/actions/workflows/nightly.yml)
+[![CI/CD Pipeline](https://github.com/Kwameldx666/FeaneShop/actions/workflows/main.yml/badge.svg)](https://github.com/Kwameldx666/FeaneShop/actions/workflows/main.yml)
 
 **Полнофункциональная система управления рестораном с микросервисной архитектурой**
 
