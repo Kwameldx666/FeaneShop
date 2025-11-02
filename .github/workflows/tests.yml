@@ -8,6 +8,27 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: services/gateway/FeaneGateway.Tests/FeaneGateway.Tests.csproj
+            name: services-gateway-FeaneGateway.Tests
+          - project: services/user-service/UserService.Tests/UserService.Tests.csproj
+            name: services-user-service-UserService.Tests
+          - project: services/OrderService/OrderService.Tests/OrderService.Tests.csproj
+            name: services-OrderService-OrderService.Tests
+          - project: services/product-service/ProductService.Tests/ProductService.Tests.csproj
+            name: services-product-service-ProductService.Tests
+          - project: services/reservation-service/ReservationService.Tests/ReservationService.Tests.csproj
+            name: services-reservation-service-ReservationService.Tests
+          - project: services/cart-service/CartService.Tests/CartService.Tests.csproj
+            name: services-cart-service-CartService.Tests
+          - project: services/book-service/BookService.Tests/BookService.Tests.csproj
+            name: services-book-service-BookService.Tests
+          - project: services/AnalyticsService/AnalyticsService.Tests/AnalyticsService.Tests.csproj
+            name: services-AnalyticsService-AnalyticsService.Tests
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,44 +44,19 @@ jobs:
       - name: Build
         run: dotnet build --no-restore --configuration Release
 
-      - name: Test (generate TRX)
+      - name: Test project - ${{ matrix.name }}
         run: |
-          dotnet test --no-build --configuration Release \
-            --logger "trx;LogFileName=TestResults.trx" \
+          mkdir -p TestResults
+          dotnet test "${{ matrix.project }}" \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=${{ matrix.name }}.trx" \
             --results-directory ./TestResults
 
-      - name: Upload consolidated test results
+      - name: Upload test results - ${{ matrix.name }}
         if: always()
         uses: actions/upload-artifact@v4
         with:
-            name: test-results
-            path: TestResults
-            if-no-files-found: warn
-
-      - name: Upload per-project TRX (sanitized names)
-        if: always()
-        shell: bash
-        run: |
-          shopt -s globstar
-          for trx in **/TestResults/*.trx; do
-            if [ -f "$trx" ]; then
-              base=$(basename "$trx")
-              dir=$(dirname "$trx")
-              # derive a name from path without invalid characters
-              name="test-results-$(echo "$dir" | tr '/\\' '-' | tr -cd '[:alnum:]-._')"
-              echo "Uploading $trx as $name"
-              gh workflow -h >/dev/null 2>&1 || true
-            fi
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload each TRX as artifact (sanitized)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-all
-          path: |
-            **/TestResults/*.trx
+          name: test-results-${{ matrix.name }}
+          path: TestResults/*.trx
           if-no-files-found: warn
-
