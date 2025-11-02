@@ -82,7 +82,7 @@ public class AuthControllerTests
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         var responseValue = okResult.Value;
-        
+
         responseValue.Should().NotBeNull();
         responseValue.GetType().GetProperty("Token")?.GetValue(responseValue).Should().Be(accessToken);
         responseValue.GetType().GetProperty("RefreshToken")?.GetValue(responseValue).Should().Be(refreshToken);
@@ -125,7 +125,7 @@ public class AuthControllerTests
 
         var claims = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim("nameid", userId.ToString()), // Using "nameid" as controller expects
             new Claim("token_type", "refresh")
         }));
 
@@ -157,7 +157,7 @@ public class AuthControllerTests
         // Assert
         var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
         var responseValue = okResult.Value;
-        
+
         responseValue.Should().NotBeNull();
         responseValue.GetType().GetProperty("Token")?.GetValue(responseValue).Should().Be(newAccessToken);
         responseValue.GetType().GetProperty("RefreshToken")?.GetValue(responseValue).Should().Be(newRefreshToken);
@@ -275,11 +275,11 @@ public class AuthControllerTests
 
         _userRepositoryMock
             .Setup(x => x.RegisterAsync(registerRequest, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new OperationResult<User> 
-            { 
-                Status = true, 
-                Data = user, 
-                Message = "Registration successful" 
+            .ReturnsAsync(new OperationResult<User>
+            {
+                Status = true,
+                Data = user,
+                Message = "Registration successful"
             });
 
         // Act
@@ -303,10 +303,10 @@ public class AuthControllerTests
 
         _userRepositoryMock
             .Setup(x => x.RegisterAsync(registerRequest, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(new OperationResult<User> 
-            { 
-                Status = false, 
-                Message = "User already exists" 
+            .ReturnsAsync(new OperationResult<User>
+            {
+                Status = false,
+                Message = "User already exists"
             });
 
         // Act
