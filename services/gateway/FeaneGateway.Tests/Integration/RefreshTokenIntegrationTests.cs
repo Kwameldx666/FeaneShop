@@ -11,7 +11,7 @@ namespace FeaneGateway.Tests.Integration;
 public class RefreshTokenIntegrationTests
 {
     [Fact]
-    public async Task RefreshEndpoint_ShouldAcceptCamelCaseJson()
+    public void RefreshEndpoint_ShouldAcceptCamelCaseJson()
     {
         // This test verifies that the endpoint accepts camelCase JSON from JavaScript clients
         var refreshTokenRequest = new
@@ -63,4 +63,3 @@ public class RefreshTokenIntegrationTests
         result!.RefreshToken.Should().Be("test.token.value");
     }
 }
-

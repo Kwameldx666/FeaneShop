@@ -162,8 +162,12 @@ public class AuthControllerTests
         var responseValue = okResult.Value;
 
         responseValue.Should().NotBeNull();
-        responseValue.GetType().GetProperty("Token")?.GetValue(responseValue).Should().Be(newAccessToken);
-        responseValue.GetType().GetProperty("RefreshToken")?.GetValue(responseValue).Should().Be(newRefreshToken);
+        var tokenProp2 = responseValue!.GetType().GetProperty("Token");
+        var refreshProp2 = responseValue!.GetType().GetProperty("RefreshToken");
+        tokenProp2.Should().NotBeNull();
+        refreshProp2.Should().NotBeNull();
+        tokenProp2!.GetValue(responseValue).Should().Be(newAccessToken);
+        refreshProp2!.GetValue(responseValue).Should().Be(newRefreshToken);
     }
 
     [Fact]
