@@ -257,7 +257,7 @@ jobs:
         echo "tags=$TAGS" >> $GITHUB_OUTPUT
 
     - name: 🔨 Build Docker Image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: ${{ matrix.service.path }}
         file: ${{ matrix.service.path }}/Dockerfile
@@ -385,12 +385,10 @@ jobs:
         echo "All services are available as Docker images tagged with \`${{ steps.get-version.outputs.version }}\`" >> CHANGELOG.md
 
     - name: 🎉 Create GitHub Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v2
       with:
         tag_name: ${{ steps.get-version.outputs.version }}
-        release_name: Release ${{ steps.get-version.outputs.version }}
+        name: Release ${{ steps.get-version.outputs.version }}
         body_path: CHANGELOG.md
         draft: false
         prerelease: false
