@@ -17,18 +17,18 @@ jobs:
     name: 🔨 Build Solution
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
+
     steps:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
+
     - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    
+
     - name: 📦 Cache NuGet Packages
       uses: actions/cache@v4
       with:
@@ -36,13 +36,13 @@ jobs:
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
-    
+
     - name: 📦 Restore Dependencies
       run: dotnet restore
-    
+
     - name: 🔨 Build Solution
       run: dotnet build --no-restore --configuration Release
-    
+
     - name: 📊 Build Summary
       if: always()
       run: |
@@ -60,28 +60,35 @@ jobs:
     needs: build
     timeout-minutes: 20
     if: always()
-    
+
     strategy:
       fail-fast: false
       matrix:
-        test-project:
-          - services/user-service/UserService.Tests
-          - services/product-service/ProductService.Tests
-          - services/book-service/BookService.Tests
-          - services/reservation-service/ReservationService.Tests
-          - services/cart-service/CartService.Tests
-          - services/OrderService.Tests
-          - services/AnalyticsService.Tests
-    
+        include:
+          - project: services/user-service/UserService.Tests/UserService.Tests.csproj
+            name: services-user-service-UserService.Tests
+          - project: services/product-service/ProductService.Tests/ProductService.Tests.csproj
+            name: services-product-service-ProductService.Tests
+          - project: services/book-service/BookService.Tests/BookService.Tests.csproj
+            name: services-book-service-BookService.Tests
+          - project: services/reservation-service/ReservationService.Tests/ReservationService.Tests.csproj
+            name: services-reservation-service-ReservationService.Tests
+          - project: services/cart-service/CartService.Tests/CartService.Tests.csproj
+            name: services-cart-service-CartService.Tests
+          - project: services/OrderService/OrderService.Tests/OrderService.Tests.csproj
+            name: services-OrderService-OrderService.Tests
+          - project: services/AnalyticsService/AnalyticsService.Tests/AnalyticsService.Tests.csproj
+            name: services-AnalyticsService-AnalyticsService.Tests
+
     steps:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
-    
+
     - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    
+
     - name: 📦 Cache NuGet Packages
       uses: actions/cache@v4
       with:
@@ -89,30 +96,31 @@ jobs:
         key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
         restore-keys: |
           ${{ runner.os }}-nuget-
-    
+
     - name: 📦 Restore Dependencies
       run: dotnet restore
-    
+
     - name: 🔨 Build
       run: dotnet build --no-restore --configuration Release
       continue-on-error: true
-    
-    - name: 🧪 Run Tests
+
+    - name: 🧪 Run Tests - ${{ matrix.name }}
       run: |
-        dotnet test ${{ matrix.test-project }}/*.csproj \
+        mkdir -p TestResults
+        dotnet test "${{ matrix.project }}" \
           --no-build \
           --configuration Release \
           --verbosity normal \
-          --logger "trx;LogFileName=test-results.trx" \
+          --logger "trx;LogFileName=${{ matrix.name }}.trx" \
           --results-directory ./TestResults || true
       continue-on-error: true
-    
-    - name: 📊 Upload Test Results
+
+    - name: 📊 Upload Test Results - ${{ matrix.name }}
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: test-results-${{ matrix.test-project }}
-        path: ./TestResults/**/*.trx
+        name: test-results-${{ matrix.name }}
+        path: ./TestResults/${{ matrix.name }}.trx
         retention-days: 30
         if-no-files-found: ignore
 
@@ -122,26 +130,26 @@ jobs:
     needs: build
     if: always()
     timeout-minutes: 10
-    
+
     steps:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
+
     - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    
+
     - name: 📦 Restore Dependencies
       run: dotnet restore
-    
+
     - name: 🎨 Check Code Formatting
       run: |
         dotnet format --verify-no-changes --no-restore --verbosity diagnostic || echo "⚠️ Code formatting issues found"
       continue-on-error: true
-    
+
     - name: 📊 Project Statistics
       run: |
         echo "## 📊 Project Statistics" >> $GITHUB_STEP_SUMMARY
@@ -159,19 +167,19 @@ jobs:
     needs: build
     if: always()
     timeout-minutes: 10
-    
+
     steps:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
-    
+
     - name: 🔧 Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-    
+
     - name: 📦 Restore Dependencies
       run: dotnet restore
-    
+
     - name: 🔍 Security Audit
       run: |
         echo "## 🔒 Security Scan" >> $GITHUB_STEP_SUMMARY
@@ -183,7 +191,7 @@ jobs:
           echo "✅ No known vulnerabilities found" >> $GITHUB_STEP_SUMMARY
         fi
       continue-on-error: true
-    
+
     - name: 📤 Upload Security Report
       uses: actions/upload-artifact@v4
       if: always()
@@ -199,7 +207,7 @@ jobs:
     needs: [build, test]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     timeout-minutes: 30
-    
+
     strategy:
       fail-fast: false
       matrix:
@@ -222,14 +230,14 @@ jobs:
             path: services/gateway
           - name: frontend
             path: services/frontend
-    
+
     steps:
     - name: 📥 Checkout Code
       uses: actions/checkout@v4
-    
+
     - name: 🐳 Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
-    
+
     - name: 🔨 Build Docker Image
       uses: docker/build-push-action@v5
       with:
@@ -240,7 +248,7 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
       continue-on-error: true
-    
+
     - name: 📊 Docker Summary
       run: |
         echo "✅ Docker image built for **${{ matrix.service.name }}**" >> $GITHUB_STEP_SUMMARY
@@ -250,7 +258,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, test, code-quality, security, docker]
     if: always()
-    
+
     steps:
     - name: 📊 Generate Summary
       run: |
