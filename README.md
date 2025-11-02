@@ -22,7 +22,7 @@
 
 ## 📋 Описание
 
-**Feane Restaurant** - это современная система управления рестораном, построенная на микросервисной архитектуре. Система включает:
+**Feane Restaurant** - это современная система управления рестораном, построенная на микросервисной архитектуре. Система включ��ет:
 
 - 🛒 **E-Commerce** - каталог товаров, корзина, оформление заказов
 - 📅 **Резервации** - бронирование столиков с управлением
@@ -38,7 +38,7 @@
 
 ### Требования
 
-- .NET 10.0 SDK
+- .NET 9.0 SDK
 - Docker Desktop
 - SQL Server 2022 (или через Docker)
 - Visual Studio 2022 / JetBrains Rider / VS Code
@@ -196,8 +196,8 @@ Database
 **База:** `Feane.CartServiceDb`
 
 **Функционал:**
-- Управление корзиной покупок
-- Добавление/удаление товаров
+- Управление корзиной покуп��к
+- Добавление/уда��ение товаров
 - Изменение количества
 - Очистка корзины
 
@@ -206,7 +206,7 @@ Database
 - `POST /api/cart/items` - добавить товар
 - `PUT /api/cart/items/{itemId}` - обновить количество
 - `DELETE /api/cart/items/{itemId}` - удалить товар
-- `DELETE /api/cart` - очистить корзину
+- `DELETE /api/cart` - очисти��ь корзину
 
 ---
 
@@ -303,7 +303,7 @@ Database
 - `/reservation/history` - история бронирований
 - `/analytics` - dashboard аналитики
 - `/account/authentication` - вход/регистрация
-- `/account/profile` - профиль пользователя
+- `/account/profile` - профиль польз��вателя
 
 **Компоненты:**
 - Navbar (на всех страницах)
@@ -377,7 +377,7 @@ Cart → Checkout → Payment Page → Order Created → Order Details
 
 3. **Order Created**
    - Создание заказа через API
-   - Автоматическая очистка корзины
+   - Автоматическая очистка к��рзины
    - Редирект на детали заказа
 
 ### Форма оплаты
@@ -408,14 +408,14 @@ Cart → Checkout → Payment Page → Order Created → Order Details
 
 **KPI Метрики (Real-time):**
 ```
-┌─────────────────────┬──────────────────┐
+┌───────────────────��─┬──────────────────┐
 │ Total Revenue       │ 95,450.00 LEI    │
 │ Total Orders        │ 892              │
 │ Completed Orders    │ 758              │
 │ Cancelled Orders    │ 134              │
 │ Average Order Value │ 107.05 LEI       │
 │ Top Product         │ Pizza Margherita │
-└─────────────────────┴──────────────────┘
+└─────────────���───────┴──────────────────┘
 ```
 
 ### Revenue Chart
@@ -640,12 +640,12 @@ FeaneShop/
 
 | Технология | Версия | Описание |
 |------------|--------|----------|
-| .NET | 10.0-preview | Framework |
-| ASP.NET Core | 10.0 | Web API |
-| Entity Framework Core | 10.0 | ORM |
+| .NET | 9.0 | Framework |
+| ASP.NET Core | 9.0 | Web API |
+| Entity Framework Core | 9.0 | ORM |
 | SQL Server | 2022 | Database |
 | Ocelot | 23.4.0 | API Gateway |
-| JWT Bearer | 10.0 | Authentication |
+| JWT Bearer | 9.0 | Authentication |
 | Swagger/OpenAPI | 7.0 | API Documentation |
 
 ### Frontend
@@ -695,7 +695,7 @@ http://localhost:5000/api/auth/login       # Вход
 http://localhost:5000/api/auth/refresh     # Обновление токена
 ```
 
-### Direct Service Access (для тестирования)
+### Direct Service Access (для тестиро��ания)
 
 ```
 http://localhost:5050/swagger              # User Service
@@ -789,7 +789,7 @@ public async Task GetUsers_ReturnsAllUsers()
 **1. Controller Tests**
 - Тестирование API endpoints
 - Валидация входных данных
-- Проверка HTTP статус кодов
+- Проверка HTTP с��атус кодов
 - Тестирование авторизации
 
 **2. Service Tests**
@@ -899,7 +899,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '9.0.x'
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
@@ -915,7 +915,7 @@ jobs:
 ### Требования для разработки
 
 - Visual Studio 2022 / JetBrains Rider / VS Code
-- .NET 10.0 SDK
+- .NET 9.0 SDK
 - Docker Desktop
 - SQL Server 2022 (или через Docker)
 - Git
@@ -1032,7 +1032,7 @@ docker logs feaneshop-<service-name>-1
 docker-compose restart <service-name>
 ```
 
-### SQL Server не запускается в Docker
+### SQL Server н�� запускается в Docker
 
 **Проблема:** Недостаточно памяти
 
@@ -1169,7 +1169,7 @@ If you have any questions or issues, please:
 - 📊 **Post-Deployment** - проверка и мониторинг после развертывания
 
 #### 3. **Pull Request Checks**
-- 📋 **PR Information** - информация о PR и измененных файлах
+- 📋 **PR Information** - информация о PR и измененных файла��
 - 🎨 **Lint & Format** - проверка форматирования кода
 - 🔨 **Build Validation** - валидация сборки
 - 🧪 **Unit Tests** - запуск юнит-тестов
@@ -1243,4 +1243,3 @@ pull requests → PR Checks → Code Review → Merge
 [⬆ Back to top](#️-feane-restaurant---full-stack-e-commerce-system)
 
 </div>
-

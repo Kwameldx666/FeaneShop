@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
-using Xunit;
 
 namespace FeaneGateway.Tests.Controllers;
 
@@ -84,8 +83,12 @@ public class AuthControllerTests
         var responseValue = okResult.Value;
 
         responseValue.Should().NotBeNull();
-        responseValue.GetType().GetProperty("Token")?.GetValue(responseValue).Should().Be(accessToken);
-        responseValue.GetType().GetProperty("RefreshToken")?.GetValue(responseValue).Should().Be(refreshToken);
+        var tokenProp = responseValue!.GetType().GetProperty("Token");
+        var refreshProp = responseValue!.GetType().GetProperty("RefreshToken");
+        tokenProp.Should().NotBeNull();
+        refreshProp.Should().NotBeNull();
+        tokenProp!.GetValue(responseValue).Should().Be(accessToken);
+        refreshProp!.GetValue(responseValue).Should().Be(refreshToken);
     }
 
     [Fact]
@@ -318,4 +321,3 @@ public class AuthControllerTests
 
     #endregion
 }
-

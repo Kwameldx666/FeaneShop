@@ -103,15 +103,16 @@ public class OrdersController : ControllerBase
             DeliveryAddress = request.DeliveryAddress,
             Notes = request.Notes,
             Status = OrderStatus.Pending,
-            Items = request.Items.Select(item => new OrderItem
-            {
-                ProductId = item.ProductId,
-                ProductName = item.ProductName,
-                ProductImageUrl = item.ProductImageUrl,
-                UnitPrice = item.UnitPrice,
-                Quantity = item.Quantity,
-                Notes = item.Notes
-            }).ToList()
+            Items = (request.Items ?? new List<OrderItemDto>())
+                .Select(item => new OrderItem
+                {
+                    ProductId = item.ProductId,
+                    ProductName = item.ProductName,
+                    ProductImageUrl = item.ProductImageUrl,
+                    UnitPrice = item.UnitPrice,
+                    Quantity = item.Quantity,
+                    Notes = item.Notes
+                }).ToList()
         };
 
         order.TotalAmount = order.Items.Sum(i => i.TotalPrice);

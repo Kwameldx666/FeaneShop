@@ -1,4 +1,4 @@
-﻿﻿using System.Text;
+﻿using System.Text;
 using AuthService.Application.Clients;
 using AuthService.Application.Configuration;
 using AuthService.Application.Interfaces;
@@ -79,14 +79,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 builder.Services.AddAuthorization();
 builder.Services.AddOcelot(builder.Configuration);
 
-var configuredOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()?
+// Build a clean, non-null list of allowed origins
+var configuredOriginsRaw = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+var configuredOrigins = configuredOriginsRaw
     .Select(origin => origin?.Trim())
     .Where(origin => !string.IsNullOrWhiteSpace(origin))
+    .Select(origin => origin!)
     .ToArray();
 
 var originSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-if (configuredOrigins != null && configuredOrigins.Length > 0)
+if (configuredOrigins.Length > 0)
     originSet.UnionWith(configuredOrigins);
 else
     originSet.UnionWith(new[]
@@ -137,7 +140,8 @@ app.UseJwtCookieAuthentication();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+// Use top-level route registrations as per analyzer recommendation
+app.MapControllers();
 
 await app.UseOcelot();
 
