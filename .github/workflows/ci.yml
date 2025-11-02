@@ -115,6 +115,15 @@ jobs:
           --results-directory ./TestResults || true
       continue-on-error: true
 
+    - name: 📊 Upload Test Results - ${{ matrix.name }}
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.name }}
+        path: ./TestResults/${{ matrix.name }}.trx
+        retention-days: 30
+        if-no-files-found: ignore
+
   code-quality:
     name: 🔍 Code Quality
     runs-on: ubuntu-latest
